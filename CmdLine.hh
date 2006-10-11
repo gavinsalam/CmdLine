@@ -33,6 +33,7 @@
 #define __CMDLINE__
 
 #include<string>
+#include<sstream>
 #include<map>
 #include<vector>
 using namespace std;
@@ -53,9 +54,9 @@ using namespace std;
 /// could somehow use base/derived classes to share common functionality? 
 ///
 class CmdLine {
-  map<string,int> __options;
+  mutable map<string,int> __options;
   vector<string> __arguments;
-  map<string,bool> __options_used;
+  mutable map<string,bool> __options_used;
   //string __progname;
   string __command_line;
 
@@ -67,9 +68,14 @@ class CmdLine {
   CmdLine(const vector<string> & args);
 
   /// true if the option is present
-  bool    present(const string & opt);
+  bool    present(const string & opt) const;
   /// true if the option is present and corresponds to a value
-  bool    present_and_set(const string & opt);
+  bool    present_and_set(const string & opt) const;
+
+  /// returns the value of the argument converted to type T
+  template<class T> T value(const string & opt) const;
+  template<class T> T value(const string & opt, const T & defval) const;
+
 
   /// return the integer value corresponding to the given option
   int     int_val(const string & opt);
@@ -77,14 +83,14 @@ class CmdLine {
   int     int_val(const string & opt, const int & defval);
 
   /// return the double value corresponding to the given option
-  double  double_val(const string & opt);
+  double  double_val(const string & opt) const;
   /// return the double value corresponding to the given option or default if option is absent
-  double  double_val(const string & opt, const double & defval);
+  double  double_val(const string & opt, const double & defval) const;
 
   /// return the string value corresponding to the given option
-  string  string_val(const string & opt);
+  string  string_val(const string & opt) const;
   /// return the string value corresponding to the given option or default if option is absent
-  string  string_val(const string & opt, const string & defval);
+  string  string_val(const string & opt, const string & defval) const;
 
   /// return the full command line
   string  command_line();
@@ -95,6 +101,35 @@ class CmdLine {
  private:
   /// builds the internal structures needed to keep track of arguments and options
   void init();
+
+  /// report failure of conversion
+  void _report_conversion_failure(const string & opt, 
+                                  const string & optstring) const;
+
+
 };
+
+
+
+/// returns the value of the argument converted to type T
+template<class T> T CmdLine::value(const string & opt) const {
+  T result;
+  string optstring = string_val(opt);
+  istringstream optstream(optstring);
+  optstream >> result;
+  if (optstream.fail()) _report_conversion_failure(opt, optstring);
+  return result;
+}
+
+/// for the string case, just copy the string...
+template<> inline string CmdLine::value<string>(const string & opt) const {
+  return string_val(opt);}
+
+
+
+template<class T> T CmdLine::value(const string & opt, const T & defval) const {
+  if (this->present_and_set(opt)) {return value<T>(opt);} 
+  else {return defval;}
+}
 
 #endif

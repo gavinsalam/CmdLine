@@ -90,21 +90,21 @@ void CmdLine::init (){
 }
 
 // indicates whether an option is present
-bool CmdLine::present(const string & opt) {
+bool CmdLine::present(const string & opt) const {
   bool result = (__options.find(opt) != __options.end());
   if (result) __options_used[opt] = true;
   return result;
 }
 
 // indicates whether an option is present and has a value associated
-bool CmdLine::present_and_set(const string & opt) {
+bool CmdLine::present_and_set(const string & opt) const {
   bool result = present(opt) && __options[opt] > 0;
   return result;
 }
 
 
 // return the string value corresponding to the specified option
-string CmdLine::string_val(const string & opt) {
+string CmdLine::string_val(const string & opt) const {
   if (!this->present_and_set(opt)) {
     cerr << "Error: Option "<<opt
 	 <<" is needed but is not present_and_set"<<endl;
@@ -118,7 +118,7 @@ string CmdLine::string_val(const string & opt) {
 }
 
 // as above, but if opt is not present_and_set, return default
-string CmdLine::string_val(const string & opt, const string & defval) {
+string CmdLine::string_val(const string & opt, const string & defval) const {
   if (this->present_and_set(opt)) {return string_val(opt);} 
   else {return defval;}
 }
@@ -148,7 +148,7 @@ int CmdLine::int_val(const string & opt, const int & defval) {
 // Return the integer value corresponding to the specified option;
 // Not too sure what happens if option is present_and_set but does not
 // have string value...
-double CmdLine::double_val(const string & opt) {
+double CmdLine::double_val(const string & opt) const {
   double result;
   string optstring = string_val(opt);
   istringstream optstream(optstring);
@@ -161,7 +161,7 @@ double CmdLine::double_val(const string & opt) {
 }
 
 // as above, but if opt is not present_and_set, return default
-double CmdLine::double_val(const string & opt, const double & defval) {
+double CmdLine::double_val(const string & opt, const double & defval) const {
   if (this->present_and_set(opt)) {return double_val(opt);} 
   else {return defval;}
 }
@@ -184,3 +184,13 @@ bool CmdLine::all_options_used() const {
   }
   return result;
 }
+
+
+/// report failure of conversion
+void CmdLine::_report_conversion_failure(const string & opt, 
+                                         const string & optstring) const {
+  cerr << "Error: could not convert option ("<<opt<<") value ("
+       <<optstring<<") to requested type"<<endl; 
+  exit(-1);
+}
+
