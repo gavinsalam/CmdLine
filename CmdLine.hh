@@ -93,7 +93,7 @@ class CmdLine {
   string  string_val(const string & opt, const string & defval) const;
 
   /// return the full command line
-  string  command_line();
+  string  command_line() const;
 
   /// return true if all options have been asked for at some point or other
   bool all_options_used() const;

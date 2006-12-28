@@ -168,7 +168,7 @@ double CmdLine::double_val(const string & opt, const double & defval) const {
 
 
 // return the full command line including the command itself
-string CmdLine::command_line() {
+string CmdLine::command_line() const {
   return __command_line;
 }
 
