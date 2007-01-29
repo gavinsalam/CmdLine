@@ -72,6 +72,10 @@ class CmdLine {
   /// true if the option is present and corresponds to a value
   bool    present_and_set(const string & opt) const;
 
+  /// return a reference to the vector of command-line arguments (0 is
+  /// command).
+  inline const vector<string> & arguments() const {return __arguments;}
+
   /// returns the value of the argument converted to type T
   template<class T> T value(const string & opt) const;
   template<class T> T value(const string & opt, const T & defval) const;
