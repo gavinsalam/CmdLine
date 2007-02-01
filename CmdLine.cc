@@ -179,7 +179,7 @@ bool CmdLine::all_options_used() const {
   for(map<string,bool>::const_iterator opt = __options_used.begin();
       opt != __options_used.end(); opt++) {
     bool this_one = opt->second;
-    if (! this_one) {cerr << "Option "<<opt->first<<" unused"<<endl;}
+    if (! this_one) {cerr << "Option "<<opt->first<<" unused/unrecognized"<<endl;}
     result = result && this_one;
   }
   return result;
