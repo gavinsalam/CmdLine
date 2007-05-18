@@ -121,7 +121,7 @@ string CmdLine::string_val(const string & opt, const string & defval) const {
 // Return the integer value corresponding to the specified option;
 // Not too sure what happens if option is present_and_set but does not
 // have string value...
-int CmdLine::int_val(const string & opt) {
+int CmdLine::int_val(const string & opt) const {
   int result;
   string optstring = string_val(opt);
   istringstream optstream(optstring);
@@ -134,7 +134,7 @@ int CmdLine::int_val(const string & opt) {
 }
 
 // as above, but if opt is not present_and_set, return default
-int CmdLine::int_val(const string & opt, const int & defval) {
+int CmdLine::int_val(const string & opt, const int & defval) const {
   if (this->present_and_set(opt)) {return int_val(opt);} 
   else {return defval;}
 }

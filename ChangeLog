@@ -1,3 +1,8 @@
+2007-05-18  Gavin SALAM  <salam@lpthe.jussieu.fr>
+
+	* CmdLine.hh|cc
+	  set int_val(...) to be const (had been missing).
+
 2007-02-03  Gavin Salam  <salam@lpthe.jussieu.fr>
 
 	* added files needed to turn this into a semi-proper release

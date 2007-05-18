@@ -76,9 +76,9 @@ class CmdLine {
 
 
   /// return the integer value corresponding to the given option
-  int     int_val(const string & opt);
+  int     int_val(const string & opt) const;
   /// return the integer value corresponding to the given option or default if option is absent
-  int     int_val(const string & opt, const int & defval);
+  int     int_val(const string & opt, const int & defval) const;
 
   /// return the double value corresponding to the given option
   double  double_val(const string & opt) const;
