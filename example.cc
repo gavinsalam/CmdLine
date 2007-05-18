@@ -29,15 +29,20 @@ using namespace std;
 
 int main (int argc, char ** argv) {
 
+  // construct the cmdline object
   CmdLine cmdline(argc, argv);
 
-  //double dval = cmdline.double_val("-d",1.0);
+  // the value<T> template deduces the correct type from the
+  // default value for the option (if present)
   double dval = cmdline.value("-d",0.0);
-  cout << "dval = " <<dval << endl;
-  string sval = cmdline.value<string>("-s","not there");
-  cout << "sval = " <<sval << endl;
+  cout << "dval = " << dval << endl;
 
-  // a time stamp is not strictly purpose of cmdline -- but it's
+  // for options with a default character value, we usually want
+  // a string result -- so this must be specified explicitly
+  string sval = cmdline.value<string>("-s","not there");
+  cout << "sval = " << sval << endl;
+
+  // time stamping is not strictly purpose of cmdline -- but it's
   // useful anyhow
   cout << "Time now      = " << cmdline.time_stamp() << endl;
 }
