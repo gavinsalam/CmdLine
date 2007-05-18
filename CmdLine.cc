@@ -53,6 +53,10 @@ CmdLine::CmdLine (const vector<string> & args) {
 
 //----------------------------------------------------------------------
 void CmdLine::init (){
+  // record time at start
+  time(&__time_at_start);
+
+  // record whole command line.
   __command_line = "";
   for(size_t iarg = 0; iarg < __arguments.size(); iarg++){
     __command_line += __arguments[iarg];
@@ -180,6 +184,45 @@ bool CmdLine::all_options_used() const {
   return result;
 }
 
+/// return a time stamp corresponding to now
+string CmdLine::time_stamp(bool utc) const {
+  time_t timenow;
+  time(&timenow);
+  return _string_time(timenow, utc);
+}
+
+/// return a time stamp corresponding to start time
+string CmdLine::time_stamp_at_start(bool utc) const {
+  return _string_time(__time_at_start, utc);
+}
+
+
+/// convert the time into a string (local by default -- utc if 
+/// utc=true).
+string CmdLine::_string_time(const time_t & time, bool utc) const {
+  struct tm * timeinfo;
+  if (utc) {
+    timeinfo = gmtime(&time);
+  } else {
+    timeinfo = localtime(&time);
+  }
+  char timecstr[100];
+  strftime (timecstr,100,"%Y-%m-%d %H:%M:%S (%Z)",timeinfo);
+  //sprintf(timecstr,"%04d-%02d-%02d %02d:%02d:%02d",
+  //        timeinfo->tm_year+1900,
+  //        timeinfo->tm_mon+1,
+  //        timeinfo->tm_mday,
+  //        timeinfo->tm_hour,
+  //        timeinfo->tm_min,
+  //        timeinfo->tm_sec);
+  //string timestr = timecstr;
+  //if (utc) {
+  //  timestr .= " (UTC)";
+  //} else {
+  //  timestr .= " (local)";
+  //}
+  return timecstr;
+}
 
 /// report failure of conversion
 void CmdLine::_report_conversion_failure(const string & opt, 

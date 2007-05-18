@@ -36,4 +36,8 @@ int main (int argc, char ** argv) {
   cout << "dval = " <<dval << endl;
   string sval = cmdline.value<string>("-s","not there");
   cout << "sval = " <<sval << endl;
+
+  // a time stamp is not strictly purpose of cmdline -- but it's
+  // useful anyhow
+  cout << "Time now      = " << cmdline.time_stamp() << endl;
 }

@@ -30,6 +30,7 @@
 #include<sstream>
 #include<map>
 #include<vector>
+#include<ctime>
 using namespace std;
 
 /// Class designed to deal with command-line arguments in a fashion similar
@@ -53,6 +54,7 @@ class CmdLine {
   mutable map<string,bool> __options_used;
   //string __progname;
   string __command_line;
+  std::time_t __time_at_start;
 
  public :
   CmdLine() {};
@@ -96,6 +98,12 @@ class CmdLine {
   /// return true if all options have been asked for at some point or other
   bool all_options_used() const;
 
+  /// return a time stamp (UTC) corresponding to now
+  string time_stamp(bool utc = false) const;
+
+  /// return a time stamp (UTC) corresponding to time of object construction
+  string time_stamp_at_start(bool utc = false) const;
+
  private:
   /// builds the internal structures needed to keep track of arguments and options
   void init();
@@ -104,7 +112,9 @@ class CmdLine {
   void _report_conversion_failure(const string & opt, 
                                   const string & optstring) const;
 
-
+  /// convert the time into a string (local by default -- utc if 
+  /// utc=true).
+  std::string _string_time(const time_t & time, bool utc) const;
 };
 
 

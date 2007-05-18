@@ -1,6 +1,7 @@
 2007-05-18  Gavin SALAM  <salam@lpthe.jussieu.fr>
 
 	* CmdLine.hh|cc
+	  added time_stamp(...) and time_stamp_at_start(...) facilities
 	  set int_val(...) to be const (had been missing).
 
 2007-02-03  Gavin Salam  <salam@lpthe.jussieu.fr>
