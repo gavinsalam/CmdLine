@@ -44,5 +44,5 @@ int main (int argc, char ** argv) {
 
   // time stamping is not strictly purpose of cmdline -- but it's
   // useful anyhow
-  cout << "Time now      = " << cmdline.time_stamp() << endl;
+  cout << "Time now = " << cmdline.time_stamp() << endl;
 }
