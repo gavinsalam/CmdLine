@@ -1,3 +1,16 @@
+2007-06-30  Gavin Salam  <salam@lpthe.jussieu.fr>
+
+	* CmdLine.hh: 
+
+	  added CmdLine::value_prefix<T>(opt,prefix), which interprets
+	  the value of opt by placing the prefix in front of it
+	   
+	  added CmdLine::value<T>(opt,default,prefix), which interprets
+	  the value of opt by placing the prefix in front of it
+
+	  Both can be useful when reading in enums that all share a common
+	  prefix.
+
 2007-05-18  Gavin SALAM  <salam@lpthe.jussieu.fr>
 
 	* CmdLine.hh|cc

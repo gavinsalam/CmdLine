@@ -74,7 +74,13 @@ class CmdLine {
 
   /// returns the value of the argument converted to type T
   template<class T> T value(const string & opt) const;
+  /// returns the value of the argument, prefixed with prefix (NB: 
+  /// require different function name to avoid confusion with 
+  /// 2-arg template).
+  template<class T> T value_prefix(const string & opt, const string & prefix) const;
   template<class T> T value(const string & opt, const T & defval) const;
+  template<class T> T value(const string & opt, const T & defval, 
+                            const string & prefix) const;
 
 
   /// return the integer value corresponding to the given option
@@ -121,8 +127,13 @@ class CmdLine {
 
 /// returns the value of the argument converted to type T
 template<class T> T CmdLine::value(const string & opt) const {
+  return value_prefix<T>(opt,""); // just give it a null prefix
+}
+
+/// returns the value of the argument converted to type T
+template<class T> T CmdLine::value_prefix(const string & opt, const string & prefix) const {
   T result;
-  string optstring = string_val(opt);
+  string optstring = prefix+string_val(opt);
   istringstream optstream(optstring);
   optstream >> result;
   if (optstream.fail()) _report_conversion_failure(opt, optstring);
@@ -137,6 +148,12 @@ template<> inline string CmdLine::value<string>(const string & opt) const {
 
 template<class T> T CmdLine::value(const string & opt, const T & defval) const {
   if (this->present_and_set(opt)) {return value<T>(opt);} 
+  else {return defval;}
+}
+
+template<class T> T CmdLine::value(const string & opt, const T & defval, 
+                                   const string & prefix) const {
+  if (this->present_and_set(opt)) {return value_prefix<T>(opt, prefix);} 
   else {return defval;}
 }
 
