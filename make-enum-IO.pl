@@ -74,7 +74,7 @@ std::ostream & operator<<(std::ostream & ostr, $enum val)";
   foreach $val (@vals) {
     $outputcc .= "  case $val: ostr << \"$val\"; return ostr;\n";
   }
-  $outputcc .= "  default: ostr << \"[unrecognized $enum]\"; return ostr;\n}\n\n";
+  $outputcc .= "  default: ostr << \"[unrecognized $enum]\"; return ostr;}\n}\n\n";
 
   # and write the corresponding input routines
   $outputcommon = "/// overloaded input for $enum
@@ -85,7 +85,7 @@ std::istream & operator>>(std::istream & istr, $enum & val)";
   istr >> strval;
 ";
   foreach $val (@vals) {
-    $outputcc .= "  if (strval == \"$val\") {val = $val}\n  else";
+    $outputcc .= "  if (strval == \"$val\") {val = $val;}\n  else";
   }
   $outputcc .= "  {std::cerr << \"Could not interpret \" << strval << \" as a $enum\\n\";
     exit(-1);}
