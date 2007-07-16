@@ -30,6 +30,7 @@
 #include<iostream> // testing
 #include<vector>
 #include<cstddef> // for size_t
+#include <sys/utsname.h> // for getting uname
 using namespace std;
 
 // initialise the various structures that we shall
@@ -222,6 +223,20 @@ string CmdLine::_string_time(const time_t & time, bool utc) const {
   //  timestr .= " (local)";
   //}
   return timecstr;
+}
+
+/// return a unix-style uname
+string CmdLine::unix_uname() const {
+  utsname utsbuf;
+  int utsret = uname(&utsbuf);
+  if (utsret != 0) {return "Error establishing uname";}
+  ostringstream uname_result;
+  uname_result << utsbuf.sysname << " " 
+               << utsbuf.nodename << " "
+               << utsbuf.release << " "
+               << utsbuf.version << " "
+               << utsbuf.machine;
+  return uname_result.str();
 }
 
 /// report failure of conversion

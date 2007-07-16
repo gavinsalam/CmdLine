@@ -110,6 +110,9 @@ class CmdLine {
   /// return a time stamp (UTC) corresponding to time of object construction
   string time_stamp_at_start(bool utc = false) const;
 
+  /// return output similar to that from uname -a on unix
+  string unix_uname() const;
+
  private:
   /// builds the internal structures needed to keep track of arguments and options
   void init();
