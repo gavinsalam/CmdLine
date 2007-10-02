@@ -1,3 +1,10 @@
+2007-10-02  Gavin SALAM  <salam@lpthe.jussieu.fr>
+
+	* configure.ac    *** ADDED ***
+	* Makefile.am     *** ADDED ***
+        * NEWS            *** ADDED ***
+	  added these on way to getting a proper automake type system
+
 2007-07-16  Gavin SALAM  <salam@lpthe.jussieu.fr>
 
 	* CmdLine.cc|hh: 
