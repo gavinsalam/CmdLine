@@ -48,4 +48,7 @@ int main (int argc, char ** argv) {
 
   // get info on machine
   cout << "Command run on " << cmdline.unix_uname() << endl;
+
+  // make sure we've used all options that were provided on command-line
+  cmdline.assert_all_options_used();
 }
