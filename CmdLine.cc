@@ -247,3 +247,9 @@ void CmdLine::_report_conversion_failure(const string & opt,
   exit(-1);
 }
 
+void CmdLine::assert_all_options_used() const {
+  if (! all_options_used()) {
+    cerr <<"Unrecognised options on the command line" << endl;
+    exit(-1);
+  }
+}

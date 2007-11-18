@@ -104,6 +104,9 @@ class CmdLine {
   /// return true if all options have been asked for at some point or other
   bool all_options_used() const;
 
+  /// gives an error if there are unused  options
+  void assert_all_options_used() const;
+
   /// return a time stamp (UTC) corresponding to now
   string time_stamp(bool utc = false) const;
 

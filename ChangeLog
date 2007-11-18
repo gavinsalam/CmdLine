@@ -1,3 +1,8 @@
+2007-11-18  Gavin Salam  <salam@lpthe.jussieu.fr>
+
+	* CmdLine.cc|hh: 
+	  added assert_all_options_used()
+
 2007-10-02  Gavin SALAM  <salam@lpthe.jussieu.fr>
 
 	* configure.ac    *** ADDED ***
