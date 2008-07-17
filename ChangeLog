@@ -1,3 +1,9 @@
+2008-07-17  Gavin SALAM  <salam@lpthe.jussieu.fr>
+
+	* CmdLine.cc: 
+	  added use of <cstdlib> for access to exit(...) [needed for
+	  g++-4.3] 
+
 2007-11-18  Gavin Salam  <salam@lpthe.jussieu.fr>
 
 	* CmdLine.cc|hh: 

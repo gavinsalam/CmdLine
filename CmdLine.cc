@@ -30,6 +30,7 @@
 #include<iostream> // testing
 #include<vector>
 #include<cstddef> // for size_t
+#include<cstdlib> // for exit(...)
 #include <sys/utsname.h> // for getting uname
 using namespace std;
 
