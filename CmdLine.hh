@@ -116,6 +116,8 @@ class CmdLine {
   /// return output similar to that from uname -a on unix
   string unix_uname() const;
 
+  class Error;
+
  private:
   /// builds the internal structures needed to keep track of arguments and options
   void init();
@@ -129,6 +131,19 @@ class CmdLine {
   std::string _string_time(const time_t & time, bool utc) const;
 };
 
+
+
+//----------------------------------------------------------------------
+/// class that deals with errors
+class CmdLine::Error {
+public:
+  Error(const std::ostringstream & ostr);
+  const std::string & message() {return _message;}
+  static void set_print_message(bool doprint) {_do_printout = doprint;}
+private:
+  std::string _message;
+  static bool        _do_printout;
+};
 
 
 /// returns the value of the argument converted to type T

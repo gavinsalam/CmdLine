@@ -30,7 +30,6 @@
 #include<iostream> // testing
 #include<vector>
 #include<cstddef> // for size_t
-#include<cstdlib> // for exit(...)
 #include <sys/utsname.h> // for getting uname
 using namespace std;
 
@@ -107,9 +106,10 @@ bool CmdLine::present_and_set(const string & opt) const {
 // return the string value corresponding to the specified option
 string CmdLine::string_val(const string & opt) const {
   if (!this->present_and_set(opt)) {
-    cerr << "Error: Option "<<opt
+    ostringstream ostr;
+    ostr << "Option "<<opt
 	 <<" is needed but is not present_and_set"<<endl;
-    exit(-1);
+    throw Error(ostr);
   }
   string arg = __arguments[__options[opt]];
   // this may itself look like an option -- if that is the case
@@ -133,9 +133,11 @@ int CmdLine::int_val(const string & opt) const {
   istringstream optstream(optstring);
   optstream >> result;
   if (optstream.fail()) {
-    cerr << "Error: could not convert option ("<<opt<<") value ("
+    ostringstream ostr;
+    ostr << "could not convert option ("<<opt<<") value ("
 	 <<optstring<<") to int"<<endl; 
-    exit(-1);}
+    throw Error(ostr);
+  }
   return result;
 }
 
@@ -155,9 +157,12 @@ double CmdLine::double_val(const string & opt) const {
   istringstream optstream(optstring);
   optstream >> result;
   if (optstream.fail()) {
-    cerr << "Error: could not convert option ("<<opt<<") value ("
+    ostringstream ostr;
+
+    ostr << "could not convert option ("<<opt<<") value ("
 	 <<optstring<<") to double"<<endl; 
-    exit(-1);}
+    throw Error(ostr);
+  }
   return result;
 }
 
@@ -243,14 +248,23 @@ string CmdLine::unix_uname() const {
 /// report failure of conversion
 void CmdLine::_report_conversion_failure(const string & opt, 
                                          const string & optstring) const {
-  cerr << "Error: could not convert option ("<<opt<<") value ("
+  ostringstream ostr;
+  ostr << "could not convert option ("<<opt<<") value ("
        <<optstring<<") to requested type"<<endl; 
-  exit(-1);
+  throw Error(ostr);
 }
 
 void CmdLine::assert_all_options_used() const {
   if (! all_options_used()) {
-    cerr <<"Unrecognised options on the command line" << endl;
-    exit(-1);
+    ostringstream ostr;
+    ostr <<"Unrecognised options on the command line" << endl;
+    throw Error(ostr);
   }
+}
+
+
+bool CmdLine::Error::_do_printout = true;
+CmdLine::Error::Error(const std::ostringstream & ostr) 
+  : _message(ostr.str()) {
+  if (_do_printout) cerr << "CmdLine Error: " << _message;
 }

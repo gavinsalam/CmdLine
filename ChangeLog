@@ -1,3 +1,10 @@
+2008-08-13  Gavin SALAM  <salam@lpthe.jussieu.fr>
+
+	* CmdLine.hh: 
+	* CmdLine.cc: 
+	  instead of exit(-1), decided to throw an error, with the option
+	  of turning off the message -- intended to be more C++ like.
+
 2008-07-17  Gavin SALAM  <salam@lpthe.jussieu.fr>
 
 	* CmdLine.cc: 
