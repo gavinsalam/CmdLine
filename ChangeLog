@@ -1,3 +1,9 @@
+2010-02-04  Gavin Salam  <salam@lpthe.jussieu.fr>
+
+	* Makefile: 
+	  created a proper Makefile (rather than one that just calls
+	  scons). 
+
 2008-08-13  Gavin SALAM  <salam@lpthe.jussieu.fr>
 
 	* CmdLine.hh: 
