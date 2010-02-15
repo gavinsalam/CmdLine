@@ -1,3 +1,9 @@
+2010-02-15  Gavin Salam  <salam@lpthe.jussieu.fr>
+
+	* README: updated this 
+	* Makefile: actually added this...
+	* moved a bunch of unused build-related things into unused
+
 2010-02-04  Gavin Salam  <salam@lpthe.jussieu.fr>
 
 	* Makefile: 
