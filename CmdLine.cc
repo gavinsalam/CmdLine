@@ -2,7 +2,7 @@
 // File: CmdLine.cc                                                          //
 // Part of the CmdLine library                                               //
 //                                                                           //
-// Copyright (c) 2007 Gavin Salam                                            //
+// Copyright (c) 2007-2012 Gavin Salam                                       //
 //                                                                           //
 // This program is free software; you can redistribute it and/or modify      //
 // it under the terms of the GNU General Public License as published by      //
@@ -57,10 +57,23 @@ void CmdLine::init (){
   // record time at start
   time(&__time_at_start);
 
-  // record whole command line.
+  // record whole command line so that it can be easily reused
   __command_line = "";
   for(size_t iarg = 0; iarg < __arguments.size(); iarg++){
-    __command_line += __arguments[iarg];
+    const string & arg = __arguments[iarg];
+    // if an argument contains special characters, enclose it in
+    // single quotes [NB: does not work if it contains a single quote
+    // itself]
+    if (arg.find(' ') != string::npos ||
+        arg.find('|') != string::npos ||
+        arg.find('<') != string::npos || 
+        arg.find('>') != string::npos || 
+        arg.find('"') != string::npos || 
+        arg.find('#') != string::npos) {
+      __command_line += "'"+arg+"'";
+    } else {
+      __command_line += __arguments[iarg];
+    }
     __command_line += " ";
   }
   

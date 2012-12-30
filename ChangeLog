@@ -1,3 +1,12 @@
+2012-12-30  Gavin Salam  <salam@lpthe.jussieu.fr>
+
+	* CmdLine.cc:
+	  modified output of CmdLine::command_line(), so that it
+	  arguments containing one of "!#|<> or a space are output
+	  enclosed in single quotes.
+
+	* AUTHORS: updated email address to be CERN
+
 2011-10-24  Gavin Salam  <gsalam@macth69.cern.ch>
 
 	* AUTHORS: updated the address
