@@ -2,7 +2,7 @@
 
 all: libCmdLine.a example
 
-CXXFLAGS=-g -ansi -pedantic -Wall -O3
+CXXFLAGS=-g -ansi -pedantic -Wall -O3 -fPIC -DPIC
 
 libCmdLine.a: CmdLine.o
 	ar rc libCmdLine.a CmdLine.o
