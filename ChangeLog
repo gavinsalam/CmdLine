@@ -1,3 +1,8 @@
+2015-11-18  Gavin Salam  <gavin.salam@cern.ch>
+
+	* tarit.sh:
+	added *.pl to tarit
+
 2013-05-12  Gavin SALAM  <salam@lpthe.jussieu.fr>
 
 	* Makefile (CXXFLAGS): 
