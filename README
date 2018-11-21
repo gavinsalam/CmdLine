@@ -10,5 +10,5 @@ type
 
 to build the library. 
 
-In the svn version, there's also an autotools setup (in the unused/
+Under version control, there's also an autotools setup (in the unused/
 directory), but it comes absolutely without guarantees.
