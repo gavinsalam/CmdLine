@@ -31,6 +31,7 @@
 #include<vector>
 #include<cstddef> // for size_t
 #include <sys/utsname.h> // for getting uname
+#include <unistd.h> // for getting current path
 using namespace std;
 
 // initialise the various structures that we shall
@@ -280,4 +281,20 @@ bool CmdLine::Error::_do_printout = true;
 CmdLine::Error::Error(const std::ostringstream & ostr) 
   : _message(ostr.str()) {
   if (_do_printout) cerr << "CmdLine Error: " << _message;
+}
+
+string CmdLine::current_path() const {
+  const size_t maxlen = 10000;
+  char tmp[maxlen];
+  getcwd(tmp,maxlen);
+  return string(tmp);
+}
+
+string CmdLine::header(const string & prefix) const {
+  ostringstream ostr;
+  ostr << prefix << "" << command_line() << endl;
+  ostr << prefix << "from path: " << current_path() << endl;
+  ostr << prefix << "started at: " << time_stamp_at_start() << endl;
+  ostr << prefix << "running on: " << unix_uname() << endl;
+  return ostr.str();
 }

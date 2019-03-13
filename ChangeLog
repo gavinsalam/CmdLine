@@ -1,3 +1,13 @@
+2019-03-13  Gavin Salam  <gavin.salam@cern.ch>
+
+	* example.cc (main): 
+	it now outputs the header() rather than individual pieces
+	
+	* CmdLine.cc|hh:
+	added
+	- current_path(): returns current path
+	- header(): returns a full header (command-line, path, time, system)
+
 2015-11-18  Gavin Salam  <gavin.salam@cern.ch>
 
 	* tarit.sh:

@@ -42,12 +42,9 @@ int main (int argc, char ** argv) {
   string sval = cmdline.value<string>("-s","not there");
   cout << "sval = " << sval << endl;
 
-  // time stamping is not strictly purpose of cmdline -- but it's
-  // useful anyhow
-  cout << "Time now = " << cmdline.time_stamp() << endl;
 
-  // get info on machine
-  cout << "Command run on " << cmdline.unix_uname() << endl;
+  // output a header with various info (command-line, path, time, system)
+  cout << cmdline.header() ;
 
   // make sure we've used all options that were provided on command-line
   cmdline.assert_all_options_used();
