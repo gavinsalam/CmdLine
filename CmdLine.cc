@@ -32,6 +32,7 @@
 #include<cstddef> // for size_t
 #include <sys/utsname.h> // for getting uname
 #include <unistd.h> // for getting current path
+#include <stdlib.h> // for getting the environment (including username)
 using namespace std;
 
 // initialise the various structures that we shall
@@ -259,6 +260,12 @@ string CmdLine::unix_uname() const {
   return uname_result.str();
 }
 
+string CmdLine::unix_username() const {
+  char * logname;
+  logname = getenv("LOGNAME");
+  return logname;
+}
+
 /// report failure of conversion
 void CmdLine::_report_conversion_failure(const string & opt, 
                                          const string & optstring) const {
@@ -295,6 +302,7 @@ string CmdLine::header(const string & prefix) const {
   ostr << prefix << "" << command_line() << endl;
   ostr << prefix << "from path: " << current_path() << endl;
   ostr << prefix << "started at: " << time_stamp_at_start() << endl;
+  ostr << prefix << "by user: "    << unix_username() << endl;
   ostr << prefix << "running on: " << unix_uname() << endl;
   return ostr.str();
 }

@@ -116,6 +116,9 @@ class CmdLine {
   /// return output similar to that from uname -a on unix
   string unix_uname() const;
 
+  /// return the username
+  string unix_username() const;
+
   /// In C++17 we don't need this, we can instead use std::filesystem::current_path();
   /// But for compatibility with older system
   string current_path() const;
@@ -123,8 +126,9 @@ class CmdLine {
   /// return a multiline header that contains
   /// - the command line
   /// - the current directory path
+  /// - the start time
+  /// - the user
   /// - the system name
-  /// - the time
   /// The header includes a final newline
   string header(const string & prefix = "# ") const;
   
