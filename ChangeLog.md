@@ -15,3 +15,6 @@ and as of version 2.0.0 this project adheres to
 - support for C++03 compilers
 
 ## Prior to this: unversioned
+
+See the [ChangeLog.old](ChangeLog.old) file for the sequence of
+changes
