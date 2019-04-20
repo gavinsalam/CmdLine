@@ -10,8 +10,8 @@ and as of version 2.0.0 this project adheres to
 
 ## Unreleased (2.0.x series)
 ### Added
-    - start of functionality for help
+- start of functionality for help
 ### Removed
-    - support for C++03 compilers
+- support for C++03 compilers
 
 ## Prior to this: unversioned
