@@ -1,8 +1,8 @@
 # ChangeLog
 
 All notable changes to this project from version 2.0.0 will be
-documented in this file. For earlier changes see the [](ChangeLog.old)
-file.
+documented in this file. For earlier changes see the
+[ChangeLog.old](ChangeLog.old) file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and as of version 2.0.0 this project adheres to 
