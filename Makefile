@@ -2,7 +2,8 @@
 
 all: libCmdLine.a example
 
-CXXFLAGS=-g -ansi -pedantic -Wall -O3 -fPIC -DPIC
+#CXXFLAGS=-g -std=c++11 -stdlib=libc++ -pedantic -Wall -O3 -fPIC -DPIC
+CXXFLAGS=-g -std=c++11  -pedantic -Wall -O3 -fPIC -DPIC
 
 libCmdLine.a: CmdLine.o
 	ar rc libCmdLine.a CmdLine.o
@@ -10,7 +11,7 @@ libCmdLine.a: CmdLine.o
 
 
 example: libCmdLine.a example.o
-	g++ -o example example.o -L. -lCmdLine
+	$(CXX) -o example example.o -L. -lCmdLine
 
 dist:
 	tarit.sh

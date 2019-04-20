@@ -275,7 +275,31 @@ void CmdLine::_report_conversion_failure(const string & opt,
   throw Error(ostr);
 }
 
+void CmdLine::print_help() const {
+  // First print a summary
+  cout << "\nUsage: \n       " << __arguments[0];
+  for (unsigned i = 0; i < __options_queried.size(); i++) {
+    cout << " [" << __options_help[__options_queried[i]].option
+         << " ...]";
+  }
+  cout << endl << endl;
+
+  // Then print detailed usage for each option
+  for (unsigned i = 0; i < __options_queried.size(); i++) {
+    const OptionHelp & opthelp = __options_help[__options_queried[i]];
+    cout << opthelp.option << " (" << opthelp.type
+         << ") default: "  << opthelp.default_value << endl;
+  }
+}
+
 void CmdLine::assert_all_options_used() const {
+  // deal with the help part
+  if (__help_enabled) {
+    if (present("-h") || present("--help")) {
+      print_help();
+      exit(0);
+    }
+  }
   if (! all_options_used()) {
     ostringstream ostr;
     ostr <<"Unrecognised options on the command line" << endl;

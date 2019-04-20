@@ -49,13 +49,6 @@ using namespace std;
 /// could somehow use base/derived classes to share common functionality? 
 ///
 class CmdLine {
-  mutable map<string,int> __options;
-  vector<string> __arguments;
-  mutable map<string,bool> __options_used;
-  //string __progname;
-  string __command_line;
-  std::time_t __time_at_start;
-
  public :
   CmdLine() {};
   /// initialise a CmdLine from a C-style array of command-line arguments
@@ -63,6 +56,9 @@ class CmdLine {
   /// initialise a CmdLine from a C++ vector of arguments 
   CmdLine(const vector<string> & args);
 
+  /// set whether help (triggered by -h or --help) should be enabled
+  void set_help_enabled(bool enabled) {__help_enabled = enabled;}
+  
   /// true if the option is present
   bool    present(const string & opt) const;
   /// true if the option is present and corresponds to a value
@@ -99,12 +95,19 @@ class CmdLine {
   string  string_val(const string & opt, const string & defval) const;
 
   /// return the full command line
-  string  command_line() const;
+  string command_line() const;
 
+  ///
+  void enable_help() {
+  }
+  
+  /// print the help string that has been deduced from all the options called
+  void print_help() const;
+  
   /// return true if all options have been asked for at some point or other
   bool all_options_used() const;
 
-  /// gives an error if there are unused  options
+  /// gives an error if there are unused options
   void assert_all_options_used() const;
 
   /// return a time stamp (UTC) corresponding to now
@@ -135,6 +138,34 @@ class CmdLine {
   class Error;
 
  private:
+
+  /// stores the command line arguments in a C++ friendly way
+  vector<string> __arguments;
+
+  /// a map of possible options found on the command line, referencing
+  /// the index of the argument that might assign a value to that
+  /// option (an option being anything starting with a dash(
+  mutable map<string,int> __options;
+
+  /// whether a given options has been requested
+  mutable map<string,bool> __options_used;
+
+  /// whether help functionality is enabled
+  bool __help_enabled = true;
+  /// information for helping with an option
+  struct OptionHelp {
+    std::string option, type, default_value, help;
+  };
+
+  /// a vector of the options queried (this may evolve)
+  mutable vector<string> __options_queried;
+  /// a map with help for each option that was queried
+  mutable std::map<std::string, OptionHelp> __options_help;
+  
+  //string __progname;
+  string __command_line;
+  std::time_t __time_at_start;
+
   /// builds the internal structures needed to keep track of arguments and options
   void init();
 
@@ -184,6 +215,15 @@ template<> inline string CmdLine::value<string>(const string & opt) const {
 
 
 template<class T> T CmdLine::value(const string & opt, const T & defval) const {
+  // construct help
+  if (__options_help.find(opt) == __options_help.end()) {
+    std::ostringstream defval_ostr;
+    defval_ostr << defval;
+    OptionHelp opthelp = {opt, typeid(defval).name(), defval_ostr.str(), ""};
+    __options_queried.push_back(opt);
+    __options_help[opt] = opthelp;
+  }
+  // return value
   if (this->present_and_set(opt)) {return value<T>(opt);} 
   else {return defval;}
 }
