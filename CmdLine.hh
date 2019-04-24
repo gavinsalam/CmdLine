@@ -31,6 +31,7 @@
 #include<map>
 #include<vector>
 #include<ctime>
+#include<typeinfo> 
 using namespace std;
 
 /// Class designed to deal with command-line arguments in a fashion similar
@@ -52,12 +53,9 @@ class CmdLine {
  public :
   CmdLine() {};
   /// initialise a CmdLine from a C-style array of command-line arguments
-  CmdLine(const int argc, char** argv);
+  CmdLine(const int argc, char** argv, bool enable_help = false);
   /// initialise a CmdLine from a C++ vector of arguments 
-  CmdLine(const vector<string> & args);
-
-  /// set whether help (triggered by -h or --help) should be enabled
-  void set_help_enabled(bool enabled) {__help_enabled = enabled;}
+  CmdLine(const vector<string> & args, bool enable_help = false);
   
   /// true if the option is present
   bool    present(const string & opt) const;
@@ -97,10 +95,6 @@ class CmdLine {
   /// return the full command line
   string command_line() const;
 
-  ///
-  void enable_help() {
-  }
-  
   /// print the help string that has been deduced from all the options called
   void print_help() const;
   
@@ -151,12 +145,40 @@ class CmdLine {
   mutable map<string,bool> __options_used;
 
   /// whether help functionality is enabled
-  bool __help_enabled = true;
+  bool __help_enabled;
+  /// whether the user has requested help with -h or --help
+  bool __help_requested;
   /// information for helping with an option
-  struct OptionHelp {
-    std::string option, type, default_value, help;
+  class OptionHelp {
+  public:
+    std::string option, default_value, help;
+    std::string type;
+    bool required;
+    bool takes_value;
+    /// returns a short summary of the option (suitable for
+    /// placing in the command-line summary
+    std::string summary() const; 
+    /// returns a longer description of the option (suitable for
+    /// placing in the more extended help)
+    std::string description() const;
+    /// returns an attempt at a human readable typename
+    std::string type_name() const;
   };
-
+  template<class T>
+  OptionHelp OptionHelp_value_with_default(const std::string & option, const T & default_value,
+                                     const std::string & help_string = "") const {
+    OptionHelp help;
+    help.option        = option;
+    std::ostringstream defval_ostr;
+    defval_ostr << default_value;
+    help.default_value = defval_ostr.str();
+    help.help          = help_string;
+    help.type          = typeid(T).name();
+    help.required      = false;
+    help.takes_value   = true;
+    return help;
+  }
+  
   /// a vector of the options queried (this may evolve)
   mutable vector<string> __options_queried;
   /// a map with help for each option that was queried
@@ -216,12 +238,9 @@ template<> inline string CmdLine::value<string>(const string & opt) const {
 
 template<class T> T CmdLine::value(const string & opt, const T & defval) const {
   // construct help
-  if (__options_help.find(opt) == __options_help.end()) {
-    std::ostringstream defval_ostr;
-    defval_ostr << defval;
-    OptionHelp opthelp = {opt, typeid(defval).name(), defval_ostr.str(), ""};
+  if (__help_enabled && __options_help.find(opt) == __options_help.end()) {
     __options_queried.push_back(opt);
-    __options_help[opt] = opthelp;
+    __options_help[opt] = OptionHelp_value_with_default(opt, defval, "");
   }
   // return value
   if (this->present_and_set(opt)) {return value<T>(opt);} 

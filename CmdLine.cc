@@ -40,7 +40,7 @@ using namespace std;
 //
 // If an option appears several times, it is its LAST value
 // that will be used in searching for option values (opposite of f90)
-CmdLine::CmdLine (const int argc, char** argv) {
+CmdLine::CmdLine (const int argc, char** argv, bool enable_help) : __help_enabled(enable_help) {
   __arguments.resize(argc);
   for(int iarg = 0; iarg < argc; iarg++){
     __arguments[iarg] = argv[iarg];
@@ -49,7 +49,7 @@ CmdLine::CmdLine (const int argc, char** argv) {
 }
 
 /// constructor from a vector of strings, one argument per string
-CmdLine::CmdLine (const vector<string> & args) {
+CmdLine::CmdLine (const vector<string> & args, bool enable_help) : __help_enabled(enable_help) {
   __arguments = args;
   this->init();
 }
@@ -65,7 +65,7 @@ void CmdLine::init (){
     const string & arg = __arguments[iarg];
     // if an argument contains special characters, enclose it in
     // single quotes [NB: does not work if it contains a single quote
-    // itself]
+    // itself: treated below]
     if (arg.find(' ') != string::npos ||
         arg.find('|') != string::npos ||
         arg.find('<') != string::npos || 
@@ -73,8 +73,12 @@ void CmdLine::init (){
         arg.find('"') != string::npos || 
         arg.find('#') != string::npos) {
       __command_line += "'"+arg+"'";
+    } else if (arg.find("'") != string::npos) {
+      // handle the case with single quotes in the argument
+      // (NB: if there are single and double quotes, we are in trouble...)
+      __command_line += '"'+arg+'"';
     } else {
-      __command_line += __arguments[iarg];
+      __command_line += arg;
     }
     __command_line += " ";
   }
@@ -101,6 +105,9 @@ void CmdLine::init (){
       next_may_be_val = false;
       currentopt = "";
     }
+  }
+  if (__help_enabled) {
+    __help_requested = present("-h") || present("--help");
   }
 }
 
@@ -275,23 +282,6 @@ void CmdLine::_report_conversion_failure(const string & opt,
   throw Error(ostr);
 }
 
-void CmdLine::print_help() const {
-  // First print a summary
-  cout << "\nUsage: \n       " << __arguments[0];
-  for (unsigned i = 0; i < __options_queried.size(); i++) {
-    cout << " [" << __options_help[__options_queried[i]].option
-         << " ...]";
-  }
-  cout << endl << endl;
-
-  // Then print detailed usage for each option
-  for (unsigned i = 0; i < __options_queried.size(); i++) {
-    const OptionHelp & opthelp = __options_help[__options_queried[i]];
-    cout << opthelp.option << " (" << opthelp.type
-         << ") default: "  << opthelp.default_value << endl;
-  }
-}
-
 void CmdLine::assert_all_options_used() const {
   // deal with the help part
   if (__help_enabled) {
@@ -329,4 +319,37 @@ string CmdLine::header(const string & prefix) const {
   ostr << prefix << "by user: "    << unix_username() << endl;
   ostr << prefix << "running on: " << unix_uname() << endl;
   return ostr.str();
+}
+
+
+string CmdLine::OptionHelp::type_name() const {
+  if      (type == typeid(int)   .name()) return "int"   ;
+  else if (type == typeid(double).name()) return "double";
+  else if (type == typeid(string).name()) return "string";
+  else return type;
+}
+
+string CmdLine::OptionHelp::summary() const {
+  return "["+option+" val]";
+}
+string CmdLine::OptionHelp::description() const {
+  ostringstream ostr;
+  ostr << option << " " << default_value << " " << type_name() << endl;
+  return ostr.str();
+}
+
+
+void CmdLine::print_help() const {
+  // First print a summary
+  cout << "\nUsage: \n       " << __arguments[0];
+  for (const auto & opt: __options_queried) {
+    cout << " " << __options_help[opt].summary();
+  }
+  cout << endl << endl;
+
+  // Then print detailed usage for each option
+  for (const auto & opt: __options_queried) {
+    const OptionHelp & opthelp = __options_help[opt];
+    cout << opthelp.description();
+  }
 }

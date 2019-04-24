@@ -30,7 +30,8 @@ using namespace std;
 int main (int argc, char ** argv) {
 
   // construct the cmdline object
-  CmdLine cmdline(argc, argv);
+  bool enable_help = true;
+  CmdLine cmdline(argc, argv, enable_help);
 
   // the value<T> template deduces the correct type from the
   // default value for the option (if present)
@@ -41,7 +42,6 @@ int main (int argc, char ** argv) {
   // a string result -- so this must be specified explicitly
   string sval = cmdline.value<string>("-s","not there");
   cout << "sval = " << sval << endl;
-
 
   // output a header with various info (command-line, path, time, system)
   cout << cmdline.header() ;
