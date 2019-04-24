@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl 
 #
 # script to help conversion of enums to and from text, via istream and 
 # ostream operators
@@ -7,6 +7,8 @@
 # make-enum-IO.pl outfile.hh infile1.hh:Enum1[:Enum2[:..]] [...]
 #
 #
+
+use warnings;
 
 $usage="make-enum-IO.pl outfile.hh infile1.hh:Enum1[:Enum2[:..]] [...]";
 $cmdline_error="Error: unsuitable command line\nUsage: $usage\n";

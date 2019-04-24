@@ -16,5 +16,5 @@ and as of version 2.0.0 this project adheres to
 
 ## Prior to this: unversioned
 
-See the [ChangeLog.old](ChangeLog.old) file for the sequence of
+See the [ChangeLog.old](ChangeLog.old) file for the earlier sequence of
 changes
