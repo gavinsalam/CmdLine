@@ -8,7 +8,7 @@ libCmdLine.a: CmdLine.o
 	ranlib libCmdLine.a
 
 
-example: CmdLine.hh libCmdLine.a example.o
+example: libCmdLine.a example.o
 	$(CXX) -o example example.o -L. -lCmdLine
 
 dist:
@@ -18,3 +18,4 @@ clean:
 	rm -f *.o
 
 CmdLine.o: CmdLine.cc CmdLine.hh
+example.o: CmdLine.hh 
