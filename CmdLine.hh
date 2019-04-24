@@ -178,6 +178,29 @@ class CmdLine {
     help.takes_value   = true;
     return help;
   }
+  template<class T>
+  OptionHelp OptionHelp_value_required(const std::string & option,
+                                       const std::string & help_string = "") const {
+    OptionHelp help;
+    help.option        = option;
+    help.default_value = "";
+    help.help          = help_string;
+    help.type          = typeid(T).name();
+    help.required      = true;
+    help.takes_value   = true;
+    return help;
+  }
+  OptionHelp OptionHelp_present(const std::string & option,
+                                       const std::string & help_string = "") const {
+    OptionHelp help;
+    help.option        = option;
+    help.default_value = "";
+    help.help          = help_string;
+    help.type          = "";
+    help.required      = false;
+    help.takes_value   = false;
+    return help;
+  }
   
   /// a vector of the options queried (this may evolve)
   mutable vector<string> __options_queried;
@@ -217,6 +240,13 @@ private:
 
 /// returns the value of the argument converted to type T
 template<class T> T CmdLine::value(const string & opt) const {
+  if (__help_enabled && __options_help.find(opt) == __options_help.end()) {
+    __options_queried.push_back(opt);
+    __options_help[opt] = OptionHelp_value_required<T>(opt, "");
+    // if (__help_requested) {
+    //   if (!present(opt)) return T(0);
+    // }
+  }
   return value_prefix<T>(opt,""); // just give it a null prefix
 }
 

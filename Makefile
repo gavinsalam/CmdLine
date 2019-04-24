@@ -1,5 +1,3 @@
-# dummy Makefile which just invokes scons (a more modern build tool)
-
 all: libCmdLine.a example
 
 #CXXFLAGS=-g -std=c++11 -stdlib=libc++ -pedantic -Wall -O3 -fPIC -DPIC
@@ -10,7 +8,7 @@ libCmdLine.a: CmdLine.o
 	ranlib libCmdLine.a
 
 
-example: libCmdLine.a example.o
+example: CmdLine.hh libCmdLine.a example.o
 	$(CXX) -o example example.o -L. -lCmdLine
 
 dist:

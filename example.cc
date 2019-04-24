@@ -33,19 +33,25 @@ int main (int argc, char ** argv) {
   bool enable_help = true;
   CmdLine cmdline(argc, argv, enable_help);
 
+  int ival = cmdline.value<int>("-i");
+  
   // the value<T> template deduces the correct type from the
   // default value for the option (if present)
   double dval = cmdline.value("-d",0.0);
-  cout << "dval = " << dval << endl;
 
   // for options with a default character value, we usually want
   // a string result -- so this must be specified explicitly
   string sval = cmdline.value<string>("-s","not there");
-  cout << "sval = " << sval << endl;
 
-  // output a header with various info (command-line, path, time, system)
-  cout << cmdline.header() ;
 
   // make sure we've used all options that were provided on command-line
   cmdline.assert_all_options_used();
+
+  // output a header with various info (command-line, path, time, system)
+  cout << cmdline.header() ;
+  // output the values
+  cout << "ival = " << ival << endl;
+  cout << "dval = " << dval << endl;
+  cout << "sval = " << sval << endl;
+
 }

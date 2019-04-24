@@ -113,6 +113,10 @@ void CmdLine::init (){
 
 // indicates whether an option is present
 bool CmdLine::present(const string & opt) const {
+    if (__help_enabled && __options_help.find(opt) == __options_help.end()) {
+    __options_queried.push_back(opt);
+    __options_help[opt] = OptionHelp_present(opt, "");
+    }
   bool result = (__options.find(opt) != __options.end());
   if (result) __options_used[opt] = true;
   return result;
@@ -330,11 +334,21 @@ string CmdLine::OptionHelp::type_name() const {
 }
 
 string CmdLine::OptionHelp::summary() const {
-  return "["+option+" val]";
+  ostringstream ostr;
+  if (! required) ostr << "[";
+  ostr << option;
+  if (takes_value) ostr << " val";
+  if (! required) ostr << "]";
+  return ostr.str();
 }
 string CmdLine::OptionHelp::description() const {
   ostringstream ostr;
-  ostr << option << " " << default_value << " " << type_name() << endl;
+  ostr << option;
+  if (takes_value) {
+    ostr << " val (" << type_name() << ")";
+    if (! required) ostr << "     default: " << default_value;
+  }
+  ostr << endl;
   return ostr.str();
 }
 
@@ -350,6 +364,6 @@ void CmdLine::print_help() const {
   // Then print detailed usage for each option
   for (const auto & opt: __options_queried) {
     const OptionHelp & opthelp = __options_help[opt];
-    cout << opthelp.description();
+    cout << "  " << opthelp.description();
   }
 }
