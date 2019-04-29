@@ -32,7 +32,7 @@
 #include<vector>
 #include<ctime>
 #include<typeinfo> 
-using namespace std;
+//using namespace std;
 
 /// Class designed to deal with command-line arguments in a fashion similar
 /// to what was done in f90 iolib.
@@ -54,48 +54,48 @@ class CmdLine {
   CmdLine() {};
   /// initialise a CmdLine from a C-style array of command-line arguments
   CmdLine(const int argc, char** argv, bool enable_help = false);
-  /// initialise a CmdLine from a C++ vector of arguments 
-  CmdLine(const vector<string> & args, bool enable_help = false);
+  /// initialise a CmdLine from a C++ std::vector of arguments 
+  CmdLine(const std::vector<std::string> & args, bool enable_help = false);
   
   /// true if the option is present
-  bool    present(const string & opt) const;
+  bool    present(const std::string & opt) const;
   /// true if the option is present and corresponds to a value
-  bool    present_and_set(const string & opt) const;
+  bool    present_and_set(const std::string & opt) const;
 
-  /// return a reference to the vector of command-line arguments (0 is
+  /// return a reference to the std::vector of command-line arguments (0 is
   /// command).
-  inline const vector<string> & arguments() const {return __arguments;}
+  inline const std::vector<std::string> & arguments() const {return __arguments;}
 
   /// returns the value of the argument converted to type T
-  template<class T> T value(const string & opt) const;
+  template<class T> T value(const std::string & opt) const;
   /// returns the value of the argument, prefixed with prefix (NB: 
   /// require different function name to avoid confusion with 
   /// 2-arg template).
-  template<class T> T value_prefix(const string & opt, const string & prefix) const;
-  template<class T> T value(const string & opt, const T & defval) const;
-  template<class T> T value(const string & opt, const T & defval, 
-                            const string & prefix) const;
+  template<class T> T value_prefix(const std::string & opt, const std::string & prefix) const;
+  template<class T> T value(const std::string & opt, const T & defval) const;
+  template<class T> T value(const std::string & opt, const T & defval, 
+                            const std::string & prefix) const;
 
 
   /// return the integer value corresponding to the given option
-  int     int_val(const string & opt) const;
+  int     int_val(const std::string & opt) const;
   /// return the integer value corresponding to the given option or default if option is absent
-  int     int_val(const string & opt, const int & defval) const;
+  int     int_val(const std::string & opt, const int & defval) const;
 
   /// return the double value corresponding to the given option
-  double  double_val(const string & opt) const;
+  double  double_val(const std::string & opt) const;
   /// return the double value corresponding to the given option or default if option is absent
-  double  double_val(const string & opt, const double & defval) const;
+  double  double_val(const std::string & opt, const double & defval) const;
 
-  /// return the string value corresponding to the given option
-  string  string_val(const string & opt) const;
-  /// return the string value corresponding to the given option or default if option is absent
-  string  string_val(const string & opt, const string & defval) const;
+  /// return the std::string value corresponding to the given option
+  std::string  string_val(const std::string & opt) const;
+  /// return the std::string value corresponding to the given option or default if option is absent
+  std::string  string_val(const std::string & opt, const std::string & defval) const;
 
   /// return the full command line
-  string command_line() const;
+  std::string command_line() const;
 
-  /// print the help string that has been deduced from all the options called
+  /// print the help std::string that has been deduced from all the options called
   void print_help() const;
   
   /// return true if all options have been asked for at some point or other
@@ -105,20 +105,20 @@ class CmdLine {
   void assert_all_options_used() const;
 
   /// return a time stamp (UTC) corresponding to now
-  string time_stamp(bool utc = false) const;
+  std::string time_stamp(bool utc = false) const;
 
   /// return a time stamp (UTC) corresponding to time of object construction
-  string time_stamp_at_start(bool utc = false) const;
+  std::string time_stamp_at_start(bool utc = false) const;
 
   /// return output similar to that from uname -a on unix
-  string unix_uname() const;
+  std::string unix_uname() const;
 
   /// return the username
-  string unix_username() const;
+  std::string unix_username() const;
 
   /// In C++17 we don't need this, we can instead use std::filesystem::current_path();
   /// But for compatibility with older system
-  string current_path() const;
+  std::string current_path() const;
 
   /// return a multiline header that contains
   /// - the command line
@@ -127,22 +127,22 @@ class CmdLine {
   /// - the user
   /// - the system name
   /// The header includes a final newline
-  string header(const string & prefix = "# ") const;
+  std::string header(const std::string & prefix = "# ") const;
   
   class Error;
 
  private:
 
   /// stores the command line arguments in a C++ friendly way
-  vector<string> __arguments;
+  std::vector<std::string> __arguments;
 
   /// a map of possible options found on the command line, referencing
   /// the index of the argument that might assign a value to that
   /// option (an option being anything starting with a dash(
-  mutable map<string,int> __options;
+  mutable std::map<std::string,int> __options;
 
   /// whether a given options has been requested
-  mutable map<string,bool> __options_used;
+  mutable std::map<std::string,bool> __options_used;
 
   /// whether help functionality is enabled
   bool __help_enabled;
@@ -202,23 +202,23 @@ class CmdLine {
     return help;
   }
   
-  /// a vector of the options queried (this may evolve)
-  mutable vector<string> __options_queried;
+  /// a std::vector of the options queried (this may evolve)
+  mutable std::vector<std::string> __options_queried;
   /// a map with help for each option that was queried
   mutable std::map<std::string, OptionHelp> __options_help;
   
-  //string __progname;
-  string __command_line;
+  //std::string __progname;
+  std::string __command_line;
   std::time_t __time_at_start;
 
   /// builds the internal structures needed to keep track of arguments and options
   void init();
 
   /// report failure of conversion
-  void _report_conversion_failure(const string & opt, 
-                                  const string & optstring) const;
+  void _report_conversion_failure(const std::string & opt, 
+                                  const std::string & optstring) const;
 
-  /// convert the time into a string (local by default -- utc if 
+  /// convert the time into a std::string (local by default -- utc if 
   /// utc=true).
   std::string _string_time(const time_t & time, bool utc) const;
 };
@@ -239,7 +239,7 @@ private:
 
 
 /// returns the value of the argument converted to type T
-template<class T> T CmdLine::value(const string & opt) const {
+template<class T> T CmdLine::value(const std::string & opt) const {
   if (__help_enabled && __options_help.find(opt) == __options_help.end()) {
     __options_queried.push_back(opt);
     __options_help[opt] = OptionHelp_value_required<T>(opt, "");
@@ -251,22 +251,27 @@ template<class T> T CmdLine::value(const string & opt) const {
 }
 
 /// returns the value of the argument converted to type T
-template<class T> T CmdLine::value_prefix(const string & opt, const string & prefix) const {
+template<class T> T CmdLine::value_prefix(const std::string & opt, const std::string & prefix) const {
   T result;
-  string optstring = prefix+string_val(opt);
-  istringstream optstream(optstring);
+  std::string optstring = prefix+string_val(opt);
+  std::istringstream optstream(optstring);
   optstream >> result;
   if (optstream.fail()) _report_conversion_failure(opt, optstring);
   return result;
 }
 
-/// for the string case, just copy the string...
-template<> inline string CmdLine::value<string>(const string & opt) const {
-  return string_val(opt);}
+/// for the std::string case, just copy the std::string...
+template<> inline std::string CmdLine::value<std::string>(const std::string & opt) const {
+  if (__help_enabled && __options_help.find(opt) == __options_help.end()) {
+    __options_queried.push_back(opt);
+    __options_help[opt] = OptionHelp_value_required<std::string>(opt, "");
+  }
+  return string_val(opt);
+}
 
 
 
-template<class T> T CmdLine::value(const string & opt, const T & defval) const {
+template<class T> T CmdLine::value(const std::string & opt, const T & defval) const {
   // construct help
   if (__help_enabled && __options_help.find(opt) == __options_help.end()) {
     __options_queried.push_back(opt);
@@ -277,8 +282,8 @@ template<class T> T CmdLine::value(const string & opt, const T & defval) const {
   else {return defval;}
 }
 
-template<class T> T CmdLine::value(const string & opt, const T & defval, 
-                                   const string & prefix) const {
+template<class T> T CmdLine::value(const std::string & opt, const T & defval, 
+                                   const std::string & prefix) const {
   if (this->present_and_set(opt)) {return value_prefix<T>(opt, prefix);} 
   else {return defval;}
 }
