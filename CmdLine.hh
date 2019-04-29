@@ -34,6 +34,15 @@
 #include<typeinfo> 
 //using namespace std;
 
+class Help {
+public:
+  Help() {}
+  Help(const std::string & help_in) : _help(help_in) {}
+  const std::string & help_string() const {return _help;}
+private:
+  std::string _help;
+};
+
 /// Class designed to deal with command-line arguments in a fashion similar
 /// to what was done in f90 iolib.
 ///
@@ -51,6 +60,16 @@
 ///
 class CmdLine {
  public :
+
+  template<class T>
+  class Result {
+  public:
+    Result(const T & t) : _t(t) {}
+    T value() const {return _t;}
+  private:
+    T _t;
+  };
+  
   CmdLine() {};
   /// initialise a CmdLine from a C-style array of command-line arguments
   CmdLine(const int argc, char** argv, bool enable_help = false);
@@ -58,7 +77,7 @@ class CmdLine {
   CmdLine(const std::vector<std::string> & args, bool enable_help = false);
   
   /// true if the option is present
-  bool    present(const std::string & opt) const;
+  bool    present(const std::string & opt, const Help & help = Help()) const;
   /// true if the option is present and corresponds to a value
   bool    present_and_set(const std::string & opt) const;
 
@@ -191,7 +210,7 @@ class CmdLine {
     return help;
   }
   OptionHelp OptionHelp_present(const std::string & option,
-                                       const std::string & help_string = "") const {
+                                const std::string & help_string = "") const {
     OptionHelp help;
     help.option        = option;
     help.default_value = "";
