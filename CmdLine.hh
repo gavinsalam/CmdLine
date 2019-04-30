@@ -117,7 +117,7 @@ class CmdLine {
   
   CmdLine() {};
   /// initialise a CmdLine from a C-style array of command-line arguments
-  CmdLine(const int argc, char** argv, bool enable_help = false);
+  CmdLine(const int argc, char** argv, bool enable_help = true);
   /// initialise a CmdLine from a C++ std::vector of arguments 
   CmdLine(const std::vector<std::string> & args, bool enable_help = false);
   
