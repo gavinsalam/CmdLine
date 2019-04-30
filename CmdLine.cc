@@ -54,6 +54,7 @@ CmdLine::CmdLine (const vector<string> & args, bool enable_help) : __help_enable
   this->init();
 }
 
+
 //----------------------------------------------------------------------
 void CmdLine::init (){
   // record time at start
@@ -112,14 +113,16 @@ void CmdLine::init (){
 }
 
 // indicates whether an option is present
-bool CmdLine::present(const string & opt, const Help & help) const {
-    if (__help_enabled && __options_help.find(opt) == __options_help.end()) {
+CmdLine::Result<bool> CmdLine::present(const string & opt) const {
+  OptionHelp * opthelp = 0;
+  if (__help_enabled && __options_help.find(opt) == __options_help.end()) {
     __options_queried.push_back(opt);
-    __options_help[opt] = OptionHelp_present(opt, help.help_string());
-    }
+    __options_help[opt] = OptionHelp_present(opt);
+    opthelp = & __options_help[opt];
+  }
   bool result = (__options.find(opt) != __options.end());
   if (result) __options_used[opt] = true;
-  return result;
+  return Result<bool>(result,opthelp);
 }
 
 // indicates whether an option is present and has a value associated
@@ -305,7 +308,11 @@ void CmdLine::assert_all_options_used() const {
 bool CmdLine::Error::_do_printout = true;
 CmdLine::Error::Error(const std::ostringstream & ostr) 
   : _message(ostr.str()) {
-  if (_do_printout) cerr << "CmdLine Error: " << _message;
+  if (_do_printout) cerr << "CmdLine Error: " << _message << endl;;
+}
+CmdLine::Error::Error(const std::string & str) 
+  : _message(str) {
+  if (_do_printout) cerr << "CmdLine Error: " << _message << endl;;
 }
 
 string CmdLine::current_path() const {
@@ -337,7 +344,7 @@ string CmdLine::OptionHelp::summary() const {
   ostringstream ostr;
   if (! required) ostr << "[";
   ostr << option;
-  if (takes_value) ostr << " val";
+  if (takes_value) ostr << " " << argname;
   if (! required) ostr << "]";
   return ostr.str();
 }
@@ -345,7 +352,7 @@ string CmdLine::OptionHelp::description() const {
   ostringstream ostr;
   ostr << option;
   if (takes_value) {
-    ostr << " val (" << type_name() << ")";
+    ostr << " " << argname << " (" << type_name() << ")";
     if (! required) ostr << "     default: " << default_value;
   }
   ostr << "\n";
