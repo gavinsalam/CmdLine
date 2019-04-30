@@ -317,7 +317,9 @@ template<class T> CmdLine::Result<T> CmdLine::value(const std::string & opt) con
     __options_help[opt] = OptionHelp_value_required<T>(opt, "");
     opthelp = &__options_help[opt];
   }
-  return Result<T>(value_prefix<T>(opt,""), opthelp); // just give it a null prefix
+  // we create the result from the (more general) value_prefix
+  // function, with an empty prefix
+  return Result<T>(value_prefix<T>(opt,""), opthelp);
 }
 
 /// returns the value of the argument converted to type T
@@ -334,14 +336,13 @@ template<class T> CmdLine::Result<T> CmdLine::value_prefix(const std::string & o
     std::istringstream optstream(optstring);
     optstream >> result;
     if (optstream.fail()) _report_conversion_failure(opt, optstring);
-  } {
-    if (__help_enabled) result = value_for_missing_option<T>();
-    else {
-      std::ostringstream ostr;
-      ostr << "Option "<< opt
-           <<" is needed but is not present_and_set"<< std::endl;
-      throw(Error(ostr)); 
-    }
+  } else if (__help_requested) {
+    result = value_for_missing_option<T>();
+  } else {
+    std::ostringstream ostr;
+    ostr << "Option "<< opt
+         <<" is needed but is not present_and_set"<< std::endl;
+    throw(Error(ostr)); 
   }
   return Result<T>(result,opthelp);
 }
@@ -355,18 +356,17 @@ template<> inline CmdLine::Result<std::string> CmdLine::value<std::string>(const
     opthelp = &__options_help[opt];
   }
   std::string result;
+  // following bit of code is largely repeated from value_prefix.
+  // Consider folding into a separate routine?
   if (present_and_set(opt)) {
     result = string_val(opt);
+  } else if (__help_requested) {
+     result = value_for_missing_option<std::string>();
   } else {
-    // following bit of code is repeated from value_prefix.
-    // Consider folding into a separate routine?
-    if (__help_enabled) result = value_for_missing_option<std::string>();
-    else {
-      std::ostringstream ostr;
-      ostr << "Option "<<opt
-           <<" is needed but is not present_and_set"<< std::endl;
-      throw(Error(ostr)); 
-    }
+    std::ostringstream ostr;
+    ostr << "Option "<<opt
+         <<" is needed but is not present_and_set"<< std::endl;
+    throw(Error(ostr)); 
   }
   return Result<std::string>(result, opthelp);
 }
