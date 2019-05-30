@@ -18,8 +18,6 @@
 // along with this program; if not, write to the Free Software               //
 // Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA //
 //                                                                           //
-// $Revision:: 139                                                          $//
-// $Date:: 2007-01-23 16:09:23 +0100 (Tue, 23 Jan 2007)                     $//
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -54,6 +52,12 @@ CmdLine::CmdLine (const vector<string> & args, bool enable_help) : __help_enable
   this->init();
 }
 
+/// Add an overall help string
+CmdLine & CmdLine::help(const std::string & help_str) {
+  __overall_help_string = help_str;
+  __help_enabled = true;
+  return *this;
+}
 
 //----------------------------------------------------------------------
 void CmdLine::init (){
@@ -108,7 +112,7 @@ void CmdLine::init (){
     }
   }
   if (__help_enabled) {
-    __help_requested = present("-h") || present("--help");
+    __help_requested = present("-h").help("prints this help message") || present("--help");
   }
 }
 
@@ -370,6 +374,13 @@ void CmdLine::print_help() const {
   }
   cout << endl << endl;
 
+  if (__overall_help_string.size() != 0) {
+    cout << __overall_help_string;
+    cout << endl << endl;
+    cout << "Detailed option help" << endl;
+    cout << "--------------------" << endl;
+  }
+  
   // Then print detailed usage for each option
   for (const auto & opt: __options_queried) {
     const OptionHelp & opthelp = __options_help[opt];

@@ -2,7 +2,7 @@
 // File: example.cc                                                          //
 // Part of the CmdLine library                                               //
 //                                                                           //
-// Copyright (c) 2007 Gavin Salam                                            //
+// Copyright (c) 2007-2019 Gavin Salam                                       //
 //                                                                           //
 // This program is free software; you can redistribute it and/or modify      //
 // it under the terms of the GNU General Public License as published by      //
@@ -18,8 +18,6 @@
 // along with this program; if not, write to the Free Software               //
 // Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA //
 //                                                                           //
-// $Revision:: 139                                                          $//
-// $Date:: 2007-01-23 16:09:23 +0100 (Tue, 23 Jan 2007)                     $//
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "CmdLine.hh"
@@ -32,6 +30,7 @@ int main (int argc, char ** argv) {
   // construct the cmdline object
   bool enable_help = true;
   CmdLine cmdline(argc, argv, enable_help);
+  cmdline.help("Small program to illustrate how the CmdLine library can be used.");
 
   auto ival = cmdline.value<int>("-i").argname("ival")
               .help("required argument, illustrates obtaining an int from the command line");

@@ -18,8 +18,6 @@
 // along with this program; if not, write to the Free Software               //
 // Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA //
 //                                                                           //
-// $Revision:: 139                                                          $//
-// $Date:: 2007-01-23 16:09:23 +0100 (Tue, 23 Jan 2007)                     $//
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -32,32 +30,34 @@
 #include<vector>
 #include<ctime>
 #include<typeinfo> 
-//using namespace std;
 
-class Help {
-public:
-  Help() {}
-  Help(const std::string & help_in) : _help(help_in) {}
-  const std::string & help_string() const {return _help;}
-private:
-  std::string _help;
-};
-
-/// Class designed to deal with command-line arguments in a fashion similar
-/// to what was done in f90 iolib.
+/// Class designed to deal with command-line arguments.
 ///
-/// Note that functionality might be slightly different? 
-/// Currently do not implement access to arguments by index
-/// though data structure would in principle allow this quite easily.
+/// Basic usage:
 ///
-/// GPS 03/01/05
-/// [NB: wonder if some of this might be more efficiently written 
-/// with templates for different type that can be read in...]
+/// \code
 ///
-/// Other question: dealing with list of options is rather common
-/// occurrence -- command-line arguments, but also card files; maybe one
-/// could somehow use base/derived classes to share common functionality? 
+/// #include "CmdLine.hh"
+/// 
+/// int main(int argc, char** argv) {
+///   CmdLine cmdline(argc,argv);
+///   cmdline.help("Overall help for your program");
+///   
+///   // required argument, no help string
+///   double x = cmdline.value<double>("-x");
+/// 
+///   // optional argument, with default value, and help string
+///   double y = cmdline.value("-y",1.0).help("sets the value of y");
+/// 
+///   //
+///   bool b_is_present = cmdline.present("-b").help("sets b_is_present to true");
+/// 
+///   // makes sure that all provided command-line options have been used
+///   // (also triggers printout of help if -h was present)
+///   cmdline.assert_all_options_used();
+/// }
 ///
+/// \endcode
 class CmdLine {
  public :
 
@@ -78,7 +78,9 @@ class CmdLine {
     std::string type_name() const;
   };
 
-  /// class that contains the result of an option
+  /// class that contains the result of an option.
+  /// Can be implicitly converted to type T, and can also be used
+  /// to add help information to the option.
   template<class T>
   class Result {
   public:
@@ -103,12 +105,12 @@ class CmdLine {
       return *this;
     }
 
-    void set_opthelp(OptionHelp * opthelp) {_opthelp = opthelp;}
-    OptionHelp * get_opthelp() const {return _opthelp;}
-
     /// returns a reference to the option help, and throws an error if
     /// there is no help
     OptionHelp & opthelp() const;
+
+    /// sets a pointer to the help instance for this argument.
+    void set_opthelp(OptionHelp * opthelp) {_opthelp = opthelp;}
 
   private:
     T _t;
@@ -119,7 +121,11 @@ class CmdLine {
   /// initialise a CmdLine from a C-style array of command-line arguments
   CmdLine(const int argc, char** argv, bool enable_help = true);
   /// initialise a CmdLine from a C++ std::vector of arguments 
-  CmdLine(const std::vector<std::string> & args, bool enable_help = false);
+  CmdLine(const std::vector<std::string> & args, bool enable_help = true);
+
+
+  /// Add an overall help string
+  CmdLine & help(const std::string & help_str);
   
   /// true if the option is present
   Result<bool> present(const std::string & opt) const;
@@ -266,7 +272,8 @@ class CmdLine {
   //std::string __progname;
   std::string __command_line;
   std::time_t __time_at_start;
-
+  std::string __overall_help_string;
+  
   /// builds the internal structures needed to keep track of arguments and options
   void init();
 
