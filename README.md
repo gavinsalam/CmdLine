@@ -5,7 +5,7 @@ A simple library to provde access to command line options.
 
 type 
 
- make 
+    make 
 
 to build the library and the example program. To include it in your
 own projects, you can simply copy the CmdLine.cc and CmdLine.hh
@@ -31,14 +31,14 @@ int main(int argc, char** argv) {
   CmdLine cmdline(argc,argv);
   cmdline.help("Overall help for your program");
   
-  // required argument, no help string
+  // required argument, no help string provided
   double x = cmdline.value<double>("-x");
 
-  // optional argument, with default value for when the argument is
+  // optional argument, with default value (1.0) for when the argument is
   // absent, and help string
   double y = cmdline.value("-y",1.0).help("sets the value of y");
 
-  //
+  // optional argument (does not take a value)
   bool b_is_present = cmdline.present("-b").help("sets b_is_present to true");
 
   // makes sure that all provided command-line options have been used
