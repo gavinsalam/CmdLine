@@ -9,6 +9,9 @@ and as of version 2.0.0 this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## Unreleased (2.0.x series)
+
+## 2.0.0-alpha.1
+
 ### Added
 - start of functionality for help
 ### Removed
