@@ -197,6 +197,9 @@ class CmdLine {
   /// But for compatibility with older system
   std::string current_path() const;
 
+  /// returns a string with basic info about the git
+  std::string git_info() const;
+  
   /// return a multiline header that contains
   /// - the command line
   /// - the current directory path
@@ -209,6 +212,9 @@ class CmdLine {
   class Error;
 
  private:
+
+  /// returns the stdout (and stderr) from the command
+  std::string stdout_from_command(std::string cmd) const;
 
   /// stores the command line arguments in a C++ friendly way
   std::vector<std::string> __arguments;
@@ -409,7 +415,5 @@ std::ostream & operator<<(std::ostream & ostr, const CmdLine::Result<T> & result
   ostr << result();
   return ostr;
 }
-
-
 
 #endif

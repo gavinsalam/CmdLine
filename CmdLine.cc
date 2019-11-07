@@ -31,6 +31,7 @@
 #include <sys/utsname.h> // for getting uname
 #include <unistd.h> // for getting current path
 #include <stdlib.h> // for getting the environment (including username)
+#include <cstdio>
 using namespace std;
 
 // initialise the various structures that we shall
@@ -333,6 +334,7 @@ string CmdLine::header(const string & prefix) const {
   ostr << prefix << "started at: " << time_stamp_at_start() << endl;
   ostr << prefix << "by user: "    << unix_username() << endl;
   ostr << prefix << "running on: " << unix_uname() << endl;
+  ostr << prefix << "git state (if any): " << git_info() << endl;
   return ostr.str();
 }
 
@@ -386,4 +388,29 @@ void CmdLine::print_help() const {
     const OptionHelp & opthelp = __options_help[opt];
     cout << "  " << opthelp.description();
   }
+}
+
+// From https://www.jeremymorgan.com/tutorials/c-programming/how-to-capture-the-output-of-a-linux-command-in-c/
+string CmdLine::stdout_from_command(string cmd) const {
+
+  string data;
+  FILE * stream;
+  const int max_buffer = 1024;
+  char buffer[max_buffer];
+  cmd.append(" 2>&1");
+  
+  stream = popen(cmd.c_str(), "r");
+  if (stream) {
+    while (!feof(stream))
+      if (fgets(buffer, max_buffer, stream) != NULL) data.append(buffer);
+    pclose(stream);
+  }
+  return data;
+}
+
+//
+string CmdLine::git_info() const {
+  string stdout = stdout_from_command("git log --pretty='%H %d of %cd' --decorate=short -1");
+  if (stdout.substr(0,6) == "fatal:") stdout = "no git info";
+  return stdout;
 }
