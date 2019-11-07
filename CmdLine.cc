@@ -410,7 +410,18 @@ string CmdLine::stdout_from_command(string cmd) const {
 
 //
 string CmdLine::git_info() const {
-  string stdout = stdout_from_command("git log --pretty='%H %d of %cd' --decorate=short -1");
-  if (stdout.substr(0,6) == "fatal:") stdout = "no git info";
-  return stdout;
+  string log_line = stdout_from_command("git log --pretty='%H %d of %cd' --decorate=short -1");
+  for (auto & c : log_line) {if (c == 0x0a || c == 0x0d) c = ';';}
+  
+  if (log_line.substr(0,6) == "fatal:") {
+    log_line = "no git info";
+  } else {
+    // add info about potentially modified files
+    string modifications;
+    string status_output = stdout_from_command("git status --porcelain --untracked-files=no");
+    for (auto & c : status_output) {if (c == 0x0a || c == 0x0d) c = ',';}
+    log_line += "; ";
+    log_line += status_output;
+  }
+  return log_line;
 }
