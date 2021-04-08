@@ -26,6 +26,7 @@
 #include<string>
 #include<sstream>
 #include<iostream> // testing
+#include<fstream>
 #include<vector>
 #include<cstddef> // for size_t
 #include <sys/utsname.h> // for getting uname
@@ -64,6 +65,32 @@ CmdLine & CmdLine::help(const std::string & help_str) {
 void CmdLine::init (){
   // record time at start
   time(&__time_at_start);
+
+  // check first if a file option is passed
+  string file_option = "-file";
+  for(size_t iarg = 0; iarg < __arguments.size(); iarg++) {
+    const string & arg = __arguments[iarg];
+    if (arg.find(file_option) != string::npos) {
+      // make sure a file is passed too
+      bool found_file = true;
+      if (iarg+1 == __arguments.size()) found_file = false;
+      else {
+        ifstream file(__arguments[iarg+1].c_str());
+        found_file = file.good();
+      }
+
+      // error if no file found
+      if (!found_file) {
+        ostringstream ostr;
+        ostr << "Option "<< file_option
+      <<" is passed but no file path was included"<<endl;
+        throw Error(ostr);
+      }
+
+      // read options from file 
+      
+    }
+  }
 
   // record whole command line so that it can be easily reused
   __command_line = "";
