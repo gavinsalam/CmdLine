@@ -1,0 +1,4 @@
+-i 4 // Comments are allowed
+-d 1.2 -s // Lines don't need to correspond with individual options
+some-string // Only the order matters
+-f 

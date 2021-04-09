@@ -279,6 +279,7 @@ class CmdLine {
   std::string __command_line;
   std::time_t __time_at_start;
   std::string __overall_help_string;
+  std::string __file_option = "-file";
   
   /// builds the internal structures needed to keep track of arguments and options
   void init();

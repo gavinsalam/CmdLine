@@ -67,28 +67,39 @@ void CmdLine::init (){
   time(&__time_at_start);
 
   // check first if a file option is passed
-  string file_option = "-file";
   for(size_t iarg = 0; iarg < __arguments.size(); iarg++) {
     const string & arg = __arguments[iarg];
-    if (arg.find(file_option) != string::npos) {
+    if (arg.find(__file_option) != string::npos) {
       // make sure a file is passed too
       bool found_file = true;
+      ifstream file_in;
       if (iarg+1 == __arguments.size()) found_file = false;
       else {
-        ifstream file(__arguments[iarg+1].c_str());
-        found_file = file.good();
+        file_in.open(__arguments[iarg+1].c_str());
+        found_file = file_in.good();
       }
 
       // error if no file found
       if (!found_file) {
         ostringstream ostr;
-        ostr << "Option "<< file_option
-      <<" is passed but no file path was included"<<endl;
+        ostr << "Option "<< __file_option
+      <<" is passed but no file was found"<<endl;
         throw Error(ostr);
       }
 
-      // read options from file 
-      
+      // remove the file options from the list of arguments
+      __arguments.erase(__arguments.begin()+iarg, __arguments.begin()+iarg+1);
+
+      string read_string = "";
+      while(file_in >> read_string) {
+        // skip the rest of the line if it's a comment
+        if (read_string.find("//") != string::npos) {
+          getline(file_in, read_string);
+        }
+        else {
+          __arguments.push_back(read_string);
+        }
+      }
     }
   }
 
