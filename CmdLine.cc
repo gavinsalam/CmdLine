@@ -40,7 +40,9 @@ using namespace std;
 //
 // If an option appears several times, it is its LAST value
 // that will be used in searching for option values (opposite of f90)
-CmdLine::CmdLine (const int argc, char** argv, bool enable_help) : __help_enabled(enable_help) {
+CmdLine::CmdLine (const int argc, char** argv, bool enable_help, string file_option) : 
+    __help_enabled(enable_help), __file_option(file_option) {
+
   __arguments.resize(argc);
   for(int iarg = 0; iarg < argc; iarg++){
     __arguments[iarg] = argv[iarg];
@@ -49,7 +51,9 @@ CmdLine::CmdLine (const int argc, char** argv, bool enable_help) : __help_enable
 }
 
 /// constructor from a vector of strings, one argument per string
-CmdLine::CmdLine (const vector<string> & args, bool enable_help) : __help_enabled(enable_help) {
+CmdLine::CmdLine (const vector<string> & args, bool enable_help, string file_option) : 
+    __help_enabled(enable_help), __file_option(file_option) {
+
   __arguments = args;
   this->init();
 }
