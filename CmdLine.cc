@@ -104,6 +104,9 @@ void CmdLine::init (){
           __arguments.push_back(read_string);
         }
       }
+
+      // start from the beginning of the file again
+      iarg = 0;
     }
   }
 
