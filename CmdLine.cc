@@ -73,7 +73,7 @@ void CmdLine::init (){
   // check first if a file option is passed
   for(size_t iarg = 0; iarg < __arguments.size(); iarg++) {
     const string & arg = __arguments[iarg];
-    if (arg.find(__file_option) != string::npos) {
+    if (arg == __file_option) {
       // make sure a file is passed too
       bool found_file = true;
       ifstream file_in;
@@ -92,10 +92,10 @@ void CmdLine::init (){
       }
 
       // remove the file options from the list of arguments
-      __arguments.erase(__arguments.begin()+iarg, __arguments.begin()+iarg+1);
+      __arguments.erase(__arguments.begin()+iarg, __arguments.begin()+iarg+2);
 
       string read_string = "";
-      while(file_in >> read_string) {
+      while (file_in >> read_string) {
         // skip the rest of the line if it's a comment
         if (read_string.find("//") != string::npos) {
           getline(file_in, read_string);
