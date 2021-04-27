@@ -119,9 +119,9 @@ class CmdLine {
   
   CmdLine() {};
   /// initialise a CmdLine from a C-style array of command-line arguments
-  CmdLine(const int argc, char** argv, bool enable_help = true, std::string file_option="-file");
+  CmdLine(const int argc, char** argv, bool enable_help = true, const std::string & file_option=_default_argfile_option );
   /// initialise a CmdLine from a C++ std::vector of arguments 
-  CmdLine(const std::vector<std::string> & args, bool enable_help = true, std::string file_option="-file");
+  CmdLine(const std::vector<std::string> & args, bool enable_help = true, const std::string & file_option=_default_argfile_option );
 
 
   /// Add an overall help string
@@ -279,8 +279,12 @@ class CmdLine {
   std::string __command_line;
   std::time_t __time_at_start;
   std::string __overall_help_string;
-  std::string __file_option = "-file";
+  /// default option to tell CmdLine to read arguments 
+  /// from a file
+  static constexpr auto _default_argfile_option = "-argfile";
+  std::string __argfile_option = _default_argfile_option;
   
+
   /// builds the internal structures needed to keep track of arguments and options
   void init();
 

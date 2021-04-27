@@ -40,8 +40,8 @@ using namespace std;
 //
 // If an option appears several times, it is its LAST value
 // that will be used in searching for option values (opposite of f90)
-CmdLine::CmdLine (const int argc, char** argv, bool enable_help, string file_option) : 
-    __help_enabled(enable_help), __file_option(file_option) {
+CmdLine::CmdLine (const int argc, char** argv, bool enable_help, const string & file_option) : 
+    __help_enabled(enable_help), __argfile_option(file_option) {
 
   __arguments.resize(argc);
   for(int iarg = 0; iarg < argc; iarg++){
@@ -51,8 +51,8 @@ CmdLine::CmdLine (const int argc, char** argv, bool enable_help, string file_opt
 }
 
 /// constructor from a vector of strings, one argument per string
-CmdLine::CmdLine (const vector<string> & args, bool enable_help, string file_option) : 
-    __help_enabled(enable_help), __file_option(file_option) {
+CmdLine::CmdLine (const vector<string> & args, bool enable_help, const string & file_option) : 
+    __help_enabled(enable_help), __argfile_option(file_option) {
 
   __arguments = args;
   this->init();
@@ -70,10 +70,15 @@ void CmdLine::init (){
   // record time at start
   time(&__time_at_start);
 
+  // this does not work...
+  //__options_help[__argfile_option] = 
+  //    OptionHelp_value_with_default<string>(__argfile_option, "filename", 
+  //                          "if present, further arguments are read from the filename");
+
   // check first if a file option is passed
   for(size_t iarg = 0; iarg < __arguments.size(); iarg++) {
     const string & arg = __arguments[iarg];
-    if (arg == __file_option) {
+    if (arg == __argfile_option) {
       // make sure a file is passed too
       bool found_file = true;
       ifstream file_in;
@@ -86,8 +91,8 @@ void CmdLine::init (){
       // error if no file found
       if (!found_file) {
         ostringstream ostr;
-        ostr << "Option "<< __file_option
-      <<" is passed but no file was found"<<endl;
+        ostr << "Option "<< __argfile_option
+             <<" is passed but no file was found"<<endl;
         throw Error(ostr);
       }
 
@@ -105,7 +110,7 @@ void CmdLine::init (){
         }
       }
 
-      // start from the beginning of the file again
+      // start from the beginning of the argument list again again
       iarg = 0;
     }
   }
