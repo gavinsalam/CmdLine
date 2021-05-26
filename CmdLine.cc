@@ -35,6 +35,8 @@
 #include <cstdio>
 using namespace std;
 
+string CmdLine::_default_argfile_option = "-argfile";
+
 // initialise the various structures that we shall
 // use to access the command-line options;
 //

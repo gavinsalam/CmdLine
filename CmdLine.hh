@@ -281,7 +281,7 @@ class CmdLine {
   std::string __overall_help_string;
   /// default option to tell CmdLine to read arguments 
   /// from a file
-  static constexpr auto _default_argfile_option = "-argfile";
+  static std::string _default_argfile_option;
   std::string __argfile_option = _default_argfile_option;
   
 
