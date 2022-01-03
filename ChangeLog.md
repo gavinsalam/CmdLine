@@ -11,6 +11,7 @@ and as of version 2.0.0 this project adheres to
 ## Unreleased (2.0.x series)
 ### Added
 - header(), including system name, git info, etc.
+- time_elapsed_since_start()
 
 ## 2.0.0-alpha.1
 

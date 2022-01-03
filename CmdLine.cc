@@ -289,6 +289,14 @@ string CmdLine::time_stamp_at_start(bool utc) const {
   return _string_time(__time_at_start, utc);
 }
 
+/// return the elapsed time in seconds since the CmdLine object was
+/// created
+double CmdLine::time_elapsed_since_start() const {
+  time_t timenow;
+  time(&timenow);
+  return std::difftime(timenow, __time_at_start);
+}
+
 
 /// convert the time into a string (local by default -- utc if 
 /// utc=true).

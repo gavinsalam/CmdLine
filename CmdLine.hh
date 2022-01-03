@@ -187,6 +187,10 @@ class CmdLine {
   /// return a time stamp (UTC) corresponding to time of object construction
   std::string time_stamp_at_start(bool utc = false) const;
 
+  /// return the elapsed time in seconds since the CmdLine object was
+  /// created
+  double time_elapsed_since_start() const;
+
   /// return output similar to that from uname -a on unix
   std::string unix_uname() const;
 
