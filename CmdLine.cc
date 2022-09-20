@@ -421,6 +421,12 @@ string CmdLine::OptionHelp::description() const {
   if (takes_value) {
     ostr << " " << argname << " (" << type_name() << ")";
     if (! required) ostr << "     default: " << default_value;
+    if (choices.size() != 0) {
+      ostr << ", valid choices: {" << choice_list() << "}";
+    }
+    if (range_strings.size() != 0) {
+      ostr << ", allowed range: " << range_string() << "";
+    }
   }
   ostr << "\n";
   if (help.size() > 0) ostr << "  " << help << endl;
@@ -428,6 +434,21 @@ string CmdLine::OptionHelp::description() const {
   return ostr.str();
 }
 
+string CmdLine::OptionHelp::choice_list() const {
+  ostringstream ostr;
+  for (unsigned i = 0; i < choices.size(); i++)   {
+    ostr << choices[i];
+    if (i+1 != choices.size()) ostr << ", ";
+  }
+  return ostr.str();
+}
+
+string CmdLine::OptionHelp::range_string() const {
+  ostringstream ostr;
+  if (range_strings.size() != 2) return "";
+  ostr << range_strings[0] << " <= " << argname << " <= " << range_strings[1];
+  return ostr.str();
+}
 
 void CmdLine::print_help() const {
   // First print a summary
@@ -486,3 +507,4 @@ string CmdLine::git_info() const {
   }
   return log_line;
 }
+

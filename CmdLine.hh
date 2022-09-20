@@ -67,6 +67,8 @@ class CmdLine {
   public:
     std::string option, default_value, help, argname="val";
     std::string type;
+    std::vector<std::string> choices;
+    std::vector<std::string> range_strings;
     bool required;
     bool takes_value;
     /// returns a short summary of the option (suitable for
@@ -77,6 +79,10 @@ class CmdLine {
     std::string description() const;
     /// returns an attempt at a human readable typename
     std::string type_name() const;
+    /// returns a strong with a comma-separated list of choices
+    std::string choice_list() const;
+    /// returns the string with the allowed range
+    std::string range_string() const;
   };
 
   /// class that contains the result of an option.
@@ -105,6 +111,14 @@ class CmdLine {
       opthelp().argname = argname_string;
       return *this;
     }
+
+    /// @brief sets the allowed choices
+    /// @param allowed_choices 
+    /// @return the Result object
+    const Result & choices(const std::vector<T> allowed_choices) const; 
+
+    /// sets the allowed range: minval  <= arg <= maxval
+    const Result & range(T minval, T maxval) const; 
 
     /// returns a reference to the option help, and throws an error if
     /// there is no help
@@ -425,5 +439,46 @@ std::ostream & operator<<(std::ostream & ostr, const CmdLine::Result<T> & result
   ostr << result();
   return ostr;
 }
+
+template<class T>
+const CmdLine::Result<T> & CmdLine::Result<T>::choices(const std::vector<T> allowed_choices) const {
+  // register the choices with the help module
+  for (const auto & choice: allowed_choices) {
+    std::ostringstream ostr;
+    ostr << choice;
+    _opthelp->choices.push_back(ostr.str());
+  }
+
+  // check the choice actually made is valid
+  bool valid = false;
+  for (const auto & choice: allowed_choices) {
+    if (_t == choice) {valid = true; break;}
+  }
+  if (!valid) {
+    std::ostringstream ostr;
+    ostr << "For option " << _opthelp->option << ", invalid option value " 
+        << _t << ". Allowed choices are: " << _opthelp->choice_list();
+    throw Error(ostr.str());
+  }
+  return *this;
+}
+
+template<class T>
+const CmdLine::Result<T> & CmdLine::Result<T>::range(T minval, T maxval) const {
+  std::ostringstream minstr, maxstr;
+  minstr << minval;
+  maxstr << maxval;
+  _opthelp->range_strings.push_back(minstr.str());
+  _opthelp->range_strings.push_back(maxstr.str());
+  if (_t < minval || _t > maxval) {
+    std::ostringstream errstr;
+    errstr << "For option " << _opthelp->option << ", option value " << _t 
+           << " out of allowed range: " 
+           << _opthelp->range_string();
+    throw Error(errstr.str());
+  }
+  return *this;
+}
+
 
 #endif

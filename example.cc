@@ -32,12 +32,12 @@ int main (int argc, char ** argv) {
   CmdLine cmdline(argc, argv, enable_help);
   cmdline.help("Small program to illustrate how the CmdLine library can be used.");
 
-  auto ival = cmdline.value<int>("-i").argname("ival")
+  auto ival = cmdline.value<int>("-i").argname("ival").choices({0,1,2})
               .help("required argument, illustrates obtaining an int from the command line");
   
   // the value<T> template deduces the correct type from the
   // default value for the option (if present)
-  double dval = cmdline.value("-d",0.0).argname("dval")
+  double dval = cmdline.value("-d",0.0).argname("dval").range(-1.0, 2.0)
               .help("optional argument, illustrates "
                     "obtaining a double from the command line");
 
