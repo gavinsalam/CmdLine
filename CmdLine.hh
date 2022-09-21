@@ -240,7 +240,7 @@ class CmdLine {
 
   /// a map of possible options found on the command line, referencing
   /// the index of the argument that might assign a value to that
-  /// option (an option being anything starting with a dash(
+  /// option (an option being anything starting with a dash)
   mutable std::map<std::string,int> __options;
 
   /// whether a given options has been requested
