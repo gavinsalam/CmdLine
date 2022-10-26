@@ -79,7 +79,7 @@ class CmdLine {
     std::string description() const;
     /// returns an attempt at a human readable typename
     std::string type_name() const;
-    /// returns a strong with a comma-separated list of choices
+    /// returns a string with a comma-separated list of choices
     std::string choice_list() const;
     /// returns the string with the allowed range
     std::string range_string() const;
