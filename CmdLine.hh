@@ -138,6 +138,9 @@ class CmdLine {
   /// initialise a CmdLine from a C++ std::vector of arguments 
   CmdLine(const std::vector<std::string> & args, bool enable_help = true, const std::string & file_option=_default_argfile_option );
 
+  /// enable/disable git info support (on by default)
+  CmdLine* set_git_info_enabled(bool enable=true){ _git_info_enabled = enable; return this; }
+  bool git_info_enabled() const{ return _git_info_enabled; }
 
   /// Add an overall help string
   CmdLine & help(const std::string & help_str);
@@ -166,7 +169,7 @@ class CmdLine {
   template<class T> Result<T> value_prefix(const std::string & opt, const std::string & prefix) const;
   template<class T> Result<T> value(const std::string & opt, const T & defval) const;
   template<class T> Result<T> value(const std::string & opt, const T & defval, 
-                            const std::string & prefix) const;
+                                    const std::string & prefix) const;
 
 
   /// return the integer value corresponding to the given option
@@ -250,6 +253,8 @@ class CmdLine {
   bool __help_enabled;
   /// whether the user has requested help with -h or --help
   bool __help_requested;
+  /// whether the git info is included or not
+  bool _git_info_enabled;
   
   template<class T>
   OptionHelp OptionHelp_value_with_default(const std::string & option, const T & default_value,

@@ -168,6 +168,9 @@ void CmdLine::init (){
   if (__help_enabled) {
     __help_requested = present("-h").help("prints this help message") || present("--help");
   }
+
+  // by default, enabe the git info
+  set_git_info_enabled(true);
 }
 
 // indicates whether an option is present
@@ -492,6 +495,8 @@ string CmdLine::stdout_from_command(string cmd) const {
 
 //
 string CmdLine::git_info() const {
+  if (!_git_info_enabled) return "unknown (disabled)";
+
   string log_line = stdout_from_command("git log --pretty='%H %d of %cd' --decorate=short -1");
   for (auto & c : log_line) {if (c == 0x0a || c == 0x0d) c = ';';}
   
