@@ -139,8 +139,8 @@ class CmdLine {
   CmdLine(const std::vector<std::string> & args, bool enable_help = true, const std::string & file_option=_default_argfile_option );
 
   /// enable/disable git info support (on by default)
-  CmdLine* set_git_info_enabled(bool enable=true){ _git_info_enabled = enable; return this; }
-  bool git_info_enabled() const{ return _git_info_enabled; }
+  CmdLine & set_git_info_enabled(bool enable=true) {_git_info_enabled = enable; return *this;}
+  bool git_info_enabled() const {return _git_info_enabled;}
 
   /// Add an overall help string
   CmdLine & help(const std::string & help_str);
