@@ -346,7 +346,8 @@ string CmdLine::unix_uname() const {
 string CmdLine::unix_username() const {
   char * logname;
   logname = getenv("LOGNAME");
-  return logname;
+  if (logname != nullptr) {return logname;}
+  else {return "unknown-username";}
 }
 
 /// report failure of conversion
@@ -387,8 +388,12 @@ CmdLine::Error::Error(const std::string & str)
 string CmdLine::current_path() const {
   const size_t maxlen = 10000;
   char tmp[maxlen];
-  getcwd(tmp,maxlen);
-  return string(tmp);
+  char * result = getcwd(tmp,maxlen);
+  if (result == nullptr) {
+    return "error-getting-path";
+  } else {
+    return string(tmp);
+  }
 }
 
 string CmdLine::header(const string & prefix) const {
