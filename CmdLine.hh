@@ -354,10 +354,15 @@ template<> inline std::string CmdLine::value_for_missing_option<std::string>() c
 /// returns the value of the argument converted to type T
 template<class T> CmdLine::Result<T> CmdLine::value(const std::string & opt) const {
   OptionHelp * opthelp = 0;
-  if (__help_enabled && __options_help.find(opt) == __options_help.end()) {
-    __options_queried.push_back(opt);
-    __options_help[opt] = OptionHelp_value_required<T>(opt, "");
-    opthelp = &__options_help[opt];
+  if (__help_enabled) {
+    auto opthelp_iter = __options_help.find(opt);
+    if (opthelp_iter == __options_help.end()) {
+      __options_queried.push_back(opt);
+      __options_help[opt] = OptionHelp_value_required<T>(opt, "");
+      opthelp = &__options_help[opt];
+    } else {
+      opthelp = &opthelp_iter->second;
+    }
   }
   // we create the result from the (more general) value_prefix
   // function, with an empty prefix
@@ -367,10 +372,15 @@ template<class T> CmdLine::Result<T> CmdLine::value(const std::string & opt) con
 /// returns the value of the argument converted to type T
 template<class T> CmdLine::Result<T> CmdLine::value_prefix(const std::string & opt, const std::string & prefix) const {
   OptionHelp * opthelp = 0;
-  if (__help_enabled && __options_help.find(opt) == __options_help.end()) {
-    __options_queried.push_back(opt);
-    __options_help[opt] = OptionHelp_value_required<T>(opt, "");
-    opthelp = &__options_help[opt];
+  if (__help_enabled) {
+    auto opthelp_iter = __options_help.find(opt);
+    if (opthelp_iter == __options_help.end()) {
+      __options_queried.push_back(opt);
+      __options_help[opt] = OptionHelp_value_required<T>(opt, "");
+      opthelp = &__options_help[opt];
+    } else {
+      opthelp = &opthelp_iter->second;
+    }
   }
   T result;
   if (present_and_set(opt)) {
@@ -392,10 +402,15 @@ template<class T> CmdLine::Result<T> CmdLine::value_prefix(const std::string & o
 /// for the std::string case, just copy the std::string...
 template<> inline CmdLine::Result<std::string> CmdLine::value<std::string>(const std::string & opt) const {
   OptionHelp * opthelp = 0;
-  if (__help_enabled && __options_help.find(opt) == __options_help.end()) {
-    __options_queried.push_back(opt);
-    __options_help[opt] = OptionHelp_value_required<std::string>(opt, "");
-    opthelp = &__options_help[opt];
+  if (__help_enabled) {
+    auto opthelp_iter = __options_help.find(opt);
+    if (opthelp_iter == __options_help.end()) {
+      __options_queried.push_back(opt);
+      __options_help[opt] = OptionHelp_value_required<std::string>(opt, "");
+      opthelp = &__options_help[opt];
+    } else {
+      opthelp = &opthelp_iter->second;
+    }
   }
   std::string result;
   // following bit of code is largely repeated from value_prefix.
@@ -418,10 +433,15 @@ template<> inline CmdLine::Result<std::string> CmdLine::value<std::string>(const
 template<class T> CmdLine::Result<T> CmdLine::value(const std::string & opt, const T & defval) const {
   // construct help
   OptionHelp * opthelp = 0;
-  if (__help_enabled && __options_help.find(opt) == __options_help.end()) {
-    __options_queried.push_back(opt);
-    __options_help[opt] = OptionHelp_value_with_default(opt, defval, "");
-    opthelp = &__options_help[opt];
+  if (__help_enabled) {
+    auto opthelp_iter = __options_help.find(opt);
+    if (opthelp_iter == __options_help.end()) {
+      __options_queried.push_back(opt);
+      __options_help[opt] = OptionHelp_value_with_default(opt, defval, "");
+      opthelp = &__options_help[opt];
+    } else {
+      opthelp = &opthelp_iter->second;
+    }
   }
   // return value
   if (this->present_and_set(opt)) {

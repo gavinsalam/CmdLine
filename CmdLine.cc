@@ -176,10 +176,15 @@ void CmdLine::init (){
 // indicates whether an option is present
 CmdLine::Result<bool> CmdLine::present(const string & opt) const {
   OptionHelp * opthelp = 0;
-  if (__help_enabled && __options_help.find(opt) == __options_help.end()) {
-    __options_queried.push_back(opt);
-    __options_help[opt] = OptionHelp_present(opt);
-    opthelp = & __options_help[opt];
+  if (__help_enabled) {
+    auto opthelp_iter = __options_help.find(opt);
+    if (opthelp_iter == __options_help.end()) {
+      __options_queried.push_back(opt);
+      __options_help[opt] = OptionHelp_present(opt);
+      opthelp = &__options_help[opt];
+    } else {
+      opthelp = &opthelp_iter->second;
+    }
   }
   bool result = (__options.find(opt) != __options.end());
   if (result) __options_used[opt] = true;
