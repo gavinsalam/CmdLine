@@ -32,11 +32,8 @@ int main (int argc, char ** argv) {
   CmdLine cmdline(argc, argv, enable_help);
   cmdline.help("Small program to illustrate how the CmdLine library can be used.");
 
-
-
   auto ival = cmdline.value<int>("-i").argname("ival").choices({0,1,2})
               .help("required argument, illustrates obtaining an int from the command line");
-  ival = cmdline.value<int>("-i").help("X");
   
   // the value<T> template deduces the correct type from the
   // default value for the option (if present)
