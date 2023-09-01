@@ -179,6 +179,8 @@ class CmdLine {
   }
   /// end a section of the help
   void end_section() {__current_section = "";}
+  /// end a section of the help, with the given name (the code will check it matches)
+  void end_section(const std::string & section_name);
 
 
   /// when an option is missing but help has been asked for, we will

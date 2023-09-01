@@ -205,6 +205,16 @@ string CmdLine::internal_string_val(const string & opt) const {
 }
 
 
+  void CmdLine::end_section(const std::string & section_name) {
+    if (__current_section != section_name) {
+      std::ostringstream ostr;
+      ostr << "Tried to end section '" << section_name << "' but current section is '" << __current_section << "'";
+      throw Error(ostr.str());
+    }
+    __current_section = "";
+  }
+
+
 // return true if all options have been asked for at some point or other
 bool CmdLine::all_options_used() const {
   bool result = true;
