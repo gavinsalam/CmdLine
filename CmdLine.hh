@@ -72,6 +72,7 @@ class CmdLine {
     bool required;
     bool takes_value;
     bool has_default;
+    std::string section;
     /// returns a short summary of the option (suitable for
     /// placing in the command-line summary
     std::string summary() const; 
@@ -171,6 +172,14 @@ class CmdLine {
 
   /// true if the option is present and corresponds to a value
   bool         present_and_set(const std::string & opt) const;
+
+  /// start a section of the help
+  void start_section(const std::string & section_name) {
+    __current_section = section_name;
+  }
+  /// end a section of the help
+  void end_section() {__current_section = "";}
+
 
   /// when an option is missing but help has been asked for, we will
   /// still return a value, specified by this function, which can
@@ -300,6 +309,7 @@ class CmdLine {
     help.required      = false;
     help.takes_value   = true;
     help.has_default   = true;
+    help.section       = __current_section;
     return help;
   }
   template<class T>
@@ -313,6 +323,7 @@ class CmdLine {
     help.required      = true;
     help.takes_value   = true;
     help.has_default   = false;
+    help.section       = __current_section;
     return help;
   }
   template<class T>
@@ -326,6 +337,7 @@ class CmdLine {
     help.required      = false;
     help.takes_value   = true;
     help.has_default   = false;
+    help.section       = __current_section;
     return help;
   }
   OptionHelp OptionHelp_present(const std::string & option,
@@ -338,6 +350,7 @@ class CmdLine {
     help.required      = false;
     help.takes_value   = false;
     help.has_default   = true;  // not 100% sure what the right choice is here; "default" is that value is false
+    help.section       = __current_section;
     return help;
   }
   
@@ -355,6 +368,8 @@ class CmdLine {
   std::string __command_line;
   std::time_t __time_at_start;
   std::string __overall_help_string;
+
+  std::string __current_section = "";
 
   /// default option to tell CmdLine to read arguments 
   /// from a file

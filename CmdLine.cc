@@ -459,13 +459,33 @@ void CmdLine::print_help() const {
     cout << __overall_help_string;
     cout << endl << endl;
     cout << "Detailed option help" << endl;
-    cout << "--------------------" << endl;
+    cout << "====================" << endl;
   }
   
-  // Then print detailed usage for each option
+  map<string,vector<const OptionHelp *> > opthelp_section_contents;
+  vector<string> opthelp_sections;
+
+  // Then print detailed usage for each option that is not in a section
   for (const auto & opt: __options_queried) {
     const OptionHelp & opthelp = __options_help[opt];
-    cout << "  " << opthelp.description();
+    if (opthelp.section == "") {
+      cout << "  " << opthelp.description();
+    } else {
+      if (opthelp_section_contents.find(opthelp.section) == opthelp_section_contents.end()) {
+        opthelp_sections.push_back(opthelp.section);
+      }
+      opthelp_section_contents[opthelp.section].push_back(&opthelp);
+    }
+  }
+
+  // then print out the options that are in sections
+  for (const auto & section: opthelp_sections) {
+    cout << endl;
+    cout << section << endl;
+    cout << string(section.size(),'-') << endl;
+    for (const auto & opthelp: opthelp_section_contents[section]) {
+      cout << "  " << opthelp->description();
+    }
   }
 }
 
