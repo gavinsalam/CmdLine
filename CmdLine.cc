@@ -175,20 +175,10 @@ void CmdLine::init (){
 
 // indicates whether an option is present
 CmdLine::Result<bool> CmdLine::present(const string & opt) const {
-  OptionHelp * opthelp = 0;
-  if (__help_enabled) {
-    auto opthelp_iter = __options_help.find(opt);
-    if (opthelp_iter == __options_help.end()) {
-      __options_queried.push_back(opt);
-      __options_help[opt] = OptionHelp_present(opt);
-      opthelp = &__options_help[opt];
-    } else {
-      opthelp = &opthelp_iter->second;
-    }
-  }
+  OptionHelp * opthelp = opthelp_ptr(OptionHelp_present(opt));
   bool result = (__options.find(opt) != __options.end());
   if (result) __options_used[opt] = true;
-  return Result<bool>(result,opthelp);
+  return Result<bool>(result,opthelp,result);
 }
 
 // indicates whether an option is present and has a value associated
@@ -199,11 +189,10 @@ bool CmdLine::present_and_set(const string & opt) const {
 
 
 // return the string value corresponding to the specified option
-string CmdLine::string_val(const string & opt) const {
+string CmdLine::internal_string_val(const string & opt) const {
   if (!this->present_and_set(opt)) {
     ostringstream ostr;
-    ostr << "Option "<<opt
-	 <<" is needed but is not present_and_set"<<endl;
+    ostr << "Option " << opt <<" is needed but is not present_and_set"<<endl;
     throw Error(ostr);
   }
   string arg = __arguments[__options[opt]];
@@ -211,66 +200,6 @@ string CmdLine::string_val(const string & opt) const {
   // declare the option to have been used
   if (arg.compare(0,1,"-") == 0) {__options_used[arg] = true;}
   return arg;
-}
-
-// as above, but if opt is not present_and_set, return default
-string CmdLine::string_val(const string & opt, const string & defval) const {
-  if (this->present_and_set(opt)) {return string_val(opt);} 
-  else {return defval;}
-}
-
-// Return the integer value corresponding to the specified option;
-// Not too sure what happens if option is present_and_set but does not
-// have string value...
-int CmdLine::int_val(const string & opt) const {
-  int result;
-  string optstring = string_val(opt);
-  istringstream optstream(optstring);
-  optstream >> result;
-  if (optstream.fail()) {
-    ostringstream ostr;
-    ostr << "could not convert option ("<<opt<<") value ("
-	 <<optstring<<") to int"<<endl; 
-    throw Error(ostr);
-  }
-  return result;
-}
-
-// as above, but if opt is not present_and_set, return default
-int CmdLine::int_val(const string & opt, const int & defval) const {
-  if (this->present_and_set(opt)) {return int_val(opt);} 
-  else {return defval;}
-}
-
-
-// Return the integer value corresponding to the specified option;
-// Not too sure what happens if option is present_and_set but does not
-// have string value...
-double CmdLine::double_val(const string & opt) const {
-  double result;
-  string optstring = string_val(opt);
-  istringstream optstream(optstring);
-  optstream >> result;
-  if (optstream.fail()) {
-    ostringstream ostr;
-
-    ostr << "could not convert option ("<<opt<<") value ("
-	 <<optstring<<") to double"<<endl; 
-    throw Error(ostr);
-  }
-  return result;
-}
-
-// as above, but if opt is not present_and_set, return default
-double CmdLine::double_val(const string & opt, const double & defval) const {
-  if (this->present_and_set(opt)) {return double_val(opt);} 
-  else {return defval;}
-}
-
-
-// return the full command line including the command itself
-string CmdLine::command_line() const {
-  return __command_line;
 }
 
 
@@ -379,6 +308,40 @@ void CmdLine::assert_all_options_used() const {
   }
 }
 
+string CmdLine::string_val(const string & opt) const {return value<std::string>(opt);}
+
+// as above, but if opt is not present_and_set, return default
+string CmdLine::string_val(const string & opt, const string & defval) const {
+  return value<string>(opt,defval);
+}
+
+// Return the integer value corresponding to the specified option;
+// Not too sure what happens if option is present_and_set but does not
+// have string value...
+int CmdLine::int_val(const string & opt) const { return value<int>(opt);}
+
+// as above, but if opt is not present_and_set, return default
+int CmdLine::int_val(const string & opt, const int & defval) const {
+  return value<int>(opt,defval);
+}
+
+
+// Return the integer value corresponding to the specified option;
+// Not too sure what happens if option is present_and_set but does not
+// have string value...
+double CmdLine::double_val(const string & opt) const {return value<double>(opt);}
+
+// as above, but if opt is not present_and_set, return default
+double CmdLine::double_val(const string & opt, const double & defval) const {
+  return value<double>(opt,defval);
+}
+
+// return the full command line including the command itself
+string CmdLine::command_line() const {
+  return __command_line;
+}
+
+
 
 bool CmdLine::Error::_do_printout = true;
 CmdLine::Error::Error(const std::ostringstream & ostr) 
@@ -452,7 +415,7 @@ string CmdLine::OptionHelp::description() const {
   ostr << option;
   if (takes_value) {
     ostr << " " << argname << " (" << type_name() << ")";
-    if (! required) ostr << "     default: " << default_value;
+    if (has_default) ostr << "     default: " << default_value;
     if (choices.size() != 0) {
       ostr << ", valid choices: {" << choice_list() << "}";
     }

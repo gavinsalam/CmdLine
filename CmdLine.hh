@@ -71,6 +71,7 @@ class CmdLine {
     std::vector<std::string> range_strings;
     bool required;
     bool takes_value;
+    bool has_default;
     /// returns a short summary of the option (suitable for
     /// placing in the command-line summary
     std::string summary() const; 
@@ -91,14 +92,18 @@ class CmdLine {
   template<class T>
   class Result {
   public:
-    Result(const T & t) : _t(t), _opthelp(0) {}
-    Result(const T & t, OptionHelp * opthelp_ptr) : _t(t), _opthelp(opthelp_ptr) {}
+    Result(const T & t) : _t(t), _opthelp(0), _is_present(true) {}
+    Result(const T & t, OptionHelp * opthelp_ptr, bool is_present) : 
+               _t(t), _opthelp(opthelp_ptr), _is_present(is_present) {}
 
     /// this allows for implicit conversion to type T in assignments
     operator T() const {return _t;}
 
     /// this allows the user to do the conversion manually
     T operator()() const {return _t;}
+
+    /// return true if the argument was present on the command-line
+    bool present() const {return _is_present;}
 
     /// for adding help to an option
     const Result & help(const std::string & help_string) const {
@@ -110,7 +115,7 @@ class CmdLine {
     const Result & argname(const std::string & argname_string) const {
       opthelp().argname = argname_string;
       return *this;
-    }
+    }    
 
     /// @brief sets the allowed choices
     /// @param allowed_choices 
@@ -130,6 +135,7 @@ class CmdLine {
   private:
     T _t;
     mutable OptionHelp * _opthelp;
+    bool _is_present;
   };
   
   CmdLine() {};
@@ -143,6 +149,26 @@ class CmdLine {
   
   /// true if the option is present
   Result<bool> present(const std::string & opt) const;
+
+  /// returns the value of the argument converted to type Result<T>
+  template<class T> Result<T> value(const std::string & opt) const;
+
+  /// returns the value of the option, or defval if the option is not present
+  template<class T> Result<T> value(const std::string & opt, const T & defval) const;
+
+  /// returns a Result<T> for the option; the result.present() should be queried to
+  /// see if it was present before trying to use the value
+  template<class T> Result<T> optional_value(const std::string & opt) const;
+
+  /// returns the value of the argument, prefixed with prefix (NB: 
+  /// require different function name to avoid confusion with 
+  /// 2-arg template).
+  template<class T> Result<T> value_prefix(const std::string & opt, const std::string & prefix) const;
+  template<class T> Result<T> value(const std::string & opt, const T & defval, 
+                                    const std::string & prefix) const;
+
+
+
   /// true if the option is present and corresponds to a value
   bool         present_and_set(const std::string & opt) const;
 
@@ -157,34 +183,7 @@ class CmdLine {
   /// command).
   inline const std::vector<std::string> & arguments() const {return __arguments;}
 
-  /// returns the value of the argument converted to type Result<T>
-  template<class T> Result<T> value(const std::string & opt) const;
 
-  /// returns the value of the option, or defval if the option is not present
-  template<class T> Result<T> value(const std::string & opt, const T & defval) const;
-
-  /// returns the value of the argument, prefixed with prefix (NB: 
-  /// require different function name to avoid confusion with 
-  /// 2-arg template).
-  template<class T> Result<T> value_prefix(const std::string & opt, const std::string & prefix) const;
-  template<class T> Result<T> value(const std::string & opt, const T & defval, 
-                                    const std::string & prefix) const;
-
-
-  /// return the integer value corresponding to the given option
-  int     int_val(const std::string & opt) const;
-  /// return the integer value corresponding to the given option or default if option is absent
-  int     int_val(const std::string & opt, const int & defval) const;
-
-  /// return the double value corresponding to the given option
-  double  double_val(const std::string & opt) const;
-  /// return the double value corresponding to the given option or default if option is absent
-  double  double_val(const std::string & opt, const double & defval) const;
-
-  /// return the std::string value corresponding to the given option
-  std::string  string_val(const std::string & opt) const;
-  /// return the std::string value corresponding to the given option or default if option is absent
-  std::string  string_val(const std::string & opt, const std::string & defval) const;
 
   /// return the full command line
   std::string command_line() const;
@@ -238,10 +237,37 @@ class CmdLine {
   
   class Error;
 
+  /// return the integer value corresponding to the given option
+  [[deprecated]]
+  int     int_val(const std::string & opt) const;
+  /// return the integer value corresponding to the given option or default if option is absent
+  [[deprecated]]
+  int     int_val(const std::string & opt, const int & defval) const;
+
+  /// return the double value corresponding to the given option
+  [[deprecated]]
+  double  double_val(const std::string & opt) const;
+  /// return the double value corresponding to the given option or default if option is absent
+  [[deprecated]]
+  double  double_val(const std::string & opt, const double & defval) const;
+
+  /// return the std::string value corresponding to the given option
+  [[deprecated("use value<std::string>(opt) instead")]]
+  std::string  string_val(const std::string & opt) const;
+
+  /// return the std::string value corresponding to the given option or default if option is absent
+  [[deprecated("use value<std::string>(opt, defval) instead")]]
+  std::string  string_val(const std::string & opt, const std::string & defval) const;
+
+
+
  private:
 
   /// returns the stdout (and stderr) from the command
   std::string stdout_from_command(std::string cmd) const;
+
+  std::string  internal_string_val(const std::string & opt) const;
+
 
   /// stores the command line arguments in a C++ friendly way
   std::vector<std::string> __arguments;
@@ -273,6 +299,7 @@ class CmdLine {
     help.type          = typeid(T).name();
     help.required      = false;
     help.takes_value   = true;
+    help.has_default   = true;
     return help;
   }
   template<class T>
@@ -285,6 +312,20 @@ class CmdLine {
     help.type          = typeid(T).name();
     help.required      = true;
     help.takes_value   = true;
+    help.has_default   = false;
+    return help;
+  }
+  template<class T>
+  OptionHelp OptionHelp_optional_value(const std::string & option,
+                                       const std::string & help_string = "") const {
+    OptionHelp help;
+    help.option        = option;
+    help.default_value = "";
+    help.help          = help_string;
+    help.type          = typeid(T).name();
+    help.required      = false;
+    help.takes_value   = true;
+    help.has_default   = false;
     return help;
   }
   OptionHelp OptionHelp_present(const std::string & option,
@@ -296,6 +337,7 @@ class CmdLine {
     help.type          = "";
     help.required      = false;
     help.takes_value   = false;
+    help.has_default   = false;
     return help;
   }
   
@@ -362,12 +404,11 @@ CmdLine::OptionHelp & CmdLine::Result<T>::opthelp() const {
 template<class T> inline T CmdLine::value_for_missing_option() const {return T(0);}
 template<> inline std::string CmdLine::value_for_missing_option<std::string>() const {return "";}
 
-/// returns the value of the argument converted to type T
+/// returns the value of the argument, convertible to type T
 template<class T> CmdLine::Result<T> CmdLine::value(const std::string & opt) const {
-  OptionHelp * opthelp = opthelp_ptr(OptionHelp_value_required<T>(opt, ""));
   // we create the result from the (more general) value_prefix
   // function, with an empty prefix
-  return Result<T>(value_prefix<T>(opt,""), opthelp);
+  return value_prefix<T>(opt,"");
 }
 
 /// returns the value of the argument converted to type T
@@ -376,7 +417,7 @@ template<class T> CmdLine::Result<T> CmdLine::value_prefix(const std::string & o
 
   T result;
   if (present_and_set(opt)) {
-    std::string optstring = prefix+string_val(opt);
+    std::string optstring = prefix+internal_string_val(opt);
     std::istringstream optstream(optstring);
     optstream >> result;
     if (optstream.fail()) _report_conversion_failure(opt, optstring);
@@ -388,7 +429,7 @@ template<class T> CmdLine::Result<T> CmdLine::value_prefix(const std::string & o
          <<" is needed but is not present_and_set"<< std::endl;
     throw(Error(ostr)); 
   }
-  return Result<T>(result,opthelp);
+  return Result<T>(result, opthelp, true);
 }
 
 /// for the std::string case, just copy the std::string...
@@ -399,7 +440,7 @@ template<> inline CmdLine::Result<std::string> CmdLine::value<std::string>(const
   // following bit of code is largely repeated from value_prefix.
   // Consider folding into a separate routine?
   if (present_and_set(opt)) {
-    result = string_val(opt);
+    result = internal_string_val(opt);
   } else if (__help_requested) {
      result = value_for_missing_option<std::string>();
   } else {
@@ -408,7 +449,7 @@ template<> inline CmdLine::Result<std::string> CmdLine::value<std::string>(const
          <<" is needed but is not present_and_set"<< std::endl;
     throw(Error(ostr)); 
   }
-  return Result<std::string>(result, opthelp);
+  return Result<std::string>(result, opthelp, true);
 }
 
 
@@ -423,14 +464,33 @@ template<class T> CmdLine::Result<T> CmdLine::value(const std::string & opt, con
     result.set_opthelp(opthelp);
     return result;
   } else {
-    return Result<T>(defval,opthelp);
+    return Result<T>(defval,opthelp,false);
   }
 }
+
+template<class T> CmdLine::Result<T> CmdLine::optional_value(const std::string & opt) const {
+  // construct help
+  OptionHelp * opthelp = opthelp_ptr(OptionHelp_optional_value<T>(opt));
+  opthelp->default_value = "None";
+
+  // return value
+  if (this->present_and_set(opt)) {
+    auto result = value<T>(opt);
+    result.set_opthelp(opthelp);
+    return result;
+  } else {
+    return Result<T>(value_for_missing_option<T>(), opthelp, false);
+  }
+}
+
 
 template<class T> CmdLine::Result<T> CmdLine::value(const std::string & opt, const T & defval, 
                                    const std::string & prefix) const {
   if (this->present_and_set(opt)) {return value_prefix<T>(opt, prefix);} 
-  else {return defval;}
+  else {
+    OptionHelp * opthelp = opthelp_ptr(OptionHelp_value_with_default(opt, defval, ""));
+    return Result<T>(defval,opthelp,false);
+  }
 }
 
 template<class T>

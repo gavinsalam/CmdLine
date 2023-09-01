@@ -37,14 +37,18 @@ int main (int argc, char ** argv) {
   
   // the value<T> template deduces the correct type from the
   // default value for the option (if present)
-  double dval = cmdline.value("-d",0.0).argname("dval").range(-1.0, 2.0)
+  auto dres = cmdline.value("-d",0.0).argname("dval").range(-1.0, 2.0)
               .help("optional argument, illustrates "
-                    "obtaining a double from the command line");
-
+                    "obtaining a double from the command line");  
+  bool d_present = dres.present();
+  double dval = dres;
   // for options with a default character value, we usually want
   // a string result -- so this must be specified explicitly
   string sval = cmdline.value<string>("-s","default-string").argname("sval")
     .help("optional argument, illustrates obtaining a string from the command line");
+
+  auto ores = cmdline.optional_value<double>("-o").help("optional argument that takes value");
+
 
   bool flag = cmdline.present("-f").help("illustrates a command-line flag");
   
@@ -56,8 +60,10 @@ int main (int argc, char ** argv) {
   cout << cmdline.header() ;
   // output the values
   cout << "ival = " << ival << endl;
-  cout << "dval = " << dval << endl;
+  cout << "dval = " << dval << " (argument was " << (d_present ? "" : "not " ) << "present)" << endl;
   cout << "sval = " << sval << endl;
+  if (ores.present()) cout << "oval = " << ores() << endl;
+  else                cout << "oval = " << "not present" << endl; 
   cout << "flag = " << flag << endl;
 
 }
