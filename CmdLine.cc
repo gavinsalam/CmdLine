@@ -471,6 +471,7 @@ void CmdLine::print_help() const {
     if (opthelp.section == "") {
       cout << "  " << opthelp.description();
     } else {
+      // if an option is in a section, register it for later
       if (opthelp_section_contents.find(opthelp.section) == opthelp_section_contents.end()) {
         opthelp_sections.push_back(opthelp.section);
       }

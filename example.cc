@@ -35,8 +35,8 @@ int main (int argc, char ** argv) {
   auto ival = cmdline.value<int>("-i").argname("ival").choices({0,1,2})
               .help("required argument, illustrates obtaining an int from the command line");
   
-  cmdline.start_section("optional arguments, with defaults");
-
+  //---------------------------------------------------------------------------
+  cmdline.start_section("optional arguments, with defaults"); 
   // the value<T> template deduces the correct type from the
   // default value for the option (if present)
   auto dres = cmdline.value("-d",0.0).argname("dval").range(-1.0, 2.0)
@@ -50,17 +50,20 @@ int main (int argc, char ** argv) {
   string sval = cmdline.value<string>("-s","default-string").argname("sval")
     .help("optional argument, illustrates obtaining a string from the command line");
 
-  cmdline.start_section("optional arguments, no defaults");
+  //---------------------------------------------------------------------------
+  cmdline.start_section("optional arguments, no defaults"); 
 
   // optional argument, which if present, takes a value (user must
   // check whether it was present before using the value)
   auto ores = cmdline.optional_value<double>("-o").help("optional argument that takes value");
 
+  //---------------------------------------------------------------------------
   cmdline.end_section();
 
   // optional flag, which if present, is true, otherwise false
   bool flag = cmdline.present("-f").help("illustrates a command-line flag");
   
+  //---------------------------------------------------------------------------
   // make sure we've used all options that were provided on command-line.
   // If the user asked for help (-h or --help) then execution will stop here.
   cmdline.assert_all_options_used();
