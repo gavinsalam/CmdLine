@@ -2,7 +2,7 @@
 // File: CmdLine.cc                                                          //
 // Part of the CmdLine library                                               //
 //                                                                           //
-// Copyright (c) 2007-2032 Gavin Salam with contributions from               //
+// Copyright (c) 2007-2023 Gavin Salam with contributions from               //
 // Gregory Soyez and Rob Verheyen                                            //
 //                                                                           //
 // This program is free software; you can redistribute it and/or modify      //

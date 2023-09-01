@@ -2,7 +2,7 @@
 // File: CmdLine.hh                                                          //
 // Part of the CmdLine library
 //                                                                           //
-// Copyright (c) 2007-2032 Gavin Salam with contributions from               //
+// Copyright (c) 2007-2023 Gavin Salam with contributions from               //
 // Gregory Soyez and Rob Verheyen                                            //
 //                                                                           //
 // This program is free software; you can redistribute it and/or modify      //
@@ -138,10 +138,6 @@ class CmdLine {
   /// initialise a CmdLine from a C++ std::vector of arguments 
   CmdLine(const std::vector<std::string> & args, bool enable_help = true, const std::string & file_option=_default_argfile_option );
 
-  /// enable/disable git info support (on by default)
-  CmdLine & set_git_info_enabled(bool enable=true) {_git_info_enabled = enable; return *this;}
-  bool git_info_enabled() const {return _git_info_enabled;}
-
   /// Add an overall help string
   CmdLine & help(const std::string & help_str);
   
@@ -161,13 +157,16 @@ class CmdLine {
   /// command).
   inline const std::vector<std::string> & arguments() const {return __arguments;}
 
-  /// returns the value of the argument converted to type T
+  /// returns the value of the argument converted to type Result<T>
   template<class T> Result<T> value(const std::string & opt) const;
+
+  /// returns the value of the option, or defval if the option is not present
+  template<class T> Result<T> value(const std::string & opt, const T & defval) const;
+
   /// returns the value of the argument, prefixed with prefix (NB: 
   /// require different function name to avoid confusion with 
   /// 2-arg template).
   template<class T> Result<T> value_prefix(const std::string & opt, const std::string & prefix) const;
-  template<class T> Result<T> value(const std::string & opt, const T & defval) const;
   template<class T> Result<T> value(const std::string & opt, const T & defval, 
                                     const std::string & prefix) const;
 
@@ -216,12 +215,18 @@ class CmdLine {
   std::string unix_username() const;
 
   /// In C++17 we don't need this, we can instead use std::filesystem::current_path();
-  /// But for compatibility with older system
+  /// But for compatibility with older system it is useful to have
   std::string current_path() const;
+
+  /// enable/disable git info support (on by default)
+  CmdLine & set_git_info_enabled(bool enable=true) {_git_info_enabled = enable; return *this;}
+  bool git_info_enabled() const {return _git_info_enabled;}
 
   /// returns a string with basic info about the git
   std::string git_info() const;
-  
+
+
+
   /// return a multiline header that contains
   /// - the command line
   /// - the current directory path
@@ -246,7 +251,7 @@ class CmdLine {
   /// option (an option being anything starting with a dash)
   mutable std::map<std::string,int> __options;
 
-  /// whether a given options has been requested
+  /// whether a given option has been requested
   mutable std::map<std::string,bool> __options_used;
 
   /// whether help functionality is enabled
@@ -303,6 +308,7 @@ class CmdLine {
   std::string __command_line;
   std::time_t __time_at_start;
   std::string __overall_help_string;
+
   /// default option to tell CmdLine to read arguments 
   /// from a file
   static std::string _default_argfile_option;
