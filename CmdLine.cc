@@ -412,6 +412,25 @@ string CmdLine::header(const string & prefix) const {
   return ostr.str();
 }
 
+/// return a pointer to an existing opthelp is the option is present
+/// otherwise register the given opthelp and return a pointer to that
+/// (if help is disabled, return a null poiner)
+CmdLine::OptionHelp * CmdLine::opthelp_ptr(const CmdLine::OptionHelp & opthelp) const {
+  if (!__help_enabled) return nullptr;
+
+  OptionHelp * result;
+
+  auto opthelp_iter = __options_help.find(opthelp.option);
+  if (opthelp_iter == __options_help.end()) {
+    __options_queried.push_back(opthelp.option);
+    __options_help[opthelp.option] = opthelp;
+    result = &__options_help[opthelp.option];
+  } else {
+    result = &opthelp_iter->second;
+  }
+  return result;
+
+}
 
 string CmdLine::OptionHelp::type_name() const {
   if      (type == typeid(int)   .name()) return "int"   ;
