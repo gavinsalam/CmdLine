@@ -1,7 +1,7 @@
 README for the CmdLine directory
 --------------------------------
 
-A simple library to provde access to command line options.
+A simple C++14 library to provide access to command line options.
 
 type 
 

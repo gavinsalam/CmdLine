@@ -337,7 +337,7 @@ class CmdLine {
     help.type          = "";
     help.required      = false;
     help.takes_value   = false;
-    help.has_default   = false;
+    help.has_default   = true;  // not 100% sure what the right choice is here; "default" is that value is false
     return help;
   }
   
