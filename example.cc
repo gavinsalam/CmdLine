@@ -42,6 +42,7 @@ int main (int argc, char ** argv) {
                     "obtaining a double from the command line");  
   bool d_present = dres.present();
   double dval = dres;
+
   // for options with a default character value, we usually want
   // a string result -- so this must be specified explicitly
   string sval = cmdline.value<string>("-s","default-string").argname("sval")
@@ -51,7 +52,7 @@ int main (int argc, char ** argv) {
   // check whether it was present before using the value)
   auto ores = cmdline.optional_value<double>("-o").help("optional argument that takes value");
 
-
+  // optional flag, which if present, is true, otherwise false
   bool flag = cmdline.present("-f").help("illustrates a command-line flag");
   
   // make sure we've used all options that were provided on command-line.
