@@ -104,8 +104,10 @@ void CmdLine::init (){
 
       string read_string = "";
       while (file_in >> read_string) {
-        // skip the rest of the line if it's a comment
-        if (read_string.find("//") != string::npos) {
+        // skip the rest of the line if it's a comment;
+        // allow both C++-style and shell-style comments
+        if (read_string.find("//") != string::npos || read_string.find("#") != string::npos) {
+          // read in the rest of this line, effectively discarding it
           getline(file_in, read_string);
         }
         else {

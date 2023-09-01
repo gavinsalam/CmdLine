@@ -47,6 +47,8 @@ int main (int argc, char ** argv) {
   string sval = cmdline.value<string>("-s","default-string").argname("sval")
     .help("optional argument, illustrates obtaining a string from the command line");
 
+  // optional argument, which if present, takes a value (user must
+  // check whether it was present before using the value)
   auto ores = cmdline.optional_value<double>("-o").help("optional argument that takes value");
 
 
