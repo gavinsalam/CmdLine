@@ -91,6 +91,7 @@ class CmdLine {
     bool required;
     bool takes_value;
     bool has_default;
+    bool no_dump = false;
     OptKind kind;
 
     std::shared_ptr<ResultBase> result_ptr;
@@ -155,9 +156,14 @@ class CmdLine {
     /// sets the allowed range: minval  <= arg <= maxval
     const Result & range(T minval, T maxval) const; 
 
+    const Result & no_dump() const {
+      opthelp().no_dump = true;
+      return *this;
+    }
+
     /// returns a reference to the option help, and throws an error if
     /// there is no help
-    OptionHelp & opthelp() const;
+    OptionHelp & opthelp() const;    
 
     /// sets a pointer to the help instance for this argument.
     void set_opthelp(OptionHelp * opthelp) {_opthelp = opthelp;}
@@ -286,7 +292,10 @@ class CmdLine {
   /// options queried and, where relevant, their values
   /// - if an option is optional (no default), it is printed commented-out
   /// - if an option was not supplied but has a default, it is printed out with its default
-  std::string dump() const;
+  ///
+  /// @param prefix is the string the precedes each description line (default is "# ")
+  /// @param absence_prefix is the string that precedes each line for an option that was not present
+  std::string dump(const std::string & prefix = "# ", const std::string & absence_prefix = "// ") const;
 
   /// return true if all options have been asked for at some point or other
   bool all_options_used() const;

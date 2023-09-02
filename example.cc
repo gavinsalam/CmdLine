@@ -63,8 +63,12 @@ int main (int argc, char ** argv) {
   cmdline.end_section();
 
   // optional flag, which if present, is true, otherwise false
-  bool flag = cmdline.present({"-f","--flag"}).help("illustrates a command-line flag");
+  bool flag = cmdline.any_present({"-f","--flag"}).help("illustrates a command-line flag");
   
+  // no_dump() indicates that this option will not be included in the dump
+  // (in this case, because it triggers the dump)
+  bool dump = cmdline.present("--dump").help("dump the state of all options").no_dump();
+
   //---------------------------------------------------------------------------
   // make sure we've used all options that were provided on command-line.
   // If the user asked for help (-h or --help) then execution will stop here.
@@ -79,6 +83,8 @@ int main (int argc, char ** argv) {
   if (ores.present()) cout << "oval = " << ores() << endl;
   else                cout << "oval = " << "not present" << endl; 
   cout << "flag = " << flag << endl;
+
+  if (dump) cout << cmdline.dump() << endl;
 
   // this can be used to dump the state of all options
   // suitable for reading back in with the -argfile option
