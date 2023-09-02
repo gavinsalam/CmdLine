@@ -158,10 +158,12 @@ void CmdLine::init (){
   // group things into options
   bool next_may_be_val = false;
   string currentopt;
+  __arguments_used.resize(__arguments.size(), false);
+  __arguments_used[0] = true;
   for(size_t iarg = 1; iarg < __arguments.size(); iarg++){
     // if expecting an option value, then take it (even if
     // it is actually next option...)
-    if (next_may_be_val) {__options[currentopt] = iarg;}
+    if (next_may_be_val) {__options[currentopt].second = iarg;}
     // now see if it might be an option itself
     string arg = __arguments[iarg];
     bool thisisopt = (arg.compare(0,1,"-") == 0);
@@ -169,7 +171,7 @@ void CmdLine::init (){
       // set option to a standard undefined value and say that 
       // we expect (possibly) a value on next round
       currentopt = arg;
-      __options[currentopt] = -1;
+      __options[currentopt] = make_pair(int(iarg),-1);
       __options_used[currentopt] = false;
       next_may_be_val = true;}
     else {
@@ -198,9 +200,35 @@ CmdLine::Result<bool> CmdLine::present(const string & opt) const {
 // indicates whether an option is present (for internal use only -- does not set help)
 bool CmdLine::internal_present(const string & opt) const {
   bool result = (__options.find(opt) != __options.end());
-  if (result) __options_used[opt] = true;
+  if (result) {
+    __options_used[opt] = true;
+    __arguments_used[__options[opt].first] = true;
+  }
   return result;
 }
+
+//// indicates whether an option is present (for internal use only -- does not set help)
+//bool CmdLine::internal_present(const vector<string> & opts) const {
+//  vector<string> opts_present;
+//  for (const auto & opt: opts) {
+//    bool opt_present = (__options.find(opt) != __options.end());
+//    if (opt_present) opts_present.push_back(opt);
+//  }
+//
+//  if      (opts_present.size() == 0) return false;
+//  else if (opts_present.size() == 1) return true;
+//  else {
+//    // options are supposed to be mutually exclusive, so eliminate
+//    // them all
+//    ostringstream ostr;
+//    ostr << "Options " << opts_present[0];
+//    for (size_t i = 1; i < opts_present.size()-1; i++) {
+//      ostr << ", " << opts_present[i];
+//    }
+//    ostr << " and " << opts_present[opts_present.size()-1] << " are mutually exclusive";
+//    throw Error(ostr);
+//  }
+//}
 
 
 // indicates whether an option is present and has a value associated
@@ -208,8 +236,9 @@ bool CmdLine::internal_present_and_set(const string & opt) const {
   bool is_present = internal_present(opt);
   if (!is_present) return false;
 
-  bool is_set = __options[opt] > 0;
-  if (!is_set) throw Error("In present_and_set check for option " + opt + ", option was present but not set");
+  bool is_set = __options[opt].second > 0;
+  if (!is_set) throw Error("In present_and_set check for option " + opt + 
+                           ", option was present but not set");
   return is_set;
 
 }
@@ -222,7 +251,8 @@ string CmdLine::internal_string_val(const string & opt) const {
     ostr << "Option " << opt <<" is needed but is not present_and_set"<<endl;
     throw Error(ostr);
   }
-  string arg = __arguments[__options[opt]];
+  string arg = __arguments[__options[opt].second];
+  __arguments_used[__options[opt].second] = true;
   // this may itself look like an option -- if that is the case
   // declare the option to have been used
   if (arg.compare(0,1,"-") == 0) {__options_used[arg] = true;}
@@ -258,7 +288,12 @@ bool CmdLine::all_options_used() const {
       opt != __options_used.end(); opt++) {
     bool this_one = opt->second;
     if (! this_one) {cerr << "Option "<<opt->first<<" unused/unrecognized"<<endl;}
-    result = result && this_one;
+    result &= this_one;
+  }
+  for (size_t iarg = 1; iarg < __arguments_used.size(); iarg++) {
+    bool this_one = __arguments_used[iarg];
+    if (! this_one) {cerr << "Argument " << __arguments[iarg] << " unused/unrecognized" << endl;}
+    result &= this_one;
   }
   return result;
 }

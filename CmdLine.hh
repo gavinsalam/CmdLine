@@ -378,10 +378,13 @@ class CmdLine {
   /// a map of possible options found on the command line, referencing
   /// the index of the argument that might assign a value to that
   /// option (an option being anything starting with a dash)
-  mutable std::map<std::string,int> __options;
+  mutable std::map<std::string,std::pair<int,int>> __options;
+  
 
   /// whether a given option has been requested
   mutable std::map<std::string,bool> __options_used;
+  /// whether a given argument has been used
+  mutable std::vector<bool> __arguments_used;
 
   /// whether help functionality is enabled
   bool __help_enabled;
