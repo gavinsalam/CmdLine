@@ -82,7 +82,9 @@ class CmdLine {
   /// class to store help related to an option
   class OptionHelp {
   public:
-    std::string option, default_value, help, argname="val";
+    std::string option;
+    std::vector<std::string> aliases;
+    std::string default_value, help, argname="val";
     std::string type;
     std::vector<std::string> choices;
     std::vector<std::string> range_strings;
@@ -199,8 +201,14 @@ class CmdLine {
 
   /// returns the value of the argument, prefixed with prefix (NB: 
   /// require different function name to avoid confusion with 
-  /// 2-arg template).
+  /// 2-arg template). This can be useful when the option is
+  /// automatically converted from a string to some other type via
+  /// the << operator, but the conversion needs a prefix to be
+  /// applied to the argument for the conversion to work.
   template<class T> Result<T> value_prefix(const std::string & opt, const std::string & prefix) const;
+
+  /// returns the value of the argument, prefixed with prefix, with defval returned
+  /// if the option is not present.
   template<class T> Result<T> value(const std::string & opt, const T & defval, 
                                     const std::string & prefix) const;
 
@@ -535,6 +543,7 @@ CmdLine::OptionHelp & CmdLine::Result<T>::opthelp() const {
 template<class T> inline T CmdLine::value_for_missing_option() const {return T(0);}
 template<> inline std::string CmdLine::value_for_missing_option<std::string>() const {return "";}
 
+
 template<class T> T CmdLine::internal_value(const std::string & opt, const std::string & prefix) const {
   if (internal_present_and_set(opt)) {
     std::string optstring = prefix+internal_string_val(opt);
@@ -544,9 +553,12 @@ template<class T> T CmdLine::internal_value(const std::string & opt, const std::
     if (optstream.fail()) _report_conversion_failure(opt, optstring);
     return result;
   } else {
-    throw Error("internal_value called for option " + opt + ", which is not present_and_set");
+    throw Error("internal_value called for option " + opt + ", which is not present and set");
   }
 }
+
+template<> std::string CmdLine::internal_value<std::string>(const std::string & opt, 
+                                                      const std::string & prefix) const;
 
 /// returns the value of the argument, convertible to type T
 template<class T> CmdLine::Result<T> CmdLine::value(const std::string & opt) const {
@@ -574,29 +586,6 @@ template<class T> CmdLine::Result<T> CmdLine::value_prefix(const std::string & o
   opthelp->result_ptr = std::make_shared<Result<T>>(res);
   return res;
 }
-
-/// for the std::string case, just copy the std::string...
-template<> inline CmdLine::Result<std::string> CmdLine::value<std::string>(const std::string & opt) const {
-  OptionHelp * opthelp = opthelp_ptr(OptionHelp_value_required<std::string>(opt, ""));
-
-  std::string result;
-  // following bit of code is largely repeated from value_prefix.
-  // Consider folding into a separate routine?
-  if (internal_present_and_set(opt)) {
-    result = internal_string_val(opt);
-  } else if (__help_requested) {
-     result = value_for_missing_option<std::string>();
-  } else {
-    std::ostringstream ostr;
-    ostr << "Option "<<opt
-         <<" is needed but is not present_and_set"<< std::endl;
-    throw(Error(ostr)); 
-  }
-  Result<std::string> res(result, opthelp, true);
-  opthelp->result_ptr = std::make_shared<Result<std::string>>(res);
-  return res;
-}
-
 
 
 template<class T> CmdLine::Result<T> CmdLine::value(const std::string & opt, const T & defval) const {

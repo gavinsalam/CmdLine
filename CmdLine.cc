@@ -229,16 +229,26 @@ string CmdLine::internal_string_val(const string & opt) const {
   return arg;
 }
 
-
-  void CmdLine::end_section(const std::string & section_name) {
-    if (__current_section != section_name) {
-      std::ostringstream ostr;
-      ostr << "Tried to end section '" << section_name 
-           << "' but current section is '" << __current_section << "'";
-      throw Error(ostr.str());
-    }
-    __current_section = "";
+template<> std::string CmdLine::internal_value<std::string>(const std::string & opt, 
+                                                      const std::string & prefix) const {
+  if (internal_present_and_set(opt)) {
+    return prefix+internal_string_val(opt);
+  } else {
+    throw Error("internal_value called for option " + opt + ", which is not present and set");
   }
+}
+
+
+
+void CmdLine::end_section(const std::string & section_name) {
+  if (__current_section != section_name) {
+    std::ostringstream ostr;
+    ostr << "Tried to end section '" << section_name 
+          << "' but current section is '" << __current_section << "'";
+    throw Error(ostr.str());
+  }
+  __current_section = "";
+}
 
 
 // return true if all options have been asked for at some point or other
