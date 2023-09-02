@@ -180,14 +180,12 @@ class CmdLine {
 
   /// Add an overall help string
   CmdLine & help(const std::string & help_str);
-  
+
+  /// @name Member functions to add and classify command-line options
+  ///@{
+
   /// true if the option is present
   Result<bool> present(const std::string & opt) const;
-
-  /// true if the option is present and corresponds to a value (internal use only)
-  [[deprecated("use CmdLine::optional_value instead, and that query whether it is present")]]
-  bool present_and_set(const std::string & opt) const;
-
 
   /// returns the value of the argument converted to type Result<T>
   template<class T> Result<T> value(const std::string & opt) const;
@@ -206,16 +204,22 @@ class CmdLine {
   template<class T> Result<T> value(const std::string & opt, const T & defval, 
                                     const std::string & prefix) const;
 
-
   /// start a section of the help
   void start_section(const std::string & section_name) {
     __current_section = section_name;
   }
+
   /// end a section of the help
   void end_section() {__current_section = "";}
+
   /// end a section of the help, with the given name (the code will check it matches)
   void end_section(const std::string & section_name);
 
+  ///@}
+
+
+  /// @name General helpers
+  ///@{
 
   /// when an option is missing but help has been asked for, we will
   /// still return a value, specified by this function, which can
@@ -270,8 +274,18 @@ class CmdLine {
   std::string current_path() const;
 
   /// enable/disable git info support (on by default)
-  CmdLine & set_git_info_enabled(bool enable=true) {_git_info_enabled = enable; return *this;}
-  bool git_info_enabled() const {return _git_info_enabled;}
+  CmdLine & set_git_info_enabled(bool enable=true) {__git_info_enabled = enable; return *this;}
+
+  /// return true if git info support is enabled
+  bool git_info_enabled() const {return __git_info_enabled;}
+
+  /// sets fussy behaviour, which means that an option that
+  /// is re-declared with a different kind, or different default
+  /// is considered an error.  This is useful for catching inconsistencies
+  CmdLine & set_fussy(bool fussy = true) {__fussy = fussy; return *this;}
+
+  /// return true if fussy behaviour is enabled
+  bool fussy() const {return __fussy;}
 
   /// returns a string with basic info about the git
   std::string git_info() const;
@@ -285,6 +299,9 @@ class CmdLine {
   /// The header includes a final newline
   std::string header(const std::string & prefix = "# ") const;
   
+  ///@}
+
+
   class Error;
 
   /// take a string and return a wrapped version of it (with the given prefix on each line).
@@ -295,6 +312,13 @@ class CmdLine {
   static std::string wrap(const std::string & str, int wrap_column = 80, 
                           const std::string & prefix = "", bool first_line_prefix = true);
 
+
+  /// @name Deprecated functions
+  ///@{
+
+  /// true if the option is present and corresponds to a value
+  [[deprecated("use CmdLine::optional_value instead, and that query whether it is present")]]
+  bool present_and_set(const std::string & opt) const;
 
   /// return the integer value corresponding to the given option
   [[deprecated]]
@@ -317,7 +341,7 @@ class CmdLine {
   /// return the std::string value corresponding to the given option or default if option is absent
   [[deprecated("use value<std::string>(opt, defval) instead")]]
   std::string  string_val(const std::string & opt, const std::string & defval) const;
-
+  ///@} 
 
  private:
 
@@ -356,8 +380,22 @@ class CmdLine {
   /// whether the user has requested help with -h or --help
   bool __help_requested;
   /// whether the git info is included or not
-  bool _git_info_enabled;
+  bool __git_info_enabled;
+
+  //std::string __progname;
+  std::string __command_line;
+  std::time_t __time_at_start;
+  std::string __overall_help_string;
+  bool        __fussy = false;
+
+  std::string __current_section = "";
+
+  /// default option to tell CmdLine to read arguments 
+  /// from a file
+  static std::string _default_argfile_option;
+  std::string __argfile_option = _default_argfile_option;
   
+
   template<class T>
   OptionHelp OptionHelp_value_with_default(const std::string & option, const T & default_value,
                                      const std::string & help_string = "") const {
@@ -429,18 +467,6 @@ class CmdLine {
   mutable std::vector<std::string> __options_queried;
   /// a map with help for each option that was queried
   mutable std::map<std::string, OptionHelp> __options_help;
-  
-  //std::string __progname;
-  std::string __command_line;
-  std::time_t __time_at_start;
-  std::string __overall_help_string;
-
-  std::string __current_section = "";
-
-  /// default option to tell CmdLine to read arguments 
-  /// from a file
-  static std::string _default_argfile_option;
-  std::string __argfile_option = _default_argfile_option;
   
 
   /// builds the internal structures needed to keep track of arguments and options
@@ -677,5 +703,5 @@ const CmdLine::Result<T> & CmdLine::Result<T>::range(T minval, T maxval) const {
   return *this;
 }
 
-
+std::ostream & operator<<(std::ostream & ostr, CmdLine::OptKind optkind);
 #endif

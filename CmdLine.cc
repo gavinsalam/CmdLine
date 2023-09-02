@@ -38,6 +38,17 @@ using namespace std;
 
 string CmdLine::_default_argfile_option = "-argfile";
 
+std::ostream & operator<<(std::ostream & ostr, CmdLine::OptKind optkind) {
+  if      (optkind == CmdLine::OptKind::present) ostr << "present";
+  else if (optkind == CmdLine::OptKind::required_value) ostr << "required_value";
+  else if (optkind == CmdLine::OptKind::optional_value) ostr << "optional_value";
+  else if (optkind == CmdLine::OptKind::value_with_default) ostr << "value_with_default";
+  else if (optkind == CmdLine::OptKind::undefined) ostr << "undefined";
+  else ostr << "UNRECOGNISED";
+  return ostr;
+}
+
+
 // initialise the various structures that we shall
 // use to access the command-line options;
 //
@@ -417,6 +428,25 @@ CmdLine::OptionHelp * CmdLine::opthelp_ptr(const CmdLine::OptionHelp & opthelp) 
     result = &__options_help[opthelp.option];
   } else {
     result = &opthelp_iter->second;
+    // now create a lambda to help with checks that
+    // - the option is not being redefined with a different kind
+    // - the option is not being redefined with a different default value
+    auto warn_or_fail = [&](const string & message) {
+      if (fussy()) throw Error(message);
+      else         cout << "********* CmdLine warning: " << message << endl;
+    };
+    if (result->kind != opthelp.kind) {
+      ostringstream ostr;
+      ostr << "Option " << opthelp.option << " has already been requested with kind '" 
+           << result->kind << "' but is now being requested with kind '" << opthelp.kind << "'";
+      warn_or_fail(ostr.str());
+    }
+    if (result->default_value != opthelp.default_value) {
+      ostringstream ostr;
+      ostr << "Option " << opthelp.option << " has already been requested with default value " 
+           << result->default_value << " but is now being requested with default_value " << opthelp.default_value;
+      warn_or_fail(ostr.str());      
+    }
   }
   return result;
 
@@ -637,7 +667,7 @@ string CmdLine::stdout_from_command(string cmd) const {
 
 //
 string CmdLine::git_info() const {
-  if (!_git_info_enabled) return "unknown (disabled)";
+  if (!__git_info_enabled) return "unknown (disabled)";
 
   string log_line = stdout_from_command("git log --pretty='%H %d of %cd' --decorate=short -1");
   for (auto & c : log_line) {if (c == 0x0a || c == 0x0d) c = ';';}

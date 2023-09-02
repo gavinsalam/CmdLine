@@ -36,6 +36,7 @@ int main (int argc, char ** argv) {
               .help("required argument, illustrates obtaining an int from the command line"
               ", with a long help line to verify that it gets wrapped");
   
+
   //---------------------------------------------------------------------------
   cmdline.start_section("optional arguments, with defaults"); 
   // the value<T> template deduces the correct type from the
@@ -79,6 +80,8 @@ int main (int argc, char ** argv) {
   else                cout << "oval = " << "not present" << endl; 
   cout << "flag = " << flag << endl;
 
-  cout << cmdline.dump() << endl;
+  // this can be used to dump the state of all options
+  // suitable for reading back in with the -argfile option
+  // cout << cmdline.dump() << endl;
 
 }

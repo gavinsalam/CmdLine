@@ -19,6 +19,10 @@ Towards version 3.1.0: 2023-09
 - added CmdLine::dump() to return a string with all options and their values,
   suitable for reading in as an argfile.
 
+- added checks that options are not being re-registered multiple times
+  with inconsistent kinds or defaults (produces a warning unless the new
+  CmdLine:set_fussy() function is has been called)
+
 - help description gets wrapped to fit in 80 columns, via the new
   CmdLine::wrap() static function
 
