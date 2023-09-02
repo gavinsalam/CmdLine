@@ -189,70 +189,81 @@ void CmdLine::init (){
 }
 
 // indicates whether an option is present
-CmdLine::Result<bool> CmdLine::present(const string & opt) const {
-  OptionHelp * opthelp = opthelp_ptr(OptionHelp_present(opt));\
-  bool result = internal_present(opt);
-  Result<bool> res(result,opthelp,result);
+CmdLine::Result<bool> CmdLine::any_present(const vector<string> & opts) const {
+  OptionHelp * opthelp = opthelp_ptr(OptionHelp_present(opts));\
+  pair<int,int> result_pair = internal_present(opts);
+  if (opts[0] == "-f") cout << result_pair.first  << " " << result_pair.second << endl;
+  bool result = (result_pair.first > 0);
+  Result<bool> res(result, opthelp, result);
   opthelp->result_ptr = std::make_shared<Result<bool>>(res);
   return res;
 }
 
 // indicates whether an option is present (for internal use only -- does not set help)
-bool CmdLine::internal_present(const string & opt) const {
+pair<int,int> CmdLine::internal_present(const string & opt) const {
   bool result = (__options.find(opt) != __options.end());
   if (result) {
     __options_used[opt] = true;
     __arguments_used[__options[opt].first] = true;
+    return __options[opt];
+  } else {
+    return make_pair(-1,-1);
   }
-  return result;
 }
 
-//// indicates whether an option is present (for internal use only -- does not set help)
-//bool CmdLine::internal_present(const vector<string> & opts) const {
-//  vector<string> opts_present;
-//  for (const auto & opt: opts) {
-//    bool opt_present = (__options.find(opt) != __options.end());
-//    if (opt_present) opts_present.push_back(opt);
-//  }
-//
-//  if      (opts_present.size() == 0) return false;
-//  else if (opts_present.size() == 1) return true;
-//  else {
-//    // options are supposed to be mutually exclusive, so eliminate
-//    // them all
-//    ostringstream ostr;
-//    ostr << "Options " << opts_present[0];
-//    for (size_t i = 1; i < opts_present.size()-1; i++) {
-//      ostr << ", " << opts_present[i];
-//    }
-//    ostr << " and " << opts_present[opts_present.size()-1] << " are mutually exclusive";
-//    throw Error(ostr);
-//  }
-//}
+// indicates whether an option is present (for internal use only -- does not set help)
+pair<int,int> CmdLine::internal_present(const vector<string> & opts) const {
+  vector<string> opts_present;
+  for (const auto & opt: opts) {
+    bool opt_present = (__options.find(opt) != __options.end());
+    if (opt_present) opts_present.push_back(opt);
+  }
+
+  if      (opts_present.size() == 0) return make_pair(-1,-1);
+  else if (opts_present.size() == 1) {
+    __options_used[opts_present[0]] = true;
+    __arguments_used[__options[opts_present[0]].first] = true;
+    return __options[opts_present[0]];
+  } else {
+    // options are supposed to be mutually exclusive, so eliminate
+    // them all
+    ostringstream ostr;
+    ostr << "Options " << opts_present[0];
+    for (size_t i = 1; i < opts_present.size()-1; i++) {
+      ostr << ", " << opts_present[i];
+    }
+    ostr << " and " << opts_present[opts_present.size()-1] << " are mutually exclusive";
+    throw Error(ostr);
+  }
+}
 
 
 // indicates whether an option is present and has a value associated
 bool CmdLine::internal_present_and_set(const string & opt) const {
-  bool is_present = internal_present(opt);
-  if (!is_present) return false;
-
-  bool is_set = __options[opt].second > 0;
-  if (!is_set) throw Error("In present_and_set check for option " + opt + 
-                           ", option was present but not set");
-  return is_set;
+  pair<int,int> is_present = internal_present(opt);
+  return (is_present.second > 0);
 
 }
 
 
 // return the string value corresponding to the specified option
-string CmdLine::internal_string_val(const string & opt) const {
-  if (!this->internal_present_and_set(opt)) {
-    ostringstream ostr;
-    ostr << "Option " << opt <<" is needed but is not present_and_set"<<endl;
-    throw Error(ostr);
+string CmdLine::internal_string_val(const vector<string> & opts) const {
+  pair<int,int> is_present = internal_present(opts);
+  if (is_present.second < 0) {
+    if (opts.size() == 1) {
+      throw Error("Option " +opts[0]+ " requested but not present and set");
+    } else {
+      ostringstream ostr;
+      ostr << "One of the options " << opts[0];
+      for (size_t i = 1; i < opts.size()-1; i++) {
+        ostr << ", " << opts[i];
+      }
+      ostr << " or " << opts[opts.size()-1] << " requested but none present and set";
+      throw Error(ostr);
+    }
   }
-  string arg = __arguments[__options[opt].second];
-  __arguments_used[__options[opt].second] = true;
+  string arg = __arguments[is_present.second];
+  __arguments_used[is_present.second] = true;
   // this may itself look like an option -- if that is the case
   // declare the option to have been used
   if (arg.compare(0,1,"-") == 0) {__options_used[arg] = true;}

@@ -32,7 +32,7 @@ int main (int argc, char ** argv) {
   CmdLine cmdline(argc, argv, enable_help);
   cmdline.help("Small program to illustrate how the CmdLine library can be used.");
 
-  auto ival = cmdline.value<int>("-i").argname("ival").choices({0,1,2})
+  auto ival = cmdline.any_value<int>({"-i","--int"}).argname("ival").choices({0,1,2})
               .help("required argument, illustrates obtaining an int from the command line"
               ", with a long help line to verify that it gets wrapped");
   
@@ -63,7 +63,7 @@ int main (int argc, char ** argv) {
   cmdline.end_section();
 
   // optional flag, which if present, is true, otherwise false
-  bool flag = cmdline.present("-f").help("illustrates a command-line flag");
+  bool flag = cmdline.present({"-f","--flag"}).help("illustrates a command-line flag");
   
   //---------------------------------------------------------------------------
   // make sure we've used all options that were provided on command-line.
