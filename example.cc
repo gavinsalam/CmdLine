@@ -33,7 +33,8 @@ int main (int argc, char ** argv) {
   cmdline.help("Small program to illustrate how the CmdLine library can be used.");
 
   auto ival = cmdline.value<int>("-i").argname("ival").choices({0,1,2})
-              .help("required argument, illustrates obtaining an int from the command line");
+              .help("required argument, illustrates obtaining an int from the command line"
+              ", with a long help line to verify that it gets wrapped");
   
   //---------------------------------------------------------------------------
   cmdline.start_section("optional arguments, with defaults"); 
@@ -77,5 +78,7 @@ int main (int argc, char ** argv) {
   if (ores.present()) cout << "oval = " << ores() << endl;
   else                cout << "oval = " << "not present" << endl; 
   cout << "flag = " << flag << endl;
+
+  cout << cmdline.dump() << endl;
 
 }

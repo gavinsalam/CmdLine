@@ -177,22 +177,36 @@ void CmdLine::init (){
 
 // indicates whether an option is present
 CmdLine::Result<bool> CmdLine::present(const string & opt) const {
-  OptionHelp * opthelp = opthelp_ptr(OptionHelp_present(opt));
-  bool result = (__options.find(opt) != __options.end());
-  if (result) __options_used[opt] = true;
-  return Result<bool>(result,opthelp,result);
+  OptionHelp * opthelp = opthelp_ptr(OptionHelp_present(opt));\
+  bool result = internal_present(opt);
+  Result<bool> res(result,opthelp,result);
+  opthelp->result_ptr = std::make_shared<Result<bool>>(res);
+  return res;
 }
 
-// indicates whether an option is present and has a value associated
-bool CmdLine::present_and_set(const string & opt) const {
-  bool result = present(opt) && __options[opt] > 0;
+// indicates whether an option is present (for internal use only -- does not set help)
+bool CmdLine::internal_present(const string & opt) const {
+  bool result = (__options.find(opt) != __options.end());
+  if (result) __options_used[opt] = true;
   return result;
+}
+
+
+// indicates whether an option is present and has a value associated
+bool CmdLine::internal_present_and_set(const string & opt) const {
+  bool is_present = internal_present(opt);
+  if (!is_present) return false;
+
+  bool is_set = __options[opt] > 0;
+  if (!is_set) throw Error("In present_and_set check for option " + opt + ", option was present but not set");
+  return is_set;
+
 }
 
 
 // return the string value corresponding to the specified option
 string CmdLine::internal_string_val(const string & opt) const {
-  if (!this->present_and_set(opt)) {
+  if (!this->internal_present_and_set(opt)) {
     ostringstream ostr;
     ostr << "Option " << opt <<" is needed but is not present_and_set"<<endl;
     throw Error(ostr);
@@ -208,7 +222,8 @@ string CmdLine::internal_string_val(const string & opt) const {
   void CmdLine::end_section(const std::string & section_name) {
     if (__current_section != section_name) {
       std::ostringstream ostr;
-      ostr << "Tried to end section '" << section_name << "' but current section is '" << __current_section << "'";
+      ostr << "Tried to end section '" << section_name 
+           << "' but current section is '" << __current_section << "'";
       throw Error(ostr.str());
     }
     __current_section = "";
@@ -422,9 +437,11 @@ string CmdLine::OptionHelp::summary() const {
   if (! required) ostr << "]";
   return ostr.str();
 }
-string CmdLine::OptionHelp::description() const {
+
+
+string CmdLine::OptionHelp::description(const string & prefix, int wrap_column) const {
   ostringstream ostr;
-  ostr << option;
+  ostr << prefix << option;
   if (takes_value) {
     ostr << " " << argname << " (" << type_name() << ")";
     if (has_default) ostr << "     default: " << default_value;
@@ -436,8 +453,54 @@ string CmdLine::OptionHelp::description() const {
     }
   }
   ostr << "\n";
-  if (help.size() > 0) ostr << "  " << help << endl;
+  if (help.size() > 0) {
+    ostr << wrap(help, wrap_column, prefix + "  ");
+  } 
   ostr << endl;
+  return ostr.str();
+}
+
+std::string CmdLine::wrap(const std::string & str, int wrap_column, 
+                          const std::string & prefix, bool first_line_prefix) {
+  // start by separating the string into tokens: words or spaces or new line characters
+  vector<string> tokens;
+  size_t last_i = 0;
+  size_t i = 0;
+  size_t n = str.size();
+  while (i < n) {
+    if (str[i] == ' ' || str[i] == '\n') {
+      tokens.push_back(str.substr(last_i,i-last_i));
+      tokens.push_back(str.substr(i,1));
+      last_i = i+1;
+    }
+    i++;
+  }
+  if (last_i < n) tokens.push_back(str.substr(last_i,n-last_i));
+
+  // then loop over the tokens, printing them out, and wrapping if need be
+  ostringstream ostr;
+  size_t line_len = 0;
+  if (first_line_prefix) {
+    ostr << prefix;
+    prefix.size();
+  }
+  for (const auto & token: tokens) {
+    if (token == "\n") {
+      ostr << endl << prefix;
+      line_len = prefix.size();
+    } else {
+      if (line_len + token.size() < wrap_column) {
+        ostr << token;
+        line_len += token.size();
+      } else if (token == " ") {
+        ostr << endl << prefix;
+        line_len = prefix.size();
+      } else {
+        ostr << endl << prefix << token;
+        line_len = prefix.size() + token.size();
+      }
+    }
+  }
   return ostr.str();
 }
 
@@ -466,20 +529,21 @@ void CmdLine::print_help() const {
   cout << endl << endl;
 
   if (__overall_help_string.size() != 0) {
-    cout << __overall_help_string;
+    cout << wrap(__overall_help_string);
     cout << endl << endl;
     cout << "Detailed option help" << endl;
-    cout << "====================" << endl;
+    cout << "====================" << endl << endl;
   }
   
   map<string,vector<const OptionHelp *> > opthelp_section_contents;
   vector<string> opthelp_sections;
 
   // Then print detailed usage for each option that is not in a section
+  string prefix = "";
   for (const auto & opt: __options_queried) {
     const OptionHelp & opthelp = __options_help[opt];
     if (opthelp.section == "") {
-      cout << "  " << opthelp.description();
+      cout << opthelp.description(prefix) << endl;
     } else {
       // if an option is in a section, register it for later
       if (opthelp_section_contents.find(opthelp.section) == opthelp_section_contents.end()) {
@@ -493,11 +557,64 @@ void CmdLine::print_help() const {
   for (const auto & section: opthelp_sections) {
     cout << endl;
     cout << section << endl;
-    cout << string(section.size(),'-') << endl;
+    cout << string(section.size(),'-') << endl << endl;
     for (const auto & opthelp: opthelp_section_contents[section]) {
-      cout << "  " << opthelp->description();
+      cout << opthelp->description(prefix) << endl;
     }
   }
+}
+
+//------------------------------------------------------------------------
+string CmdLine::dump() const {
+  ostringstream ostr;
+  map<string,vector<const OptionHelp *> > opthelp_section_contents;
+  vector<string> opthelp_sections;
+
+  string prefix = "# ";
+  ostr << prefix << "argfile for " << command_line() << endl;
+  ostr << wrap(__overall_help_string, 80, prefix) << endl;
+  ostr << prefix << "generated by CmdLine::dump() on " << time_stamp() << endl;
+
+  auto print_option = [&](const OptionHelp & opthelp) {
+    const ResultBase & res = *(opthelp.result_ptr);
+    if (opthelp.kind == OptKind::present) {
+      if (res.present()) ostr << opthelp.option << endl;
+      else               ostr << "// " << opthelp.option << endl;
+    } else if (opthelp.kind == OptKind::optional_value) {
+      if (res.present()) ostr << opthelp.option << " " << res.value_as_string() << endl;
+      else               ostr << "// " << opthelp.option << " " << opthelp.argname << endl;
+    } else {
+      ostr << opthelp.option << " " << res.value_as_string() << endl;
+    }
+  };
+
+  for (const auto & opt: __options_queried) {
+    const OptionHelp & opthelp = __options_help[opt];
+    if (opthelp.section == "") {
+      ostr << prefix << "\n" << opthelp.description(prefix);
+      print_option(opthelp);
+    } else {
+      // if an option is in a section, register it for later
+      if (opthelp_section_contents.find(opthelp.section) == opthelp_section_contents.end()) {
+        opthelp_sections.push_back(opthelp.section);
+      }
+      opthelp_section_contents[opthelp.section].push_back(&opthelp);
+    }
+  }
+
+  // then print out the options that are in sections
+  for (const auto & section: opthelp_sections) {
+    ostr << prefix << endl;
+    ostr << prefix << string(section.size(),'-') << endl ;
+    ostr << prefix << section << endl;
+    ostr << prefix << string(section.size(),'-') << endl ;
+    for (const auto & opthelp: opthelp_section_contents[section]) {
+      ostr << prefix << "\n" << opthelp->description(prefix) << prefix << endl;
+      print_option(*opthelp);
+    }
+  }
+  
+  return ostr.str();
 }
 
 // From https://www.jeremymorgan.com/tutorials/c-programming/how-to-capture-the-output-of-a-linux-command-in-c/
