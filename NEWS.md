@@ -11,7 +11,8 @@ Towards version 3.1.0: 2023-09
 
 - added CmdLine::Result<T>::present() function to tell if an option was
   actually present on the command line (notably for use with
-  optional_value results) 
+  optional_value results), ::has_value() to indicate if it has a value
+  and value_or(...) to get the value or an alternative if it has no value.
 
 - added CmdLine::start_section(..) CmdLine::end_section() to allow for
   basic sectioning of help text 
