@@ -32,7 +32,7 @@ int main (int argc, char ** argv) {
   CmdLine cmdline(argc, argv, enable_help);
   cmdline.help("Small program to illustrate how the CmdLine library can be used.");
 
-  auto ival = cmdline.any_value<int>({"-i","--int"}).argname("ival").choices({0,1,2})
+  auto ival = cmdline.value<int>("-i").argname("ival").choices({0,1,2})
               .help("required argument, illustrates obtaining an int from the command line"
               ", with a long help line to verify that it gets wrapped");
   
@@ -57,7 +57,7 @@ int main (int argc, char ** argv) {
 
   // optional argument, which if present, takes a value (user must
   // check whether it was present before using the value)
-  auto ores = cmdline.optional_value<double>("-o").help("optional argument that takes value");
+  auto ores = cmdline.any_optional_value<double>({"-o"}).help("optional argument that takes value");
 
   //---------------------------------------------------------------------------
   cmdline.end_section();

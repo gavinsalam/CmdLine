@@ -189,24 +189,20 @@ class CmdLine {
   /// return true if the option is present
   Result<bool> present(const std::string & opt) const {return any_present(std::vector<std::string>{opt});}
 
-  /// return true if any of the options in the option vector is present
-  /// (at most one of the options should be present)
-  Result<bool> any_present(const std::vector<std::string> & opts) const;
-
   /// returns the value of the argument following opt, converted to type Result<T>
   template<class T> Result<T> value(const std::string & opt) const {
     return any_value<T>(std::vector<std::string>{opt});}
 
-  /// returns the value of the argument following any of opts, converted
-  /// to type Result<T> (at most one of the opts should be present)
-  template<class T> Result<T> any_value(const std::vector<std::string> & opts) const;
-
   /// returns the value of the option, or defval if the option is not present
-  template<class T> Result<T> value(const std::string & opt, const T & defval) const;
+  template<class T> Result<T> value(const std::string & opt, const T & defval) const {
+    return any_value<T>(std::vector<std::string>{opt}, defval);
+  }
 
   /// returns a Result<T> for the option; the result.present() should be queried to
   /// see if it was present before trying to use the value
-  template<class T> Result<T> optional_value(const std::string & opt) const;
+  template<class T> Result<T> optional_value(const std::string & opt) const {
+    return any_optional_value<T>(std::vector<std::string>{opt});
+  }
 
   /// returns the value of the argument, prefixed with prefix (NB: 
   /// require different function name to avoid confusion with 
@@ -217,11 +213,36 @@ class CmdLine {
   template<class T> Result<T> value_prefix(const std::string & opt, const std::string & prefix) const {
     return any_value_prefix<T>(std::vector<std::string>{opt}, prefix);
   }
-  template<class T> Result<T> any_value_prefix(const std::vector<std::string> & opts, const std::string & prefix) const;
 
   /// returns the value of the argument, prefixed with prefix, with defval returned
   /// if the option is not present.
   template<class T> Result<T> value(const std::string & opt, const T & defval, 
+                                    const std::string & prefix) const {
+    return any_value<T>(std::vector<std::string>{opt}, defval, prefix);
+  }
+
+
+  /// return true if any of the options in the option vector is present
+  /// (at most one of the options should be present)
+  Result<bool> any_present(const std::vector<std::string> & opts) const;
+
+  /// returns the value of the argument following any of the (mutually
+  /// exclusive) opts, converted to type Result<T> 
+  template<class T> Result<T> any_value(const std::vector<std::string> & opts) const;
+
+  /// returns the value following any of the (mutually exclusive)
+  /// options, or defval if none is present
+  template<class T> Result<T> any_value(const std::vector<std::string> & opt, const T & defval) const;
+
+  /// like optional_value, but for a (mutually exclusive) vector of options
+  template<class T> Result<T> any_optional_value(const std::vector<std::string> & opts) const;
+
+  /// like value_prefix, but for a (mutually exclusive) vector of options
+  template<class T> Result<T> any_value_prefix(const std::vector<std::string> & opts, 
+                                               const std::string & prefix) const;
+
+  /// like value (with prefix), but for a (mutually exclusive) vector of options
+  template<class T> Result<T> any_value(const std::vector<std::string> & opt, const T & defval, 
                                     const std::string & prefix) const;
 
   /// start a section of the help
@@ -436,10 +457,11 @@ class CmdLine {
   
 
   template<class T>
-  OptionHelp OptionHelp_value_with_default(const std::string & option, const T & default_value,
+  OptionHelp OptionHelp_value_with_default(const std::vector<std::string> & options, const T & default_value,
                                      const std::string & help_string = "") const {
     OptionHelp help;
-    help.option        = option;
+    help.option        = options[0];
+    help.aliases       = options;
     std::ostringstream defval_ostr;
     defval_ostr << default_value;
     help.default_value = defval_ostr.str();
@@ -469,10 +491,11 @@ class CmdLine {
     return help;
   }
   template<class T>
-  OptionHelp OptionHelp_optional_value(const std::string & option,
+  OptionHelp OptionHelp_optional_value(const std::vector<std::string> & options,
                                        const std::string & help_string = "") const {
     OptionHelp help;
-    help.option        = option;
+    help.option        = options[0];
+    help.aliases       = options;
     help.default_value = "";
     help.help          = help_string;
     help.type          = typeid(T).name();
@@ -617,14 +640,14 @@ CmdLine::Result<T> CmdLine::any_value_prefix(const std::vector<std::string> & op
 }
 
 
-template<class T> CmdLine::Result<T> CmdLine::value(const std::string & opt, const T & defval) const {
+template<class T> CmdLine::Result<T> CmdLine::any_value(const std::vector<std::string> & opts, const T & defval) const {
   // construct help
-  OptionHelp * opthelp = opthelp_ptr(OptionHelp_value_with_default(opt, defval, ""));
+  OptionHelp * opthelp = opthelp_ptr(OptionHelp_value_with_default(opts, defval, ""));
 
   std::shared_ptr<Result<T>> res;
   // return value
-  if (this->internal_present_and_set(opt)) {
-    auto result = internal_value<T>(opt);
+  if (this->internal_present(opts).second > 0) {
+    auto result = internal_value<T>(opts);
     res = std::make_shared<Result<T>>(result,opthelp,true);
   } else {
     res = std::make_shared<Result<T>>(defval,opthelp,false);
@@ -633,15 +656,15 @@ template<class T> CmdLine::Result<T> CmdLine::value(const std::string & opt, con
   return *res;
 }
 
-template<class T> CmdLine::Result<T> CmdLine::optional_value(const std::string & opt) const {
+template<class T> CmdLine::Result<T> CmdLine::any_optional_value(const std::vector<std::string> & opts) const {
   // construct help
-  OptionHelp * opthelp = opthelp_ptr(OptionHelp_optional_value<T>(opt));
+  OptionHelp * opthelp = opthelp_ptr(OptionHelp_optional_value<T>(opts));
   opthelp->default_value = "None";
 
   // return value
   std::shared_ptr<Result<T>> res;
-  if (this->internal_present_and_set(opt)) {
-    auto result = internal_value<T>(opt);
+  if (this->internal_present(opts).second > 0) {
+    auto result = internal_value<T>(opts);
     res = std::make_shared<Result<T>>(result, opthelp, true);
   } else {
     res = std::make_shared<Result<T>>(value_for_missing_option<T>(), opthelp, false);
@@ -651,14 +674,14 @@ template<class T> CmdLine::Result<T> CmdLine::optional_value(const std::string &
 }
 
 
-template<class T> CmdLine::Result<T> CmdLine::value(const std::string & opt, const T & defval, 
+template<class T> CmdLine::Result<T> CmdLine::any_value(const std::vector<std::string> & opts, const T & defval, 
                                    const std::string & prefix) const {
-  OptionHelp * opthelp = opthelp_ptr(OptionHelp_value_with_default(opt, defval, ""));
+  OptionHelp * opthelp = opthelp_ptr(OptionHelp_value_with_default(opts, defval, ""));
 
   // return value
   std::shared_ptr<Result<T>> res;
-  if (this->internal_present_and_set(opt)) {
-    auto result = internal_value<T>(opt, prefix);
+  if (this->internal_present(opts).second > 0) {
+    auto result = internal_value<T>(opts, prefix);
     res = std::make_shared<Result<T>>(result, opthelp, true);
   } else {
     res = std::make_shared<Result<T>>(defval, opthelp, false);
