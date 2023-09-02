@@ -127,6 +127,9 @@ class CmdLine {
     /// this allows the user to do the conversion to the argument's value manually
     T operator()() const;
 
+    /// an alternative member name for getting the value manually
+    T value() const;
+
     /// returns true if the argument was present on the command-line
     bool present() const override {return _is_present;}
 
@@ -584,16 +587,19 @@ void CmdLine::Result<T>::throw_value_not_available() const {
 
 template<class T>
 inline CmdLine::Result<T>::operator T() const {
-  if (!has_value()) throw_value_not_available();
-  return _t;
+  return value();
 }
 
 template<class T>
 inline T CmdLine::Result<T>::operator()() const {
+  return value();
+}
+
+template<class T>
+inline T CmdLine::Result<T>::value() const {
   if (!has_value()) throw_value_not_available();
   return _t;
 }
-
 
 template<class T>
 CmdLine::OptionHelp & CmdLine::Result<T>::opthelp() const {

@@ -80,7 +80,7 @@ int main (int argc, char ** argv) {
   cout << "ival = " << ival << endl;
   cout << "dval = " << dval << " (argument was " << (d_present ? "" : "not " ) << "present)" << endl;
   cout << "sval = " << sval << endl;
-  if (ores.present()) cout << "oval = " << ores() << endl;
+  if (ores.present()) cout << "oval = " << ores.value() << endl;
   else                cout << "oval = " << "not present" << endl; 
   cout << "flag = " << flag << endl;
 
