@@ -674,7 +674,7 @@ string CmdLine::dump(const string & prefix, const string & absence_prefix) const
     } else if (opthelp.kind == OptKind::optional_value) {
       if (res.present()) ostr << opthelp.option << " " << res.value_as_string() << endl;
       else               ostr << absence_prefix << opthelp.option << " " << opthelp.argname << endl;
-    } else {
+    } else {      
       ostr << opthelp.option << " " << res.value_as_string() << endl;
     }
   };

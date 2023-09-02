@@ -16,6 +16,10 @@ Towards version 3.1.0: 2023-09
 - added CmdLine::start_section(..) CmdLine::end_section() to allow for
   basic sectioning of help text 
 
+- added variants of the query functions prefixed by any_, which allow the
+  user to supply multiple variants (or aliases) of an option name, e.g. 
+  `cmdline.any_present({"-l","--long"})`
+
 - added CmdLine::dump() to return a string with all options and their values,
   suitable for reading in as an argfile.
 

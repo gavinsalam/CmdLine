@@ -136,6 +136,12 @@ class CmdLine {
     /// returns true if the result can be converted to a value
     bool has_value() const override {return kind() != OptKind::optional_value || _is_present;}
 
+    /// returns the value of the option, or val if the option is not present
+    T value_or(T val) const {
+      if (has_value()) return _t;
+      else return val;
+    }
+
     /// returns the value of the option, as a string (with 16 digits precision)
     std::string value_as_string() const override;
 
@@ -661,9 +667,12 @@ template<class T> CmdLine::Result<T> CmdLine::any_value(const std::vector<std::s
 
   std::shared_ptr<Result<T>> res;
   // return value
-  if (this->internal_present(opts).second > 0) {
+  auto pres = this->internal_present(opts);
+  if (pres.second > 0) {
     auto result = internal_value<T>(opts);
     res = std::make_shared<Result<T>>(result,opthelp,true);
+  } else if (pres.first > 0) {
+    throw Error("option " + __arguments[pres.first] + " present, but expected value was absent");
   } else {
     res = std::make_shared<Result<T>>(defval,opthelp,false);
   }
@@ -678,10 +687,13 @@ template<class T> CmdLine::Result<T> CmdLine::any_optional_value(const std::vect
 
   // return value
   std::shared_ptr<Result<T>> res;
-  if (this->internal_present(opts).second > 0) {
+  auto pres = this->internal_present(opts);
+  if (pres.second > 0) {
     auto result = internal_value<T>(opts);
     res = std::make_shared<Result<T>>(result, opthelp, true);
-  } else {
+  } else if (pres.first > 0) {
+    throw Error("option " + __arguments[pres.first] + " present, but expected value was absent");
+  } else {    
     res = std::make_shared<Result<T>>(value_for_missing_option<T>(), opthelp, false);
   }
   opthelp->result_ptr = res;
@@ -695,9 +707,12 @@ template<class T> CmdLine::Result<T> CmdLine::any_value(const std::vector<std::s
 
   // return value
   std::shared_ptr<Result<T>> res;
-  if (this->internal_present(opts).second > 0) {
+  auto pres = this->internal_present(opts);
+  if (pres.second > 0) {
     auto result = internal_value<T>(opts, prefix);
     res = std::make_shared<Result<T>>(result, opthelp, true);
+  } else if (pres.first > 0) {
+    throw Error("option " + __arguments[pres.first] + " present, but expected value was absent");
   } else {
     res = std::make_shared<Result<T>>(defval, opthelp, false);
   }
