@@ -181,7 +181,7 @@ void CmdLine::init (){
     }
   }
   if (__help_enabled) {
-    __help_requested = present("-h").help("prints this help message") || present("--help");
+    __help_requested = any_present({"-h","-help","--help"}).help("prints this help message");
   }
 
   // by default, enabe the git info
@@ -389,11 +389,9 @@ void CmdLine::_report_conversion_failure(const string & opt,
 
 void CmdLine::assert_all_options_used() const {
   // deal with the help part
-  if (__help_enabled) {
-    if (present("-h") || present("--help")) {
-      print_help();
-      exit(0);
-    }
+  if (__help_enabled && __help_requested) {
+    print_help();
+    exit(0);
   }
   if (! all_options_used()) {
     ostringstream ostr;
