@@ -581,7 +581,7 @@ std::string CmdLine::wrap(const std::string & str, int wrap_column,
       ostr << endl << prefix;
       line_len = prefix.size();
     } else {
-      if (line_len + token.size() < wrap_column) {
+      if (int(line_len + token.size()) < wrap_column) {
         ostr << token;
         line_len += token.size();
       } else if (token == " ") {
