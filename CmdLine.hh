@@ -30,6 +30,7 @@
 #include<map>
 #include<vector>
 #include<ctime>
+#include<memory>
 #include<typeinfo> 
 
 /// Class designed to deal with command-line arguments.
