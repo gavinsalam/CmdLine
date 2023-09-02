@@ -537,6 +537,14 @@ string CmdLine::OptionHelp::description(const string & prefix, int wrap_column) 
     }
   }
   ostr << "\n";
+  if (aliases.size() > 1) {
+    ostr << prefix << "  aliases: ";
+    for (unsigned i = 1; i < aliases.size(); i++) {
+      ostr << aliases[i];
+      if (i+1 != aliases.size()) ostr << ", ";
+    }
+    ostr << "\n";
+  }
   if (help.size() > 0) {
     ostr << wrap(help, wrap_column, prefix + "  ");
   } 
