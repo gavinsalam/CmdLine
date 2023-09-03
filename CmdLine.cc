@@ -495,7 +495,7 @@ CmdLine::OptionHelp * CmdLine::opthelp_ptr(const CmdLine::OptionHelp & opthelp) 
            << result->kind << "' but is now being requested with kind '" << opthelp.kind << "'";
       warn_or_fail(ostr.str());
     }
-    if (result->default_value != opthelp.default_value) {
+    if (result->kind == OptKind::value_with_default && result->default_value != opthelp.default_value) {
       ostringstream ostr;
       ostr << "Option " << opthelp.option << " has already been requested with default value " 
            << result->default_value << " but is now being requested with default_value " << opthelp.default_value;
