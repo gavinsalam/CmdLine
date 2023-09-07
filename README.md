@@ -1,3 +1,5 @@
+[![Build Status](https://img.shields.io/github/workflow/status/<USERNAME>/<REPOSITORY>/<WORKFLOW_NAME>?label=build&logo=github&style=flat-square)](https://github.com/<USERNAME>/<REPOSITORY>/actions/workflows/<WORKFLOW_NAME>)
+
 README for the CmdLine directory
 --------------------------------
 
