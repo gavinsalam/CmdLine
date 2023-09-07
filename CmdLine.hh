@@ -446,6 +446,9 @@ class CmdLine {
   /// a map of possible options found on the command line, referencing
   /// the index of the argument that might assign a value to that
   /// option (an option being anything starting with a dash)
+  ///
+  /// The first element of the pair is the location is the option,
+  /// the second is the location of its value (or -1 if there is no value)
   mutable std::map<std::string,std::pair<int,int>> __options;
   
 

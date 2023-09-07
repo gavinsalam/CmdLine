@@ -192,7 +192,6 @@ void CmdLine::init (){
 CmdLine::Result<bool> CmdLine::any_present(const vector<string> & opts) const {
   OptionHelp * opthelp = opthelp_ptr(OptionHelp_present(opts));\
   pair<int,int> result_pair = internal_present(opts);
-  if (opts[0] == "-f") cout << result_pair.first  << " " << result_pair.second << endl;
   bool result = (result_pair.first > 0);
   Result<bool> res(result, opthelp, result);
   opthelp->result_ptr = std::make_shared<Result<bool>>(res);
@@ -295,15 +294,29 @@ void CmdLine::end_section(const std::string & section_name) {
 // return true if all options have been asked for at some point or other
 bool CmdLine::all_options_used() const {
   bool result = true;
-  for(map<string,bool>::const_iterator opt = __options_used.begin();
-      opt != __options_used.end(); opt++) {
-    bool this_one = opt->second;
-    if (! this_one) {cerr << "Option "<<opt->first<<" unused/unrecognized"<<endl;}
-    result &= this_one;
-  }
+  // do not use this version (which cekced only for unused options), but rather 
+  // the one below, which checks for unused arguments
+  // for(map<string,bool>::const_iterator opt = __options_used.begin();
+  //     opt != __options_used.end(); opt++) {
+  //   bool this_one = opt->second;
+  //   if (! this_one) {cerr << "Option "<<opt->first<<" unused/unrecognized"<<endl;}
+  //   result &= this_one;
+  // }
   for (size_t iarg = 1; iarg < __arguments_used.size(); iarg++) {
+    string arg = __arguments[iarg];
     bool this_one = __arguments_used[iarg];
-    if (! this_one) {cerr << "Argument " << __arguments[iarg] << " unused/unrecognized" << endl;}
+    if (! this_one) {
+      cerr << "Argument " << arg << " at position " << iarg << " unused/unrecognized";
+      if (__options_used.count(arg) > 0 && __options_used[arg]) {
+        cerr << "  (this could be because the same option already appeared";
+        if (__options.count(arg) && __options[arg].first > 0) {
+          cerr << " at position " << __options[arg].first << ")";
+        } else {
+          cerr << " elsewhere on the command line)";
+        }
+      }
+      cerr << endl;
+    }
     result &= this_one;
   }
   return result;
