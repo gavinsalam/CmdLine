@@ -12,11 +12,12 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        gcc_v: [13] # Version of gcc we want to use.
+        #gcc_v: [13] # Version of gcc we want to use.
         #python-version: [3.9]
     env:
-      FC: gfortran-${{matrix.gcc_v}}
-      GCC_V: ${{matrix.gcc_v}}
+      #FC: gfortran-${{matrix.gcc_v}}
+      #GCC_V: ${{matrix.gcc_v}}
+      OS_NAME: ${{matrix.os}}
 
     steps:
 
@@ -34,18 +35,15 @@ jobs:
       run: |
         sudo add-apt-repository ppa:ubuntu-toolchain-r/test
         sudo apt-get update
-        sudo apt-get install -y gcc-${GCC_V}
+        sudo apt-get install -y gcc
+        #sudo apt-get install -y gcc-${GCC_V}
         # gfortran-${GCC_V}
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_V} 100 \
-        --slave /usr/bin/gcov gcov /usr/bin/gcov-${GCC_V}        
+        #sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC_V} 100 \
+        #--slave /usr/bin/gcov gcov /usr/bin/gcov-${GCC_V}        
 
     - name: configure_build_check
       if: contains( matrix.os, 'ubuntu')
       run: |
-        #FC=gfortran-${{matrix.gcc_v}}
-        #GCOV=gcov-${{matrix.gcc_v}}
-        # build and run unit tests
-        #./configure FC=gfortran-${{matrix.gcc_v}}
-        make CXX=cpp-${{matrix.gcc_v}}
+        make 
         ./example -i 1
 
