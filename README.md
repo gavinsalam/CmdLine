@@ -1,4 +1,4 @@
-[![Build Status](https://img.shields.io/github/workflow/status/<USERNAME>/<REPOSITORY>/<WORKFLOW_NAME>?label=build&logo=github&style=flat-square)](https://github.com/<USERNAME>/<REPOSITORY>/actions/workflows/<WORKFLOW_NAME>)
+[![Build Status](https://img.shields.io/github/workflow/status/gavinsalam/CmdLine/CI?label=build&logo=github&style=flat-square)](https://github.com/gavinsalam/CmdLine/actions/workflows/CI)
 
 README for the CmdLine directory
 --------------------------------
