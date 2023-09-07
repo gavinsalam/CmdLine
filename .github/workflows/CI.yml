@@ -46,6 +46,6 @@ jobs:
         #GCOV=gcov-${{matrix.gcc_v}}
         # build and run unit tests
         #./configure FC=gfortran-${{matrix.gcc_v}}
-        make CXX=g++-${{matrix.gcc_v}}
+        make CXX=cpp-${{matrix.gcc_v}}
         ./example -i 1
 
