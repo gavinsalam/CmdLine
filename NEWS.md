@@ -1,6 +1,6 @@
 
-Towards version 3.1.0: 2023-09
-------------------------------
+Version 3.1.0: 2023-09-07
+-------------------------
 
 ### new features
 
@@ -22,7 +22,7 @@ Towards version 3.1.0: 2023-09
   `cmdline.any_present({"-l","--long"})`
 
 - added CmdLine::dump() to return a string with all options and their values,
-  suitable for reading in as an argfile.
+  suitable for reading with the -argfile option
 
 - added checks that options are not being re-registered multiple times
   with inconsistent kinds or defaults (produces a warning unless the new
