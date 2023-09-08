@@ -196,9 +196,6 @@ class CmdLine {
   /// initialise a CmdLine from a C++ std::vector of arguments 
   CmdLine(const std::vector<std::string> & args, bool enable_help = true, const std::string & file_option=_default_argfile_option );
 
-  /// Add an overall help string
-  CmdLine & help(const std::string & help_str);
-
   /// @name Member functions to add and classify command-line options
   ///@{
 
@@ -261,6 +258,16 @@ class CmdLine {
   template<class T> Result<T> any_value(const std::vector<std::string> & opt, const T & defval, 
                                     const std::string & prefix) const;
 
+  ///@}
+
+  /// @name Member functions connected with the help system
+  ///@{
+
+  /// Add an overall help string, e.g. including the name of the program
+  /// and its basic purpose. This will be printed out if the user includes the
+  ///  -h | -help | --help options
+  CmdLine & help(const std::string & help_str);
+
   /// start a section of the help
   void start_section(const std::string & section_name) {
     __current_section = section_name;
@@ -271,6 +278,13 @@ class CmdLine {
 
   /// end a section of the help, with the given name (the code will check it matches)
   void end_section(const std::string & section_name);
+
+  /// return the name of the current section
+  std::string section() const {return __current_section;}
+
+  /// return true iff the help system is the user has requested
+  /// a help string (via -h or --help)
+  bool help_requested() const {return __help_requested;} 
 
   ///@}
 

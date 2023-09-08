@@ -2,6 +2,10 @@
 Towards Version 3.1.1
 ---------------------
 
+### other changes
+- CmdLine::section() and help_requested() members to return current section
+  and help requested status
+
 Version 3.1.0: 2023-09-07
 -------------------------
 
