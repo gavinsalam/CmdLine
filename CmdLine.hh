@@ -282,8 +282,8 @@ class CmdLine {
   /// return the name of the current section
   std::string section() const {return __current_section;}
 
-  /// return true iff the help system is the user has requested
-  /// a help string (via -h or --help)
+  /// return true iff the user has requested a help string (via -h or
+  /// --help)
   bool help_requested() const {return __help_requested;} 
 
   ///@}
