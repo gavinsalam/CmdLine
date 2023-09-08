@@ -33,13 +33,11 @@
 #include<memory>
 #include<typeinfo> 
 
-/// \mainpage CmdLine code documentation
+
+
+/// Class designed to deal with command-line arguments.
 ///
-/// The main classes are CmdLine and the result of an option, CmdLine::Result.
-///
-/// Include the CmdLine.hh and CmdLine.hh files in your project and then use it
-/// as follows:
-///
+/// Basic usage:
 /// \code
 ///
 /// #include "CmdLine.hh"
@@ -65,11 +63,6 @@
 /// }
 ///
 /// \endcode
-
-
-
-/// Class designed to deal with command-line arguments.
-///
 class CmdLine {
  public :
 

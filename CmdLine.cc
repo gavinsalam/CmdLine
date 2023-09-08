@@ -22,7 +22,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-
 /// \mainpage CmdLine code documentation
 ///
 /// The main classes are CmdLine and the result of an option, CmdLine::Result.
@@ -40,7 +39,7 @@
 ///   
 ///   // required argument, no help string
 ///   // (this actually returns a CmdLine::Result<double> object, which 
-///   // gets automatically converted to a double))
+///   // gets automatically converted to a double)
 ///   double x = cmdline.value<double>("-x");
 /// 
 ///   // optional argument, with default value, and help string
