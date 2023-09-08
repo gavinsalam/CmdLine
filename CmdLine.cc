@@ -671,30 +671,21 @@ string CmdLine::OptionHelp::range_string() const {
   return ostr.str();
 }
 
-void CmdLine::print_help() const {
-  // First print a summary
-  cout << "\nUsage: \n       " << __arguments[0];
-  for (const auto & opt: __options_queried) {
-    cout << " " << __options_help[opt].summary();
-  }
-  cout << endl << endl;
+/// returns a vector of OptSection objects, each of which contains
+/// a vector of options, as well as an indication of the name of the section
+/// and the level of indentation
+std::vector<CmdLine::OptSection> CmdLine::organised_options() const {
+  vector<OptSection> opt_sections;
+  opt_sections.push_back(OptSection("", 0));
 
-  if (__overall_help_string.size() != 0) {
-    cout << wrap(__overall_help_string);
-    cout << endl << endl;
-    cout << "Detailed option help" << endl;
-    cout << "====================" << endl << endl;
-  }
-  
   map<string,vector<const OptionHelp *> > opthelp_section_contents;
   vector<string> opthelp_sections;
 
-  // Then print detailed usage for each option that is not in a section
-  string prefix = "";
+  // First register each option that is not in any section
   for (const auto & opt: __options_queried) {
     const OptionHelp & opthelp = __options_help[opt];
     if (opthelp.section == "") {
-      cout << opthelp.description(prefix) << endl;
+      opt_sections.back().options.push_back(&opthelp);
     } else {
       // if an option is in a section, register it for later
       if (opthelp_section_contents.count(opthelp.section) == 0) {
@@ -704,11 +695,9 @@ void CmdLine::print_help() const {
     }
   }
 
-  // then print out the options that are in sections
+  // then loop over the sections, registering each one
   for (const auto & section: opthelp_sections) {
-    cout << endl;
-    cout << section << endl;
-    cout << string(section.size(),'-') << endl << endl;
+    opt_sections.push_back(OptSection(section, 1));
 
     map<string,vector<const OptionHelp *> > opthelp_subsection_contents;
     vector<string> opthelp_subsections;
@@ -716,7 +705,7 @@ void CmdLine::print_help() const {
       // print out those that are not in a subsection, registering the
       // subsection options for later
       if (opthelp->subsection == "") {
-        cout << opthelp->description(prefix) << endl;
+        opt_sections.back().options.push_back(opthelp);
       } else {
         // if an option is in a subsection, register it for later
         if (opthelp_subsection_contents.count(opthelp->subsection) == 0) {
@@ -728,15 +717,119 @@ void CmdLine::print_help() const {
 
     // and then print out things that are in subsections
     for (const auto & subsection: opthelp_subsections) {
-      cout << endl;
-      cout << subsection << endl;
-      cout << string(subsection.size(),'.') << endl << endl;
+      opt_sections.push_back(OptSection(subsection, 2));
       for (const auto & opthelp: opthelp_subsection_contents[subsection]) {
-        cout << opthelp->description(prefix) << endl;
+        opt_sections.back().options.push_back(opthelp);
       }
     }
   }
+
+  return opt_sections;
+
 }
+
+
+// void CmdLine::print_help() const {
+//   // First print a summary
+//   cout << "\nUsage: \n       " << __arguments[0];
+//   for (const auto & opt: __options_queried) {
+//     cout << " " << __options_help[opt].summary();
+//   }
+//   cout << endl << endl;
+// 
+//   if (__overall_help_string.size() != 0) {
+//     cout << wrap(__overall_help_string);
+//     cout << endl << endl;
+//     cout << "Detailed option help" << endl;
+//     cout << "====================" << endl << endl;
+//   }
+//   
+//   map<string,vector<const OptionHelp *> > opthelp_section_contents;
+//   vector<string> opthelp_sections;
+// 
+//   // Then print detailed usage for each option that is not in a section
+//   string prefix = "";
+//   for (const auto & opt: __options_queried) {
+//     const OptionHelp & opthelp = __options_help[opt];
+//     if (opthelp.section == "") {
+//       cout << opthelp.description(prefix) << endl;
+//     } else {
+//       // if an option is in a section, register it for later
+//       if (opthelp_section_contents.count(opthelp.section) == 0) {
+//         opthelp_sections.push_back(opthelp.section);
+//       }
+//       opthelp_section_contents[opthelp.section].push_back(&opthelp);
+//     }
+//   }
+// 
+//   // then print out the options that are in sections
+//   for (const auto & section: opthelp_sections) {
+//     cout << endl;
+//     cout << section << endl;
+//     cout << string(section.size(),'-') << endl << endl;
+// 
+//     map<string,vector<const OptionHelp *> > opthelp_subsection_contents;
+//     vector<string> opthelp_subsections;
+//     for (const auto & opthelp: opthelp_section_contents[section]) {
+//       // print out those that are not in a subsection, registering the
+//       // subsection options for later
+//       if (opthelp->subsection == "") {
+//         cout << opthelp->description(prefix) << endl;
+//       } else {
+//         // if an option is in a subsection, register it for later
+//         if (opthelp_subsection_contents.count(opthelp->subsection) == 0) {
+//           opthelp_subsections.push_back(opthelp->subsection);
+//         }
+//         opthelp_subsection_contents[opthelp->subsection].push_back(opthelp);
+//       }
+//     }
+// 
+//     // and then print out things that are in subsections
+//     for (const auto & subsection: opthelp_subsections) {
+//       cout << endl;
+//       cout << subsection << endl;
+//       cout << string(subsection.size(),'.') << endl << endl;
+//       for (const auto & opthelp: opthelp_subsection_contents[subsection]) {
+//         cout << opthelp->description(prefix) << endl;
+//       }
+//     }
+//   }
+// }
+
+void CmdLine::print_help() const {
+  // First print a summary
+  cout << "\nUsage: \n       " << __arguments[0];
+  for (const auto & opt: __options_queried) {
+    cout << " " << __options_help[opt].summary();
+  }
+  cout << endl << endl;
+
+  if (__overall_help_string.size() != 0) {
+    cout << wrap(__overall_help_string);
+    cout << endl << endl;
+  }
+
+  cout << "Detailed option help" << endl;
+  cout << "====================" << endl << endl;
+
+  vector<OptSection> sections = organised_options();
+  string prefix = "";
+  for (const auto & section: sections) {
+    // print a section header if appropriate
+    if (section.level > 0) {
+      cout << endl;
+      cout << section.name << endl;
+      cout << string(section.name.size(), section.level == 1 ? '-' : '.') << endl << endl;
+    }
+
+    // then print the options in that section (or subsection)
+    for (const auto & opthelp: section.options) {
+      cout << opthelp->description(prefix) << endl;
+    }
+  }
+
+}
+
 
 //------------------------------------------------------------------------
   /// return a std::string in argfile format that contains all

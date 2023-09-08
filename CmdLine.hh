@@ -511,16 +511,17 @@ class CmdLine {
   static std::string _default_argfile_option;
   std::string __argfile_option = _default_argfile_option;
   
-  // /// a struct to help organise sections and subsections for options
-  // struct OptSection {
-  //   std::string name;
-  //   int level;
-  //   std::vector<const OptionHelp *> options;
-  // };
-  // /// returns a vector of OptSection objects, each of which contains
-  // /// a vector of options, as well as an indication of the name of the section
-  // /// and the level of indentation
-  // std::vector<OptSection> organised_options() const;
+  /// a struct to help organise sections and subsections for options
+  struct OptSection {
+    OptSection(const std::string & name, int level) : name(name), level(level) {}
+    std::string name;
+    int level;
+    std::vector<const OptionHelp *> options;
+  };
+  /// returns a vector of OptSection objects, each of which contains
+  /// a vector of options, as well as an indication of the name of the section
+  /// and the level of indentation
+  std::vector<OptSection> organised_options() const;
 
 
   template<class T>
