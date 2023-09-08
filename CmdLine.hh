@@ -276,6 +276,7 @@ class CmdLine {
     __current_section = section_name;
     __current_subsection = "";
   }
+  void section(const std::string & section_name) {start_section(section_name);}
 
   /// end a section of the help
   void end_section() {__current_section = ""; __current_subsection = "";}
@@ -289,6 +290,7 @@ class CmdLine {
 
   /// start a subsection of the help
   void start_subsection(const std::string & subsection_name);
+  void subsection(const std::string & subsection_name) {start_subsection(section_name);}
 
   /// end a subsection of the help
   void end_subsection() {__current_subsection = "";}
