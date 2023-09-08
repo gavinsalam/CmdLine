@@ -311,8 +311,6 @@ template<> std::string CmdLine::internal_value<std::string>(const std::string & 
   }
 }
 
-
-
 void CmdLine::end_section(const std::string & section_name) {
   if (__current_section != section_name) {
     std::ostringstream ostr;
@@ -321,8 +319,23 @@ void CmdLine::end_section(const std::string & section_name) {
     throw Error(ostr.str());
   }
   __current_section = "";
+  __current_subsection = "";
 }
 
+  void CmdLine::start_subsection(const std::string & subsection_name) {
+    if (__current_section == "") throw Error("cannot start subsection without being in a section");
+    __current_subsection = subsection_name;
+  }
+
+void CmdLine::end_subsection(const std::string & subsection_name) {
+  if (__current_subsection != subsection_name) {
+    std::ostringstream ostr;
+    ostr << "Tried to end subsection '" << subsection_name 
+          << "' but current subsection is '" << __current_subsection << "'";
+    throw Error(ostr.str());
+  }
+  __current_subsection = "";
+}
 
 // return true if all options have been asked for at some point or other
 bool CmdLine::all_options_used() const {
@@ -684,7 +697,7 @@ void CmdLine::print_help() const {
       cout << opthelp.description(prefix) << endl;
     } else {
       // if an option is in a section, register it for later
-      if (opthelp_section_contents.find(opthelp.section) == opthelp_section_contents.end()) {
+      if (opthelp_section_contents.count(opthelp.section) == 0) {
         opthelp_sections.push_back(opthelp.section);
       }
       opthelp_section_contents[opthelp.section].push_back(&opthelp);
@@ -696,13 +709,43 @@ void CmdLine::print_help() const {
     cout << endl;
     cout << section << endl;
     cout << string(section.size(),'-') << endl << endl;
+
+    map<string,vector<const OptionHelp *> > opthelp_subsection_contents;
+    vector<string> opthelp_subsections;
     for (const auto & opthelp: opthelp_section_contents[section]) {
-      cout << opthelp->description(prefix) << endl;
+      // print out those that are not in a subsection, registering the
+      // subsection options for later
+      if (opthelp->subsection == "") {
+        cout << opthelp->description(prefix) << endl;
+      } else {
+        // if an option is in a subsection, register it for later
+        if (opthelp_subsection_contents.count(opthelp->subsection) == 0) {
+          opthelp_subsections.push_back(opthelp->subsection);
+        }
+        opthelp_subsection_contents[opthelp->subsection].push_back(opthelp);
+      }
+    }
+
+    // and then print out things that are in subsections
+    for (const auto & subsection: opthelp_subsections) {
+      cout << endl;
+      cout << subsection << endl;
+      cout << string(subsection.size(),'.') << endl << endl;
+      for (const auto & opthelp: opthelp_subsection_contents[subsection]) {
+        cout << opthelp->description(prefix) << endl;
+      }
     }
   }
 }
 
 //------------------------------------------------------------------------
+  /// return a std::string in argfile format that contains all
+  /// options queried and, where relevant, their values
+  /// - if an option is optional (no default), it is printed commented-out
+  /// - if an option was not supplied but has a default, it is printed out with its default
+  ///
+  /// @param prefix is the string the precedes each description line (default is "# ")
+  /// @param absence_prefix is the string that precedes each line for an option that was not present
 string CmdLine::dump(const string & prefix, const string & absence_prefix) const {
   ostringstream ostr;
   map<string,vector<const OptionHelp *> > opthelp_section_contents;

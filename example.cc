@@ -47,6 +47,7 @@ int main (int argc, char ** argv) {
   bool d_present = dres.present();
   double dval = dres;
 
+  cmdline.start_subsection("a subsection");
   // for options with a default character value, we usually want
   // a string result -- so this must be specified explicitly
   string sval = cmdline.value<string>("-s","default-string").argname("sval")

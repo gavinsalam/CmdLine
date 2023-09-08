@@ -100,7 +100,7 @@ class CmdLine {
 
     std::shared_ptr<ResultBase> result_ptr;
 
-    std::string section;
+    std::string section, subsection;
     /// returns a short summary of the option (suitable for
     /// placing in the command-line summary
     std::string summary() const; 
@@ -274,16 +274,32 @@ class CmdLine {
   /// start a section of the help
   void start_section(const std::string & section_name) {
     __current_section = section_name;
+    __current_subsection = "";
   }
 
   /// end a section of the help
-  void end_section() {__current_section = "";}
+  void end_section() {__current_section = ""; __current_subsection = "";}
 
-  /// end a section of the help, with the given name (the code will check it matches)
+  /// end a section of the help, with the given name (the code will check it matches current section)
   void end_section(const std::string & section_name);
 
   /// return the name of the current section
   std::string section() const {return __current_section;}
+
+
+  /// start a subsection of the help
+  void start_subsection(const std::string & subsection_name);
+
+  /// end a subsection of the help
+  void end_subsection() {__current_subsection = "";}
+
+  /// end a subsection of the help, with the given name (the code will check it matches current subsection)
+  void end_subsection(const std::string & subsection_name);
+
+  /// return the name of the current subsection
+  std::string subsection() const {return __current_subsection;}
+
+
 
   /// return true iff the user has requested a help string (via -h or
   /// --help)
@@ -323,7 +339,7 @@ class CmdLine {
   /// @param prefix is the string the precedes each description line (default is "# ")
   /// @param absence_prefix is the string that precedes each line for an option that was not present
   std::string dump(const std::string & prefix = "# ", const std::string & absence_prefix = "// ") const;
-
+  
   /// return true if all options have been asked for at some point or other
   bool all_options_used() const;
 
@@ -488,12 +504,24 @@ class CmdLine {
   bool        __fussy = false;
 
   std::string __current_section = "";
+  std::string __current_subsection = "";
 
   /// default option to tell CmdLine to read arguments 
   /// from a file
   static std::string _default_argfile_option;
   std::string __argfile_option = _default_argfile_option;
   
+  // /// a struct to help organise sections and subsections for options
+  // struct OptSection {
+  //   std::string name;
+  //   int level;
+  //   std::vector<const OptionHelp *> options;
+  // };
+  // /// returns a vector of OptSection objects, each of which contains
+  // /// a vector of options, as well as an indication of the name of the section
+  // /// and the level of indentation
+  // std::vector<OptSection> organised_options() const;
+
 
   template<class T>
   OptionHelp OptionHelp_value_with_default(const std::vector<std::string> & options, const T & default_value,
@@ -511,6 +539,7 @@ class CmdLine {
     help.has_default   = true;
     help.kind          = OptKind::value_with_default;
     help.section       = __current_section;
+    help.subsection    = __current_subsection;
     return help;
   }
   template<class T>
@@ -527,6 +556,7 @@ class CmdLine {
     help.has_default   = false;
     help.kind          = OptKind::required_value;
     help.section       = __current_section;
+    help.subsection    = __current_subsection;
     return help;
   }
   template<class T>
@@ -543,6 +573,7 @@ class CmdLine {
     help.has_default   = false;
     help.kind          = OptKind::optional_value;
     help.section       = __current_section;
+    help.subsection    = __current_subsection;
     return help;
   }
   OptionHelp OptionHelp_present(const std::vector<std::string> & options,
@@ -558,6 +589,7 @@ class CmdLine {
     help.has_default   = true;  // not 100% sure what the right choice is here; "default" is that value is false
     help.kind          = OptKind::present;
     help.section       = __current_section;
+    help.subsection    = __current_subsection;
     return help;
   }
   
