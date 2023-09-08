@@ -290,7 +290,7 @@ class CmdLine {
 
   /// start a subsection of the help
   void start_subsection(const std::string & subsection_name);
-  void subsection(const std::string & subsection_name) {start_subsection(section_name);}
+  void subsection(const std::string & subsection_name) {start_subsection(subsection_name);}
 
   /// end a subsection of the help
   void end_subsection() {__current_subsection = "";}
