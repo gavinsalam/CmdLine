@@ -22,38 +22,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-/// \mainpage CmdLine code documentation
-///
-/// The main classes are CmdLine and the result of an option, CmdLine::Result.
-///
-/// Include the CmdLine.hh and CmdLine.hh files in your project and then use it
-/// as follows:
-///
-/// \code
-///
-/// #include "CmdLine.hh"
-/// 
-/// int main(int argc, char** argv) {
-///   CmdLine cmdline(argc,argv);
-///   cmdline.help("Overall help for your program");
-///   
-///   // required argument, no help string
-///   // (this actually returns a CmdLine::Result<double> object, which 
-///   // gets automatically converted to a double)
-///   double x = cmdline.value<double>("-x");
-/// 
-///   // optional argument, with default value, and help string
-///   double y = cmdline.value("-y",1.0).help("sets the value of y");
-/// 
-///   // a flag, with help string
-///   bool b_is_present = cmdline.present("-b").help("sets b_is_present to true");
-/// 
-///   // makes sure that all provided command-line options have been used
-///   // (also triggers printout of help if -h was present)
-///   cmdline.assert_all_options_used();
-/// }
-///
-/// \endcode
 
 
 #include "CmdLine.hh"

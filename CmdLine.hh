@@ -47,11 +47,12 @@
 ///   cmdline.help("Overall help for your program");
 ///   
 ///   // required argument, no help string
-///   // (this actually returns a CmdLine::Result<double> object, which 
-///   // gets automatically converted to a double)
 ///   double x = cmdline.value<double>("-x");
 /// 
 ///   // optional argument, with default value, and help string
+///   // (this actually returns a CmdLine::Result<double> object, on which
+///   // varioius options can be set; it then then automatically gets converted
+///   // to a double when assigned to y).
 ///   double y = cmdline.value("-y",1.0).help("sets the value of y");
 /// 
 ///   // a flag, with help string
