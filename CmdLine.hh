@@ -413,8 +413,8 @@ class CmdLine {
   ///@{
 
   /// true if the option is present and corresponds to a value
-  [[deprecated("use CmdLine::optional_value instead, and then query whether it is present")]]
-  bool present_and_set(const std::string & opt) const;
+  [[deprecated("use CmdLine::optional_value instead, and then query the result to see if the argument was present")]]
+  bool present_and_set(const std::string & opt) const {return internal_present_and_set(opt);}
 
   /// return the integer value corresponding to the given option
   [[deprecated]]
