@@ -622,8 +622,8 @@ class CmdLine {
   /// builds the internal structures needed to keep track of arguments and options
   void init();
 
-  /// report failure of conversion
-  void _report_conversion_failure(const std::string & opt, 
+  /// report failure of conversion (throws a CmdLine::Error)
+  [[ noreturn ]] void _report_conversion_failure(const std::string & opt, 
                                   const std::string & optstring) const;
 
   /// convert the time into a std::string (local by default -- utc if 
@@ -850,14 +850,12 @@ template<> bool CmdLine_string_to_value<bool>(const std::string & str);
 template<class T> T CmdLine::internal_value(const std::vector<std::string> & opts, const std::string & prefix) const {
   std::string optstring = prefix+internal_string_val(opts);
   std::istringstream optstream(optstring);
-  T result;
   try {
-    result = CmdLine_string_to_value<T>(optstring);
+    return CmdLine_string_to_value<T>(optstring);
   } catch (const ConversionFailure & failure) {
     std::string opt = __arguments[internal_present(opts).first];
     _report_conversion_failure(opt, failure.what());
   }
-  return result;
 }
 
 #endif
