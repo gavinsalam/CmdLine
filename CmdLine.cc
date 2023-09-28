@@ -35,6 +35,8 @@
 #include <unistd.h> // for getting current path
 #include <stdlib.h> // for getting the environment (including username)
 #include <cstdio>
+#include <algorithm>
+#include <cctype>
 using namespace std;
 
 string CmdLine::_default_argfile_option = "-argfile";
@@ -871,9 +873,12 @@ string CmdLine::git_info() const {
   return log_line;
 }
 
+/// specialisation for bools, to allow for 1/0, on/off, true/false .true./.false., yes/no
 template<> bool CmdLine::string_to_value(const std::string & str) {
   // get the lower-case string
   string lcstr = str;
+  // taken from https://stackoverflow.com/questions/313970/how-to-convert-an-instance-of-stdstring-to-lower-case
+  // adapted from https://notfaq.wordpress.com/2007/08/04/cc-convert-string-to-upperlower-case/
   std::transform(str.begin(), str.end(), lcstr.begin(),
     [](unsigned char c){ return std::tolower(c); });
 
