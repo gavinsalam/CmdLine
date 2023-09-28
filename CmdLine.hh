@@ -34,7 +34,6 @@
 #include<typeinfo> 
 
 
-
 /// Class designed to deal with command-line arguments.
 ///
 /// Basic usage:
@@ -272,20 +271,6 @@ class CmdLine {
   public:
     ConversionFailure(const std::string & str) : std::runtime_error(str) {}
   };
-
-  /// default conversion to string, using a istringstream
-  template<class T> static T string_to_value(const std::string & str) {
-    std::istringstream optstream(str);
-    T result;
-    optstream >> result;
-    if (optstream.fail()) {throw ConversionFailure(str);}
-    return result;
-  }
-
-  /// specialisation for strings, which require no action
-  template<> std::string string_to_value(const std::string & str) {return str;}
-  /// specialisation for bools, to allow for 0/1, on/off, true/false .true./.false.
-  template<> bool string_to_value(const std::string & str);
 
 
   ///@}
@@ -704,19 +689,6 @@ template<class T> inline T CmdLine::value_for_missing_option() const {return T(0
 template<> inline std::string CmdLine::value_for_missing_option<std::string>() const {return "";}
 
 
-template<class T> T CmdLine::internal_value(const std::vector<std::string> & opts, const std::string & prefix) const {
-  std::string optstring = prefix+internal_string_val(opts);
-  std::istringstream optstream(optstring);
-  T result;
-  try {
-    result = string_to_value<T>(optstring);
-  } catch (const ConversionFailure & failure) {
-    std::string opt = __arguments[internal_present(opts).first];
-    _report_conversion_failure(opt, failure.what());
-  }
-  return result;
-}
-
 /// returns the value of the argument, convertible to type T
 template<class T> CmdLine::Result<T> CmdLine::any_value(const std::vector<std::string> & opts) const {
   // we create the result from the (more general) value_prefix
@@ -856,4 +828,36 @@ const CmdLine::Result<T> & CmdLine::Result<T>::range(T minval, T maxval) const {
 }
 
 std::ostream & operator<<(std::ostream & ostr, CmdLine::OptKind optkind);
+
+
+/// default conversion to string, using an istringstream
+/// NB: this is outside the class, because some compilers
+/// can't handle-in class specialisations
+template<class T> T CmdLine_string_to_value(const std::string & str) {
+  std::istringstream optstream(str);
+  T result;
+  optstream >> result;
+  if (optstream.fail()) {throw CmdLine::ConversionFailure(str);}
+  return result;
+}
+
+/// specialisation for strings, which just returns the string
+template<> std::string CmdLine_string_to_value<std::string>(const std::string & str);
+/// specialisation for bools, to allow for 0/1, yes/no, on/off, true/false .true./.false.
+template<> bool CmdLine_string_to_value<bool>(const std::string & str);
+
+
+template<class T> T CmdLine::internal_value(const std::vector<std::string> & opts, const std::string & prefix) const {
+  std::string optstring = prefix+internal_string_val(opts);
+  std::istringstream optstream(optstring);
+  T result;
+  try {
+    result = CmdLine_string_to_value<T>(optstring);
+  } catch (const ConversionFailure & failure) {
+    std::string opt = __arguments[internal_present(opts).first];
+    _report_conversion_failure(opt, failure.what());
+  }
+  return result;
+}
+
 #endif

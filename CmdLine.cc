@@ -873,8 +873,11 @@ string CmdLine::git_info() const {
   return log_line;
 }
 
+template<> std::string CmdLine_string_to_value<string>(const std::string & str) {return str;}
+
+
 /// specialisation for bools, to allow for 1/0, on/off, true/false .true./.false., yes/no
-template<> bool CmdLine::string_to_value(const std::string & str) {
+template<> bool CmdLine_string_to_value<bool>(const std::string & str) {
   // get the lower-case string
   string lcstr = str;
   // taken from https://stackoverflow.com/questions/313970/how-to-convert-an-instance-of-stdstring-to-lower-case
@@ -884,5 +887,5 @@ template<> bool CmdLine::string_to_value(const std::string & str) {
 
   if (lcstr == "1" || lcstr == "yes" || lcstr == "on" || lcstr == "true" || lcstr == ".true.") return true;
   if (lcstr == "0" || lcstr == "no" || lcstr == "off" || lcstr == "false" || lcstr == ".false.") return false;
-  throw ConversionFailure(str);
+  throw CmdLine::ConversionFailure(str);
 }
