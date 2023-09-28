@@ -270,15 +270,6 @@ string CmdLine::internal_string_val(const vector<string> & opts) const {
   return arg;
 }
 
-template<> std::string CmdLine::internal_value<std::string>(const std::string & opt, 
-                                                      const std::string & prefix) const {
-  if (internal_present_and_set(opt)) {
-    return prefix+internal_string_val(opt);
-  } else {
-    throw Error("internal_value called for option " + opt + ", which is not present and set");
-  }
-}
-
 void CmdLine::end_section(const std::string & section_name) {
   if (__current_section != section_name) {
     std::ostringstream ostr;
@@ -880,3 +871,13 @@ string CmdLine::git_info() const {
   return log_line;
 }
 
+template<> bool CmdLine::string_to_value(const std::string & str) {
+  // get the lower-case string
+  string lcstr = str;
+  std::transform(str.begin(), str.end(), lcstr.begin(),
+    [](unsigned char c){ return std::tolower(c); });
+
+  if (lcstr == "1" || lcstr == "yes" || lcstr == "on" || lcstr == "true" || lcstr == ".true.") return true;
+  if (lcstr == "0" || lcstr == "no" || lcstr == "off" || lcstr == "false" || lcstr == ".false.") return false;
+  throw ConversionFailure(str);
+}

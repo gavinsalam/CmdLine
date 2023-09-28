@@ -1,9 +1,16 @@
 
-Towards Version 3.1.1
+Towards Version 3.2.0
 ---------------------
 
 ### new features
 - subsections now possible, with CmdLine::start_subsection(...)
+
+- as well as overloading operator<< to obtain conversions to
+  specific types, the user has the option of specialising the
+  static template function T CmdLine::string_to_value<T>(...)
+
+- this has been used to enable cmdline.value<bool> to handle
+  various inputs (true/false, on/off, 1/0, yes/no)
 
 ### other changes
 - CmdLine::section() and help_requested() members to return current section

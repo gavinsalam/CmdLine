@@ -263,6 +263,32 @@ class CmdLine {
                                     const std::string & prefix) const;
 
   ///@}
+  
+  /// @name Static functions for type conversions to/from string
+  ///@{
+
+  /// class to be thrown internally to signal a conversion failure
+  class ConversionFailure: public std::runtime_error {
+  public:
+    ConversionFailure(const std::string & str) : std::runtime_error(str) {}
+  };
+
+  /// default conversion to string, using a istringstream
+  template<class T> static T string_to_value(const std::string & str) {
+    std::istringstream optstream(str);
+    T result;
+    optstream >> result;
+    if (optstream.fail()) {throw ConversionFailure(str);}
+    return result;
+  }
+
+  /// specialisation for strings, which require no action
+  template<> std::string string_to_value(const std::string & str) {return str;}
+  /// specialisation for bools, to allow for 0/1, on/off, true/false .true./.false.
+  template<> bool string_to_value(const std::string & str);
+
+
+  ///@}
 
   /// @name Member functions connected with the help system
   ///@{
@@ -642,7 +668,7 @@ void CmdLine::Result<T>::throw_value_not_available() const {
   ostr << "value of option ";
   if (_opthelp) ostr << _opthelp->option;
   else ostr << "[unknown -- because help disabled]";
-  ostr << " requested, but that value is not available\n"
+  ostr << " requested, but that value is not availabole\n"
        << "because the option was not present on the command line and no default was supplied\n";
   throw Error(ostr.str());
 }
@@ -682,16 +708,14 @@ template<class T> T CmdLine::internal_value(const std::vector<std::string> & opt
   std::string optstring = prefix+internal_string_val(opts);
   std::istringstream optstream(optstring);
   T result;
-  optstream >> result;
-  if (optstream.fail()) {
+  try {
+    result = string_to_value<T>(optstring);
+  } catch (const ConversionFailure & failure) {
     std::string opt = __arguments[internal_present(opts).first];
-    _report_conversion_failure(opt, optstring);
+    _report_conversion_failure(opt, failure.what());
   }
   return result;
 }
-
-template<> std::string CmdLine::internal_value<std::string>(const std::string & opt, 
-                                                      const std::string & prefix) const;
 
 /// returns the value of the argument, convertible to type T
 template<class T> CmdLine::Result<T> CmdLine::any_value(const std::vector<std::string> & opts) const {
