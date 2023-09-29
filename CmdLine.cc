@@ -399,7 +399,7 @@ string CmdLine::unix_username() const {
 }
 
 /// report failure of conversion
-[[ noreturn ]] void CmdLine::_report_conversion_failure(const string & opt, 
+void CmdLine::_report_conversion_failure(const string & opt, 
                                          const string & optstring) const {
   ostringstream ostr;
   ostr << "could not convert option ("<<opt<<") value ("

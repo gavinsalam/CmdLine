@@ -7,7 +7,9 @@ Towards Version 3.2.0
 
 - as well as overloading operator<< to obtain conversions to
   specific types, the user has the option of specialising the
-  static template function T CmdLine_string_to_value<T>(...)
+  static template function T CmdLine_string_to_value<T>(...),
+  which can be used as a last-resort for types where overloading
+  operator<< is not an option.
 
 - this has been used to enable cmdline.value<bool> to handle
   various inputs (true/false, on/off, 1/0, yes/no)
