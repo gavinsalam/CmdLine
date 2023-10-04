@@ -193,12 +193,43 @@ void CmdLine::init (){
 
 // indicates whether an option is present
 CmdLine::Result<bool> CmdLine::any_present(const vector<string> & opts) const {
-  OptionHelp * opthelp = opthelp_ptr(OptionHelp_present(opts));\
+  OptionHelp * opthelp = opthelp_ptr(OptionHelp_present(opts));
   pair<int,int> result_pair = internal_present(opts);
   bool result = (result_pair.first > 0);
   Result<bool> res(result, opthelp, result);
   opthelp->result_ptr = std::make_shared<Result<bool>>(res);
   return res;
+}
+
+CmdLine::Result<bool> CmdLine::value_bool(const std::string & opt, const bool defval) const {
+  OptionHelp * opthelp = opthelp_ptr(OptionHelp_value_with_default<bool>({opt}, defval));
+  pair<int,int> result_opt    = internal_present(opt);
+  pair<int,int> result_no_opt = internal_present("-no" + opt);
+  bool result;
+  bool is_present = true;
+  if (result_opt.first > 0) {
+    if (result_no_opt.first > 0) {
+      throw Error("boolean option " + opt + " and its negation -no" + opt + " are both present");
+    } else if (result_opt.second > 0) {
+      const string & arg = __arguments[result_opt.second];
+      // if next value starts with a - then it's an option, not a value
+      if (arg[0] == '-') {
+        result = true;
+      } else  {
+        result = internal_value<bool>(opt);
+      }
+    } else {
+      result = true;
+    }
+  } else if (result_no_opt.first > 0) {
+    result = false;
+  } else {
+    result = defval;
+    is_present = false;
+  }
+  auto res = std::make_shared<Result<bool>>(result, opthelp, is_present);
+  opthelp->result_ptr = res;
+  return *res;
 }
 
 // indicates whether an option is present (for internal use only -- does not set help)
@@ -457,12 +488,14 @@ string CmdLine::command_line() const {
 
 bool CmdLine::Error::_do_printout = true;
 CmdLine::Error::Error(const std::ostringstream & ostr) 
-  : _message(ostr.str()) {
-  if (_do_printout) cerr << "CmdLine Error: " << _message << endl;;
+  : std::runtime_error("CmdLine Error: " + ostr.str()) {
+  _message = what();
+  if (_do_printout) cerr <<  _message << endl;;
 }
 CmdLine::Error::Error(const std::string & str) 
-  : _message(str) {
-  if (_do_printout) cerr << "CmdLine Error: " << _message << endl;;
+  : std::runtime_error("CmdLine Error: " + str) {
+  _message = what();
+  if (_do_printout) cerr << _message << endl;;
 }
 
 string CmdLine::current_path() const {

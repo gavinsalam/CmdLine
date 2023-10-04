@@ -47,4 +47,5 @@ jobs:
       run: |
         make 
         ./example -i 1
+        make check
 

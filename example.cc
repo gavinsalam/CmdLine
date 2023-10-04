@@ -64,8 +64,10 @@ int main (int argc, char ** argv) {
   cmdline.end_section();
 
   // optional flag, which if present, is true, otherwise false
-  bool flag = cmdline.any_present({"-f","--flag"}).help("illustrates a command-line flag");
+  //bool flag = cmdline.any_present({"-f","--flag"}).help("illustrates a command-line flag");
   //bool flag = cmdline.any_value<bool>({"-f","--flag"}).help("illustrates an option that takes a boolean");
+
+  bool flag = cmdline.value_bool("-f", true).help("illustrates a command-line flag");
 
   // no_dump() indicates that this option will not be included in the dump
   // (in this case, because it triggers the dump)

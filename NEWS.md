@@ -14,6 +14,11 @@ Towards Version 3.2.0
 - this has been used to enable cmdline.value<bool> to handle
   various inputs (true/false, on/off, 1/0, yes/no)
 
+- unit-tests.cc has now been added to check various behaviours,
+  can be invoked with make check
+
+- added CmdLine::value_bool() ****COMPLETE THIS*****
+
 ### other changes
 - CmdLine::section() and help_requested() members to return current section
   and help requested status

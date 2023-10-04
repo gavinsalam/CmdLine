@@ -237,6 +237,13 @@ class CmdLine {
     return any_value<T>(std::vector<std::string>{opt}, defval, prefix);
   }
 
+  /// if opt is supplied as "-opt", then
+  /// * -opt    -> true
+  /// * -no-opt -> false
+  /// * -opt 1  -> true
+  /// * -opt 0  -> false
+  Result<bool> value_bool(const std::string & opt, const bool defval) const;
+
 
   /// return true if any of the options in the option vector is present
   /// (at most one of the options should be present)
@@ -635,11 +642,11 @@ class CmdLine {
 
 //----------------------------------------------------------------------
 /// class that deals with errors
-class CmdLine::Error {
+class CmdLine::Error : public std::runtime_error {
 public:
   Error(const std::ostringstream & ostr);
   Error(const std::string & str);
-  const char* what() throw() {return _message.c_str();}
+  //const char* what() throw() {return _message.c_str();}
   const std::string & message() throw() {return _message;}
   static void set_print_message(bool doprint) {_do_printout = doprint;}
 private:
