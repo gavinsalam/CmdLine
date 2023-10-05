@@ -107,11 +107,12 @@ class CmdLine {
     std::string summary() const; 
     /// returns a longer description of the option (suitable for
     /// placing in the more extended help)
-    std::string description(const std::string & prefix="  ", int wrap_column = 80) const;
+    std::string description(const std::string & prefix="  ", int wrap_column = 80, bool markdown = false) const;
     /// returns an attempt at a human readable typename
     std::string type_name() const;
     /// returns a string with a comma-separated list of choices
-    std::string choice_list() const;
+    std::string choice_list(const std::function<std::string(const std::string & str)> & code_formatter 
+                                                              = [](const std::string & str){return str;}) const;
     /// returns the string with the allowed range
     std::string range_string() const;
   };
@@ -354,8 +355,9 @@ class CmdLine {
   std::string command_name() const {return __arguments[0];}
 
   /// print the help std::string that has been deduced from all the options called
-  void print_help() const;
-  
+  void print_help(std::ostream & ostr = std::cout, bool markdown = false) const;
+  void print_markdown(std::ostream & ostr = std::cout) const;
+
   /// return a std::string in argfile format that contains all
   /// options queried and, where relevant, their values
   /// - if an option is optional (no default), it is printed commented-out
@@ -519,7 +521,9 @@ class CmdLine {
   /// whether help functionality is enabled
   bool __help_enabled;
   /// whether the user has requested help with -h or --help
-  bool __help_requested;
+  bool __help_requested = false;
+  /// whether the user has requested markdown help with --help-markdown
+  bool __markdown_help = false;
   /// whether the git info is included or not
   bool __git_info_enabled;
 
@@ -548,7 +552,6 @@ class CmdLine {
   /// a vector of options, as well as the name of the section
   /// and the level of indentation
   std::vector<OptSection> organised_options() const;
-
 
   template<class T>
   OptionHelp OptionHelp_value_with_default(const std::vector<std::string> & options, const T & default_value,

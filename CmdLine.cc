@@ -185,6 +185,8 @@ void CmdLine::init (){
   }
   if (__help_enabled) {
     __help_requested = any_present({"-h","-help","--help"}).help("prints this help message").no_dump();
+    __markdown_help = present("--markdown-help").help("prints this help message in markdown format").no_dump();
+    __help_requested |= __markdown_help;
   }
 
   // by default, enabe the git info
@@ -434,7 +436,7 @@ void CmdLine::_report_conversion_failure(const string & opt,
 void CmdLine::assert_all_options_used() const {
   // deal with the help part
   if (__help_enabled && __help_requested) {
-    print_help();
+    print_help(cout, __markdown_help);
     exit(0);
   }
   ostringstream ostr;
@@ -556,6 +558,7 @@ string CmdLine::OptionHelp::type_name() const {
   if      (type == typeid(int)   .name()) return "int"   ;
   else if (type == typeid(double).name()) return "double";
   else if (type == typeid(string).name()) return "string";
+  else if (type == typeid(bool  ).name()) return "bool";
   else return type;
 }
 
@@ -569,27 +572,33 @@ string CmdLine::OptionHelp::summary() const {
 }
 
 
-string CmdLine::OptionHelp::description(const string & prefix, int wrap_column) const {
+string CmdLine::OptionHelp::description(const string & prefix, int wrap_column, bool markdown) const {
   ostringstream ostr;
-  ostr << prefix << option;
+  auto code = [&](const std::string & str) {
+    if (markdown) return "`" + str + "`";
+    else          return str;
+  };
+
+  ostr << prefix << code(option);
+
   if (takes_value) {
-    ostr << " " << argname << " (" << type_name() << ")";
-    if (has_default) ostr << "     default: " << default_value;
+    ostr << " " << code(argname) << " (" << type_name() << ")";
+    if (has_default) ostr << ", default: " << code(default_value);
     if (choices.size() != 0) {
-      ostr << ", valid choices: {" << choice_list() << "}";
+      ostr << ", valid choices: {" << choice_list(code) << "}";
     }
     if (range_strings.size() != 0) {
       ostr << ", allowed range: " << range_string() << "";
     }
   }
-  ostr << "\n";
+  ostr << "  \n";
   if (aliases.size() > 1) {
     ostr << prefix << "  aliases: ";
     for (unsigned i = 1; i < aliases.size(); i++) {
-      ostr << aliases[i];
+      ostr << code(aliases[i]);
       if (i+1 != aliases.size()) ostr << ", ";
     }
-    ostr << "\n";
+    ostr << "  \n";
   }
   if (help.size() > 0) {
     ostr << wrap(help, wrap_column, prefix + "  ");
@@ -642,10 +651,10 @@ std::string CmdLine::wrap(const std::string & str, int wrap_column,
   return ostr.str();
 }
 
-string CmdLine::OptionHelp::choice_list() const {
+string CmdLine::OptionHelp::choice_list(const std::function<std::string(const std::string & str)> & code_formatter) const {
   ostringstream ostr;
   for (unsigned i = 0; i < choices.size(); i++)   {
-    ostr << choices[i];
+    ostr << code_formatter(choices[i]);
     if (i+1 != choices.size()) ostr << ", ";
   }
   return ostr.str();
@@ -715,39 +724,90 @@ std::vector<CmdLine::OptSection> CmdLine::organised_options() const {
 
 }
 
-void CmdLine::print_help() const {
-  // First print a summary
-  cout << "\nUsage: \n       " << __arguments[0];
-  for (const auto & opt: __options_queried) {
-    cout << " " << __options_help[opt].summary();
+void CmdLine::print_help(ostream & ostr, bool markdown) const {
+  if (markdown) {
+    print_markdown(ostr);
+    return;
   }
-  cout << endl << endl;
+  // First print a summary
+  ostr << "\nUsage: \n       " << __arguments[0];
+  for (const auto & opt: __options_queried) {
+    ostr << " " << __options_help[opt].summary();
+  }
+  ostr << endl << endl;
 
   if (__overall_help_string.size() != 0) {
-    cout << wrap(__overall_help_string);
-    cout << endl << endl;
+    ostr << wrap(__overall_help_string);
+    ostr << endl << endl;
   }
 
-  cout << "Detailed option help" << endl;
-  cout << "====================" << endl << endl;
+  ostr << "Detailed option help" << endl;
+  ostr << "====================" << endl << endl;
 
   vector<OptSection> sections = organised_options();
   string prefix = "";
   for (const auto & section: sections) {
     // print a section header if appropriate
     if (section.level > 0) {
-      cout << endl;
-      cout << section.name << endl;
-      cout << string(section.name.size(), section.level == 1 ? '-' : '.') << endl << endl;
+      ostr << endl;
+      ostr << section.name << endl;
+      ostr << string(section.name.size(), section.level == 1 ? '-' : '.') << endl << endl;
     }
 
     // then print the options in that section (or subsection)
     for (const auto & opthelp: section.options) {
-      cout << opthelp->description(prefix) << endl;
+      ostr << opthelp->description(prefix) << endl;
     }
   }
 
 }
+
+
+//------------------------------------------------------------------------
+void CmdLine::print_markdown(ostream & ostr) const {
+  bool markdown = true;
+  int wrap_column = 80;
+  auto code = [&](const std::string & str) {
+    if (markdown) return "`" + str + "`";
+    else          return str;
+  };
+
+  // First print a summary
+//  ostr << "\nUsage: \n       " << __arguments[0];
+//  for (const auto & opt: __options_queried) {
+//    ostr << " " << __options_help[opt].summary();
+//  }
+//  ostr << endl << endl;
+
+  ostr << "# " << code(__arguments[0]) << ": Option help" << endl << endl;;
+
+  if (__overall_help_string.size() != 0) {
+    ostr << wrap(__overall_help_string);
+    ostr << endl << endl;
+  }
+
+
+  vector<OptSection> sections = organised_options();
+  string prefix = "";
+  for (int isec = 0; isec < int(sections.size()); isec++) {
+    const auto & section = sections[isec];
+    // print a section header if appropriate
+    string section_name = section.level > 0 ? section.name : string("Unsectioned arguments");
+    ostr << endl 
+          << "<a id=\"sec" << isec << "\"></a>" 
+          << endl;
+    ostr << string(min(1,section.level) + 1, '#') << " ";
+    ostr << section_name 
+          << endl << endl;
+
+    // then print the options in that section (or subsection)
+    for (const auto & opthelp: section.options) {
+      ostr << opthelp->description(prefix, wrap_column, markdown) << endl;
+    }
+  }
+
+}
+
 
 
 //------------------------------------------------------------------------
