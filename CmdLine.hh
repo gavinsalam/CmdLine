@@ -238,11 +238,14 @@ class CmdLine {
     return any_value<T>(std::vector<std::string>{opt}, defval, prefix);
   }
 
-  /// if opt is supplied as "-opt", then
-  /// * -opt    -> true
-  /// * -no-opt -> false
-  /// * -opt 1  -> true
-  /// * -opt 0  -> false
+  /// If one of the following is present, then return as indicated
+  ///
+  ///   * -opt    -> true
+  ///   * -no-opt -> false
+  ///   * -opt 1  -> true      [also valid are on, yes, true, .true.]
+  ///   * -opt 0  -> false     [also valid are off, no, false, .false.]
+  ///
+  /// otherwise return the default
   Result<bool> value_bool(const std::string & opt, const bool defval) const;
 
 
