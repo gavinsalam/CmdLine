@@ -53,14 +53,18 @@ void check_pass(const int line_number, const U & fn, const string & options, con
 
 template<typename U> 
 void check_fail(const int line_number, const U & fn, const string & options) {
+
   try {
     CmdLine cmdline(split_spaces(options));
     auto result = fn(cmdline);
+    cmdline.assert_all_options_used();
+
     cerr << "From line " << to_string(line_number) << ", unexpected success with options: " << options << endl;
     cerr << "  Expected failure, but got: ";
     print(result);
     cerr << endl;
     throw runtime_error("CmdLine passed when failure expected");
+
   } catch (const CmdLine::Error & e) {
     // expected
     return;
@@ -91,6 +95,7 @@ int main() {
     CHECK_PASS(cmd, "-f on -i 2",  make_tuple(2,true) );
     // should fail because 3 is not accepted as a boolean
     CHECK_FAIL(cmd, "-f 3 -i 2");
+    CHECK_FAIL(cmd, "-f -2 -i 2");
   }
 
   //---------------------------------------------------------------------------

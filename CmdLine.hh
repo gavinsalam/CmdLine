@@ -27,6 +27,7 @@
 
 #include<string>
 #include<sstream>
+#include<iostream>
 #include<map>
 #include<vector>
 #include<ctime>
@@ -362,7 +363,8 @@ class CmdLine {
   std::string dump(const std::string & prefix = "# ", const std::string & absence_prefix = "// ") const;
   
   /// return true if all options have been asked for at some point or other
-  bool all_options_used() const;
+  /// and send diagnostic info to ostr
+  bool all_options_used(std::ostream & ostr = std::cerr) const;
 
   /// gives an error if there are unused options
   void assert_all_options_used() const;

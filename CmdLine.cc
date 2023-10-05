@@ -330,30 +330,23 @@ void CmdLine::end_subsection(const std::string & subsection_name) {
 }
 
 // return true if all options have been asked for at some point or other
-bool CmdLine::all_options_used() const {
+// and send diagnostic info to ostr
+bool CmdLine::all_options_used(ostream & ostr) const {
   bool result = true;
-  // do not use this version (which cekced only for unused options), but rather 
-  // the one below, which checks for unused arguments
-  // for(map<string,bool>::const_iterator opt = __options_used.begin();
-  //     opt != __options_used.end(); opt++) {
-  //   bool this_one = opt->second;
-  //   if (! this_one) {cerr << "Option "<<opt->first<<" unused/unrecognized"<<endl;}
-  //   result &= this_one;
-  // }
   for (size_t iarg = 1; iarg < __arguments_used.size(); iarg++) {
     string arg = __arguments[iarg];
     bool this_one = __arguments_used[iarg];
     if (! this_one) {
-      cerr << "Argument " << arg << " at position " << iarg << " unused/unrecognized";
+      ostr << "\nArgument " << arg << " at position " << iarg << " unused/unrecognized";
       if (__options_used.count(arg) > 0 && __options_used[arg]) {
-        cerr << "  (this could be because the same option already appeared";
+        ostr << "  (this could be because the same option already appeared";
         if (__options.count(arg) && __options[arg].first > 0) {
-          cerr << " at position " << __options[arg].first << ")";
+          ostr << " at position " << __options[arg].first << ")";
         } else {
-          cerr << " elsewhere on the command line)";
+          ostr << " elsewhere on the command line)";
         }
       }
-      cerr << endl;
+      ostr << endl;
     }
     result &= this_one;
   }
@@ -444,8 +437,8 @@ void CmdLine::assert_all_options_used() const {
     print_help();
     exit(0);
   }
-  if (! all_options_used()) {
-    ostringstream ostr;
+  ostringstream ostr;
+  if (! all_options_used(ostr)) {
     ostr <<"Unrecognised options on the command line" << endl;
     throw Error(ostr);
   }
