@@ -556,6 +556,7 @@ CmdLine::OptionHelp * CmdLine::opthelp_ptr(const CmdLine::OptionHelp & opthelp) 
 
 string CmdLine::OptionHelp::type_name() const {
   if      (type == typeid(int)   .name()) return "int"   ;
+  if      (type == typeid(unsigned int).name()) return "unsigned int"   ;
   else if (type == typeid(double).name()) return "double";
   else if (type == typeid(string).name()) return "string";
   else if (type == typeid(bool  ).name()) return "bool";

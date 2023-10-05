@@ -19,6 +19,8 @@ Towards Version 3.2.0
 
 - added CmdLine::value_bool() ****COMPLETE THIS*****
 
+- added markdown formatted help ****COMPLETE THIS*****
+
 ### other changes
 - CmdLine::section() and help_requested() members to return current section
   and help requested status

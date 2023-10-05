@@ -33,7 +33,7 @@
 #include<ctime>
 #include<memory>
 #include<typeinfo> 
-
+#include<functional>
 
 /// Class designed to deal with command-line arguments.
 ///
