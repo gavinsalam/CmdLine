@@ -585,11 +585,15 @@ string CmdLine::OptionHelp::description(const string & prefix, int wrap_column, 
     if (markdown) return "**`" + str + "`**";
     else          return str;
   };
+  auto italic_code = [&](const std::string & str) {
+    if (markdown) return "*`" + str + "`*";
+    else          return str;
+  };
 
-  ostr << prefix << code(option);
+  ostr << prefix << bold_code(option);
 
   if (takes_value) {
-    ostr << " " << bold_code(argname) << " (" << type_name() << ")";
+    ostr << " " << italic_code(argname) << " (" << type_name() << ")";
     if (has_default) ostr << ", default: " << code(default_value);
     if (choices.size() != 0) {
       ostr << ", valid choices: {" << choice_list(code) << "}";
