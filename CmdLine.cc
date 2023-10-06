@@ -555,11 +555,13 @@ CmdLine::OptionHelp * CmdLine::opthelp_ptr(const CmdLine::OptionHelp & opthelp) 
 }
 
 string CmdLine::OptionHelp::type_name() const {
-  if      (type == typeid(int)   .name()) return "int"   ;
-  if      (type == typeid(unsigned int).name()) return "unsigned int"   ;
-  else if (type == typeid(double).name()) return "double";
-  else if (type == typeid(string).name()) return "string";
-  else if (type == typeid(bool  ).name()) return "bool";
+  if      (type == typeid(int)   .name())   return "int"   ;
+  else if (type == typeid(unsigned int).name()) return "unsigned int"   ;
+  else if (type == typeid(uint64_t).name()) return "uint64_t"   ;
+  else if (type == typeid(int64_t).name())  return "int64_t"   ;
+  else if (type == typeid(double).name())   return "double";
+  else if (type == typeid(string).name())   return "string";
+  else if (type == typeid(bool  ).name())   return "bool";
   else return type;
 }
 
@@ -579,11 +581,15 @@ string CmdLine::OptionHelp::description(const string & prefix, int wrap_column, 
     if (markdown) return "`" + str + "`";
     else          return str;
   };
+  auto bold_code = [&](const std::string & str) {
+    if (markdown) return "**`" + str + "`**";
+    else          return str;
+  };
 
   ostr << prefix << code(option);
 
   if (takes_value) {
-    ostr << " " << code(argname) << " (" << type_name() << ")";
+    ostr << " " << bold_code(argname) << " (" << type_name() << ")";
     if (has_default) ostr << ", default: " << code(default_value);
     if (choices.size() != 0) {
       ostr << ", valid choices: {" << choice_list(code) << "}";
