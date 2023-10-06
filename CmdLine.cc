@@ -787,6 +787,11 @@ void CmdLine::print_markdown(ostream & ostr) const {
     ostr << endl << endl;
   }
 
+  ostringstream body;
+  ostringstream toc;
+
+  toc  << "## Table of contents" << endl << endl;
+  body << "# Detailed option help" << endl << endl;
 
   vector<OptSection> sections = organised_options();
   string prefix = "";
@@ -794,18 +799,28 @@ void CmdLine::print_markdown(ostream & ostr) const {
     const auto & section = sections[isec];
     // print a section header if appropriate
     string section_name = section.level > 0 ? section.name : string("Unsectioned arguments");
-    ostr << endl 
+    int section_level = max(1,section.level);
+    //cerr << section_name << " " << " " << section.level << " " << section_level << endl;
+
+    // indent the section name according to its level
+    toc << string(section_level * 2, ' ');
+    toc << "- [" << section_name << "](#sec" << isec << ")" << endl;
+
+    body << endl 
           << "<a id=\"sec" << isec << "\"></a>" 
           << endl;
-    ostr << string(min(1,section.level) + 1, '#') << " ";
-    ostr << section_name 
+    body << string(section_level+1, '#') << " ";
+    body << section_name 
           << endl << endl;
 
     // then print the options in that section (or subsection)
     for (const auto & opthelp: section.options) {
-      ostr << opthelp->description(prefix, wrap_column, markdown) << endl;
+      body << opthelp->description(prefix, wrap_column, markdown) << endl;
     }
   }
+
+  ostr << toc.str() << endl << endl;
+  ostr << body.str() << endl << endl;
 
 }
 
