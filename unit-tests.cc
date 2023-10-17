@@ -20,7 +20,7 @@ vector<string> split_spaces(const string& s) {
 /// first part of recursive print function for tuples (from stack overflow)
 template<std::size_t I = 0, typename... Tp>
 inline typename std::enable_if<I == sizeof...(Tp), void>::type
-  print(const std::tuple<Tp...>& t)
+  print(const std::tuple<Tp...>& )
   { }
 
 /// second part of recursive print function for tuples
