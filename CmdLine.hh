@@ -92,6 +92,7 @@ class CmdLine {
     std::string default_value, help, argname="val";
     std::string type;
     std::vector<std::string> choices;
+    std::vector<std::string> choices_help;
     std::vector<std::string> range_strings;
     bool required;
     bool takes_value;
@@ -166,7 +167,8 @@ class CmdLine {
     /// @brief sets the allowed choices
     /// @param allowed_choices 
     /// @return the Result object
-    const Result & choices(const std::vector<T> allowed_choices) const; 
+    const Result & choices(const std::vector<T> & allowed_choices, 
+                           const std::vector<std::string> & choices_help = {}) const; 
 
     /// sets the allowed range: minval  <= arg <= maxval
     const Result & range(T minval, T maxval) const; 
@@ -803,12 +805,23 @@ std::string CmdLine::Result<T>::value_as_string() const {
 }
 
 template<class T>
-const CmdLine::Result<T> & CmdLine::Result<T>::choices(const std::vector<T> allowed_choices) const {
+const CmdLine::Result<T> & CmdLine::Result<T>::choices(
+                             const std::vector<T> & allowed_choices,
+                             const std::vector<std::string> & choices_help
+                             ) const {
   // register the choices with the help module
   for (const auto & choice: allowed_choices) {
     std::ostringstream ostr;
     ostr << choice;
     _opthelp->choices.push_back(ostr.str());
+  }
+  if (choices_help.size() != 0) {
+    if (choices_help.size() != allowed_choices.size()) {
+      throw Error("choices_help vector must be same size as allowed_choices vector");
+    }
+    for (size_t i=0; i<choices_help.size(); ++i) {
+      _opthelp->choices_help.push_back(choices_help[i]);
+    }
   }
 
   // check the choice actually made is valid
