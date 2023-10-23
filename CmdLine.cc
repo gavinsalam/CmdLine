@@ -185,7 +185,7 @@ void CmdLine::init (){
   }
   if (__help_enabled) {
     __help_requested = any_present({"-h","-help","--help"}).help("prints this help message").no_dump();
-    __markdown_help = present("--markdown-help").help("prints this help message in markdown format").no_dump();
+    __markdown_help = any_present({"--markdown-help","-markdown-help"}).help("prints this help message in markdown format").no_dump();
     __help_requested |= __markdown_help;
   }
 
@@ -592,11 +592,16 @@ string CmdLine::OptionHelp::description(const string & prefix, int wrap_column, 
 
   ostr << prefix << bold_code(option);
 
+  bool itemised_choices = false;
+
   if (takes_value) {
     ostr << " " << italic_code(argname) << " (" << type_name() << ")";
     if (has_default) ostr << ", default: " << code(default_value);
     if (choices.size() != 0) {
-      ostr << ", valid choices: {" << choice_list(code) << "}";
+      string choice_list_str = choice_list(code);
+      // some arbitrary limit on the length of the list of choices
+      itemised_choices = choice_list_str.size() > 40 || choices_help.size() != 0;
+      if (!itemised_choices) ostr << ", valid choices: {" << choice_list_str << "}";
     }
     if (range_strings.size() != 0) {
       ostr << ", allowed range: " << range_string() << "";
@@ -615,6 +620,21 @@ string CmdLine::OptionHelp::description(const string & prefix, int wrap_column, 
     ostr << wrap(help, wrap_column, prefix + "  ");
   } 
   ostr << endl;
+
+  // finish off with any itemised choices
+  if (itemised_choices) {
+    ostr << prefix << endl 
+         << prefix << "  Valid choices: " << endl;
+    bool has_choices_help = (choices_help.size() == choices.size());
+    for (unsigned i = 0; i < choices.size(); i++)   {
+      if (has_choices_help) {
+        ostr << CmdLine::wrap(prefix + "  * " + code(choices[i]) + ": " + choices_help[i], wrap_column, prefix+"  ", false) << endl;
+      } else {
+        ostr << prefix+"  * " << code(choices[i]) << endl;
+      }
+      //if (i+1 != choices.size()) ostr << ", ";
+    }
+  }
   return ostr.str();
 }
 

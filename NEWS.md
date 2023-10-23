@@ -19,7 +19,12 @@ Towards Version 3.2.0
 
 - added CmdLine::value_bool() ****COMPLETE THIS*****
 
-- added markdown formatted help ****COMPLETE THIS*****
+- added markdown formatted help, printed out with --markdown-help (or
+  -markdown-help)
+
+- CmdLine::Result<T>::choices() can now take a second argument with a
+  vector of help strings, one per valid choice. These are then printed
+  out in the various help formats
 
 ### other changes
 - CmdLine::section() and help_requested() members to return current section
