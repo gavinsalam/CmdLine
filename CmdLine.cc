@@ -628,7 +628,8 @@ string CmdLine::OptionHelp::description(const string & prefix, int wrap_column, 
     bool has_choices_help = (choices_help.size() == choices.size());
     for (unsigned i = 0; i < choices.size(); i++)   {
       if (has_choices_help) {
-        ostr << CmdLine::wrap(prefix + "  * " + code(choices[i]) + ": " + choices_help[i], wrap_column, prefix+"  ", false) << endl;
+        ostr << CmdLine::wrap(prefix + "  * " + code(choices[i]) + ": " + choices_help[i], wrap_column, 
+                              prefix+"    ", false) << endl;
       } else {
         ostr << prefix+"  * " << code(choices[i]) << endl;
       }
