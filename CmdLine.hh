@@ -545,7 +545,7 @@ class CmdLine {
   
   /// a struct to help organise sections and subsections for options
   struct OptSection {
-    OptSection(const std::string & name, int level) : name(name), level(level) {}
+    OptSection(const std::string & name_in, int level_in) : name(name_in), level(level_in) {}
     std::string name;
     int level;
     std::vector<const OptionHelp *> options;
