@@ -184,9 +184,11 @@ void CmdLine::init (){
     }
   }
   if (__help_enabled) {
+    start_section("Options for getting help");
     __help_requested = any_present({"-h","-help","--help"}).help("prints this help message").no_dump();
     __markdown_help = any_present({"--markdown-help","-markdown-help"}).help("prints this help message in markdown format").no_dump();
     __help_requested |= __markdown_help;
+    end_section();
   }
 
   // by default, enabe the git info
@@ -829,7 +831,7 @@ void CmdLine::print_markdown(ostream & ostr) const {
   for (int isec = 0; isec < int(sections.size()); isec++) {
     const auto & section = sections[isec];
     // print a section header if appropriate
-    string section_name = section.level > 0 ? section.name : string("Unsectioned arguments");
+    string section_name = section.level > 0 ? section.name : string("General options");
     int section_level = max(1,section.level);
     //cerr << section_name << " " << " " << section.level << " " << section_level << endl;
 
