@@ -3,6 +3,11 @@ Towards Version 3.2.0
 ---------------------
 
 ### new features
+
+- sections and subsections can have descriptions, which are printed out
+  in the help text -- just add a second arguments to the
+  `start_[sub]section` call. 
+
 - subsections now possible, with CmdLine::start_subsection(...)
 
 - as well as overloading operator<< to obtain conversions to
@@ -14,7 +19,7 @@ Towards Version 3.2.0
 - this has been used to enable cmdline.value<bool> to handle
   various inputs (true/false, on/off, 1/0, yes/no)
 
-- unit-tests.cc has now been added to check various behaviours,
+- unit-tests.cc has now been added to check various behaviours;
   can be invoked with make check
 
 - added CmdLine::value_bool() ****COMPLETE THIS*****

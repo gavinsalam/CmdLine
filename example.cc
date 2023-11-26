@@ -38,7 +38,8 @@ int main (int argc, char ** argv) {
   
 
   //---------------------------------------------------------------------------
-  cmdline.start_section("Optional arguments, with defaults"); 
+  cmdline.start_section("Optional arguments, with defaults", 
+                        "If the option is not present, the default value is used"); 
   // the value<T> template deduces the correct type from the
   // default value for the option (if present)
   auto dres = cmdline.value("-d",0.0).argname("dval").range(-1.0, 2.0)
@@ -47,7 +48,7 @@ int main (int argc, char ** argv) {
   bool d_present = dres.present();
   double dval = dres;
 
-  cmdline.start_subsection("A subsection");
+  cmdline.start_subsection("A subsection", "with its description");
   // for options with a default character value, we usually want
   // a string result -- so this must be specified explicitly
   string sval = cmdline.value<string>("-s","default-string").argname("sval")

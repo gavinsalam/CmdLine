@@ -318,9 +318,12 @@ void CmdLine::end_section(const std::string & section_name) {
   __current_subsection = "";
 }
 
-  void CmdLine::start_subsection(const std::string & subsection_name) {
+  void CmdLine::start_subsection(const std::string & subsection_name, const std::string & description) {
     if (__current_section == "") throw Error("cannot start subsection without being in a section");
     __current_subsection = subsection_name;
+    if (description != "") {
+      __section_descriptions[__section_key(__current_section, subsection_name)] = description;
+    }
   }
 
 void CmdLine::end_subsection(const std::string & subsection_name) {
@@ -728,6 +731,7 @@ std::vector<CmdLine::OptSection> CmdLine::organised_options() const {
   // then loop over the sections, registering each one
   for (const auto & section: opthelp_sections) {
     opt_sections.push_back(OptSection(section, 1));
+    opt_sections.back().section_key = __section_key(section, "");
 
     map<string,vector<const OptionHelp *> > opthelp_subsection_contents;
     vector<string> opthelp_subsections;
@@ -748,6 +752,7 @@ std::vector<CmdLine::OptSection> CmdLine::organised_options() const {
     // and then print out things that are in subsections
     for (const auto & subsection: opthelp_subsections) {
       opt_sections.push_back(OptSection(subsection, 2));
+      opt_sections.back().section_key = __section_key(section, subsection);
       for (const auto & opthelp: opthelp_subsection_contents[subsection]) {
         opt_sections.back().options.push_back(opthelp);
       }
@@ -781,11 +786,19 @@ void CmdLine::print_help(ostream & ostr, bool markdown) const {
   vector<OptSection> sections = organised_options();
   string prefix = "";
   for (const auto & section: sections) {
+    // skip empty sections
+    if (section.options.size() == 0) continue;
+
     // print a section header if appropriate
-    if (section.level > 0) {
+    if (section.level > 0) {      
       ostr << endl;
       ostr << section.name << endl;
-      ostr << string(section.name.size(), section.level == 1 ? '-' : '.') << endl << endl;
+      ostr << string(section.name.size(), section.level == 1 ? '-' : '.') << endl;
+      auto description = __section_descriptions.find(section.section_key);
+      if (description != __section_descriptions.end()) {
+        ostr << wrap(description->second, 80, "", false) << endl;
+      }
+      ostr << endl;
     }
 
     // then print the options in that section (or subsection)
@@ -830,6 +843,10 @@ void CmdLine::print_markdown(ostream & ostr) const {
   string prefix = "";
   for (int isec = 0; isec < int(sections.size()); isec++) {
     const auto & section = sections[isec];
+
+    // skip empty sections
+    if (section.options.size() == 0) continue;
+
     // print a section header if appropriate
     string section_name = section.level > 0 ? section.name : string("General options");
     int section_level = max(1,section.level);
@@ -843,8 +860,12 @@ void CmdLine::print_markdown(ostream & ostr) const {
           << "<a id=\"sec" << isec << "\"></a>" 
           << endl;
     body << string(section_level+1, '#') << " ";
-    body << section_name 
-          << endl << endl;
+    body << section_name << endl;
+    auto description = __section_descriptions.find(section.section_key);
+    if (description != __section_descriptions.end()) {
+      body << wrap(description->second, wrap_column, "", false) << endl;
+    }
+    body << endl;
 
     // then print the options in that section (or subsection)
     for (const auto & opthelp: section.options) {
