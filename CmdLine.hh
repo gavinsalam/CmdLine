@@ -116,6 +116,8 @@ class CmdLine {
                                                               = [](const std::string & str){return str;}) const;
     /// returns the string with the allowed range
     std::string range_string() const;
+
+    static std::string demangle(const std::string & type_name);
   };
 
   /// class that contains the result of an option.

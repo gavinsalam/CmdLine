@@ -37,6 +37,10 @@
 #include <cstdio>
 #include <algorithm>
 #include <cctype>
+#ifdef __CMDLINE_ABI_DEMANGLE__
+#include <cxxabi.h>
+#endif 
+
 using namespace std;
 
 string CmdLine::_default_argfile_option = "-argfile";
@@ -567,8 +571,28 @@ string CmdLine::OptionHelp::type_name() const {
   else if (type == typeid(double).name())   return "double";
   else if (type == typeid(string).name())   return "string";
   else if (type == typeid(bool  ).name())   return "bool";
-  else return type;
+  else return demangle(type);
 }
+
+string CmdLine::OptionHelp::demangle(const std::string & type_name) {
+#ifdef __CMDLINE_ABI_DEMANGLE__
+  int     status;
+  char   *realname;
+
+  realname = abi::__cxa_demangle(type_name.c_str(), NULL, NULL, &status);
+  string realname_str;
+  if (status == 0) {
+    realname_str = realname;
+  } else {
+    realname_str = type_name;
+  }
+  std::free(realname);
+  return realname_str;
+#else // __CMDLINE_ABI_DEMANGLE__
+  return type_name;
+#endif // __CMDLINE_ABI_DEMANGLE__
+}
+
 
 string CmdLine::OptionHelp::summary() const {
   ostringstream ostr;

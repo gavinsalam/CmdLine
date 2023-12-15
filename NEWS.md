@@ -4,6 +4,10 @@ Towards Version 3.2.0
 
 ### new features
 
+- name demangling is enabled via cxxabi.h if CmdLine.cc is compiled with
+  -DCMDLINE_ENABLE_DEMANGLE. This is useful for printing out type
+  names in the help output
+
 - sections and subsections can have descriptions, which are printed out
   in the help text -- just add a second arguments to the
   `start_[sub]section` call. 
