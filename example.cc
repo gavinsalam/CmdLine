@@ -36,7 +36,6 @@ int main (int argc, char ** argv) {
               .help("required argument, illustrates obtaining an int from the command line"
               ", with a long help line to verify that it gets wrapped");
   
-
   //---------------------------------------------------------------------------
   cmdline.start_section("Optional arguments, with defaults", 
                         "If the option is not present, the default value is used"); 
@@ -47,6 +46,7 @@ int main (int argc, char ** argv) {
                     "obtaining a double from the command line");  
   bool d_present = dres.present();
   double dval = dres;
+
 
   cmdline.start_subsection("A subsection", "with its description");
   // for options with a default character value, we usually want

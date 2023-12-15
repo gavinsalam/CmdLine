@@ -821,13 +821,28 @@ const CmdLine::Result<T> & CmdLine::Result<T>::choices(
                              const std::vector<T> & allowed_choices,
                              const std::vector<std::string> & choices_help
                              ) const {
+
   // register the choices with the help module
+  if (_opthelp->choices.size() != 0) {
+    if (_opthelp->choices.size() != allowed_choices.size()) {
+      throw Error("For "+ _opthelp->option+ " option, overwriting choices vector must be same size as existing allowed_choices");
+    }
+    for (unsigned i = 0; i < allowed_choices.size(); ++i) {
+      std::ostringstream ostr;
+      ostr << allowed_choices[i];
+      if (_opthelp->choices[i] != ostr.str()) {
+        throw Error("For "+ _opthelp->option+ " option, overwrite choice at index " + std::to_string(i) + " = " + ostr.str() + " must be same as choice already set at that index, " + _opthelp->choices[i]);
+      }
+    }
+  }
+  _opthelp->choices.resize(0);
   for (const auto & choice: allowed_choices) {
     std::ostringstream ostr;
     ostr << choice;
     _opthelp->choices.push_back(ostr.str());
   }
   if (choices_help.size() != 0) {
+    _opthelp->choices_help.resize(0);
     if (choices_help.size() != allowed_choices.size()) {
       throw Error("choices_help vector must be same size as allowed_choices vector");
     }
