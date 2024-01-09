@@ -75,6 +75,10 @@ CmdLine::CmdLine (const int argc, char** argv, bool enable_help, const string & 
 CmdLine::CmdLine (const vector<string> & args, bool enable_help, const string & file_option) : 
     __help_enabled(enable_help), __argfile_option(file_option) {
 
+  // some sanity checks
+  if (args[0].size() == 0) throw Error("CmdLine constructor: args[0] is empy, but should contain a command name");
+  if (args[0][0] == '-') throw Error("CmdLine constructor: args[0] = '" + args[0] + "' starts with a -, but should contain a command name");
+
   __arguments = args;
   this->init();
 }
