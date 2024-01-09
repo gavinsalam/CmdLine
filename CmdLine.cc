@@ -323,7 +323,7 @@ void CmdLine::end_section(const std::string & section_name) {
 }
 
   void CmdLine::start_subsection(const std::string & subsection_name, const std::string & description) {
-    if (__current_section == "") throw Error("cannot start subsection without being in a section");
+    if (__current_section == "") throw Error("cannot start subsection '" + subsection_name + "' without being in a section");
     __current_subsection = subsection_name;
     if (description != "") {
       __section_descriptions[__section_key(__current_section, subsection_name)] = description;
