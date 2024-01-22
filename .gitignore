@@ -1,4 +1,5 @@
 *.o
 /html
+/unit-tests
 example
 libCmdLine.a
