@@ -26,7 +26,9 @@ Towards Version 3.2.0
 - unit-tests.cc has now been added to check various behaviours;
   can be invoked with make check
 
-- added CmdLine::value_bool() ****COMPLETE THIS*****
+- added CmdLine::value_bool("-opt",true/false) option, which can process
+  -opt true/false (or yes/no, on/off, 1/0), as well as simply -opt and -no-opt
+  and returns true/false accordingly.
 
 - added markdown formatted help, printed out with --markdown-help (or
   -markdown-help)
