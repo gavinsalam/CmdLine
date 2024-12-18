@@ -125,6 +125,9 @@ int main() {
     CHECK_PASS(cmd, "-f no    -i 2", make_tuple(2,false));
     CHECK_PASS(cmd, "-f false -i 2", make_tuple(2,false));
     CHECK_PASS(cmd, "-f 0     -i 2", make_tuple(2,false));
+
+    CHECK_PASS(cmd, "-f .true.  -i 2", make_tuple(2,true));
+    CHECK_PASS(cmd, "-f .false. -i 2", make_tuple(2,false));
   }
 
   //---------------------------------------------------------------------------
