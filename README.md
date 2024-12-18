@@ -39,8 +39,12 @@ int main(int argc, char** argv) {
   // absent, and help string
   double y = cmdline.value("-y",1.0).help("sets the value of y");
 
-  // optional argument (does not take a value)
-  bool b_is_present = cmdline.present("-b").help("sets b_is_present to true");
+  // optional argument that returns a bool; it can be used in several
+  // ways, with
+  // - "-b", "-b true", "-b yes", "-b on", "-b 1", all setting b_is_present to true
+  // - the absence of any argument, as well as "-no-b", "-b no", etc.
+  //   all setting b_is_present to false
+  bool b = cmdline.value_bool("-b",false).help("sets b to true or false");
 
   // makes sure that all provided command-line options have been used
   // (also triggers printout of help if -h was present)

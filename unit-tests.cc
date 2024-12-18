@@ -12,6 +12,8 @@ vector<string> split_spaces(const string& s) {
   stringstream ss(s);
   string item;
   while (getline(ss, item, ' ')) {
+    // skip empty items, effectively ignoring multiple spaces
+    if (item == "") continue;
     result.push_back(item);
   }
   return result;
@@ -110,10 +112,19 @@ int main() {
     };
     CHECK_PASS(cmd, "-i 2",    make_tuple(2,false));
     CHECK_PASS(cmd, "-i 2 -f", make_tuple(2,true));
-    CHECK_PASS(cmd, "-f -i 2", make_tuple(2,true));
-    CHECK_PASS(cmd, "-no-f -i 2", make_tuple(2,false));
-    CHECK_PASS(cmd, "-f off -i 2", make_tuple(2,false));
-    CHECK_PASS(cmd, "-f on -i 2", make_tuple(2,true));
+    CHECK_PASS(cmd, "-i 2 -f 1", make_tuple(2,true));
+
+    CHECK_PASS(cmd, "-f       -i 2", make_tuple(2,true));
+    CHECK_PASS(cmd, "-f on    -i 2", make_tuple(2,true));
+    CHECK_PASS(cmd, "-f yes   -i 2", make_tuple(2,true));
+    CHECK_PASS(cmd, "-f true  -i 2", make_tuple(2,true));
+    CHECK_PASS(cmd, "-f 1     -i 2", make_tuple(2,true));
+    
+    CHECK_PASS(cmd, "-no-f    -i 2", make_tuple(2,false));
+    CHECK_PASS(cmd, "-f off   -i 2", make_tuple(2,false));
+    CHECK_PASS(cmd, "-f no    -i 2", make_tuple(2,false));
+    CHECK_PASS(cmd, "-f false -i 2", make_tuple(2,false));
+    CHECK_PASS(cmd, "-f 0     -i 2", make_tuple(2,false));
   }
 
   //---------------------------------------------------------------------------
