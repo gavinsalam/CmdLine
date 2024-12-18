@@ -1,6 +1,7 @@
 #include "CmdLine.hh"
 #include <cassert>
 #include <iostream>
+#include <list>
 
 using namespace std;
 
@@ -114,5 +115,23 @@ int main() {
     CHECK_PASS(cmd, "-f off -i 2", make_tuple(2,false));
     CHECK_PASS(cmd, "-f on -i 2", make_tuple(2,true));
   }
+
+  //---------------------------------------------------------------------------
+  // verify cases that take initialiser lists and vectors of options
+  auto cmd = [](CmdLine & cmdline){
+    vector<string> opts_d = {"-d","--double"};
+    auto uu = cmdline.optional_value<int>({"-u","--uu"});
+    double u = uu.present() ? uu.value() : 3;
+    return make_tuple(      
+      cmdline.value<double>(opts_d, 1.4),
+      cmdline.value<int>({"-i","--int"}),
+      u
+    );
+  };
+  CHECK_PASS(cmd, "-d 2.3 -i 2",          make_tuple(2.3, 2, 3));
+  CHECK_PASS(cmd, "--double 2.3 --int 2", make_tuple(2.3, 2, 3));
+  CHECK_PASS(cmd, "--int 2",              make_tuple(1.4, 2, 3));
+  CHECK_PASS(cmd, "--int 2 --uu 6",       make_tuple(1.4, 2, 6));
+  CHECK_FAIL(cmd, "");
 
 }

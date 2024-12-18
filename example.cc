@@ -59,14 +59,14 @@ int main (int argc, char ** argv) {
 
   // optional argument, which if present, takes a value (user must
   // check whether it was present before using the value)
-  auto ores = cmdline.any_optional_value<double>({"-o"}).help("optional argument that takes value");
+  auto ores = cmdline.optional_value<double>({"-o","--opt"}).help("optional argument that takes value");
 
   //---------------------------------------------------------------------------
   cmdline.end_section();
 
   // optional flag, which if present, is true, otherwise false
-  //bool flag = cmdline.any_present({"-f","--flag"}).help("illustrates a command-line flag");
-  //bool flag = cmdline.any_value<bool>({"-f","--flag"}).help("illustrates an option that takes a boolean");
+  //bool flag = cmdline.present({"-f","--flag"}).help("illustrates a command-line flag");
+  //bool flag = cmdline.value<bool>({"-f","--flag"}).help("illustrates an option that takes a boolean");
 
   bool flag = cmdline.value_bool("-f", true).help("illustrates a command-line flag");
 

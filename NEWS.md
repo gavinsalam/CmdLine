@@ -4,15 +4,19 @@ Towards Version 3.2.0
 
 ### new features
 
+- when there are multiple forms of an option, instead of
+  `any_value<T>({"-l,"--long"})`, one can now simply use
+  `value<T>({"-l","--long"})` to get the same effect. 
+
 - name demangling is enabled via cxxabi.h if CmdLine.cc is compiled with
   -DCMDLINE_ENABLE_DEMANGLE. This is useful for printing out type
   names in the help output
 
-- sections and subsections can have descriptions, which are printed out
-  in the help text -- just add a second arguments to the
-  `start_[sub]section` call. 
-
 - subsections now possible, with CmdLine::start_subsection(...)
+
+- sections and subsections can have descriptions, which are printed out
+  in the help text -- just add a second argument to the
+  `start_[sub]section` call. 
 
 - as well as overloading operator<< to obtain conversions to
   specific types, the user has the option of specialising the

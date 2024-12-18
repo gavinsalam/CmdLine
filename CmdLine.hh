@@ -213,17 +213,42 @@ class CmdLine {
 
   /// returns the value of the argument following opt, converted to type Result<T>
   template<class T> Result<T> value(const std::string & opt) const {
-    return any_value<T>(std::vector<std::string>{opt});}
+    return any_value<T>({opt});}
+
+  /// returns the value of the argument following any of opts, converted to type Result<T>
+  template<class T> Result<T> value(const std::initializer_list<std::string> & opts) const {
+    return any_value<T>(opts);}
+
+  /// returns the value of the argument following any of opts, converted to type Result<T>
+  template<class T> Result<T> value(const std::vector<std::string> & opts) const {
+    return any_value<T>(opts);}
+
 
   /// returns the value of the option, or defval if the option is not present
   template<class T> Result<T> value(const std::string & opt, const T & defval) const {
-    return any_value<T>(std::vector<std::string>{opt}, defval);
+    return any_value<T>({opt}, defval);
+  }
+  /// returns the value of any of the options (opts), or defval if none of the options is not present
+  template<class T> Result<T> value(const std::initializer_list<std::string> & opts, const T & defval) const {
+    return any_value<T>(opts, defval);
+  }
+  /// returns the value of any of the options (opts), or defval if none of the options is not present
+  template<class T> Result<T> value(const std::vector<std::string> & opts, const T & defval) const {
+    return any_value<T>(opts, defval);
   }
 
   /// returns a Result<T> for the option; the result.present() should be queried to
   /// see if it was present before trying to use the value
   template<class T> Result<T> optional_value(const std::string & opt) const {
-    return any_optional_value<T>(std::vector<std::string>{opt});
+    return any_optional_value<T>({opt});
+  }
+  /// returns a Result<T> for the any of the option(opts); the result.present() should be queried to
+  /// see if it was present before trying to use the value
+  template<class T> Result<T> optional_value(const std::initializer_list<std::string> & opts) const {
+    return any_optional_value<T>(opts);
+  }
+  template<class T> Result<T> optional_value(const std::vector<std::string> & opts) const {
+    return any_optional_value<T>(opts);
   }
 
   /// returns the value of the argument, prefixed with prefix (NB: 
