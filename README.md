@@ -13,13 +13,13 @@ to build the library and the example program. To include it in your
 own projects, you can simply copy the CmdLine.cc and CmdLine.hh
 files. 
 
-Many command-line libraries require you to declare the options you
-want and then process the command line to access them. This one
+Many command-line libraries require you to declare all the options you
+want and then subsequently process the command line to access them. This one
 instead gives you immediate access to the value of the argument.  An
 advantage of such an approach is that it avoids having to set the
 variable in a different location from where it is declared.
 
-Help is to some extent automated, though as of May 2019 it does not
+Help is to some extent automated, thought it does not
 yet handle complex cases where one set of arguments depends on a
 previous set. 
 
@@ -51,3 +51,6 @@ int main(int argc, char** argv) {
   cmdline.assert_all_options_used();
 }
 ```
+
+Run `example -h` to see an illustrative help message, or 
+`example -markdown-help` to see the help message in markdown format.
