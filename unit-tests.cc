@@ -5,6 +5,8 @@
 
 using namespace std;
 
+int n_checks = 0;
+
 /// return a vector of strings, split by spaces
 vector<string> split_spaces(const string& s) {
   vector<string> result;
@@ -39,6 +41,7 @@ inline typename std::enable_if<I < sizeof...(Tp), void>::type
 /// gives the expected result
 template<typename U, typename V> 
 void check_pass(const int line_number, const U & fn, const string & options, const V & expected_result){
+  n_checks++;
   CmdLine cmdline(split_spaces(options));
   V result = fn(cmdline);
   if (result != expected_result) {
@@ -57,6 +60,7 @@ void check_pass(const int line_number, const U & fn, const string & options, con
 template<typename U> 
 void check_fail(const int line_number, const U & fn, const string & options) {
 
+  n_checks++;
   try {
     CmdLine cmdline(split_spaces(options));
     auto result = fn(cmdline);
@@ -87,18 +91,26 @@ int main() {
     auto cmd = [](CmdLine & cmdline){
       return make_tuple(
           cmdline.value<int>("-i"), 
-          cmdline.value_bool("-f", true)
+          cmdline.value_bool({"-f","-future"}, true)
       );
     };
-    CHECK_PASS(cmd, "-i 2",        make_tuple(2,true) );
-    CHECK_PASS(cmd, "-i 2 -f",     make_tuple(2,true) );
-    CHECK_PASS(cmd, "-f -i 2",     make_tuple(2,true) );
-    CHECK_PASS(cmd, "-no-f -i 2",  make_tuple(2,false));
-    CHECK_PASS(cmd, "-f off -i 2", make_tuple(2,false));
-    CHECK_PASS(cmd, "-f on -i 2",  make_tuple(2,true) );
+    CHECK_PASS(cmd, "-i 2",            make_tuple(2,true) );
+    CHECK_PASS(cmd, "-i 2 -f",         make_tuple(2,true) );
+    CHECK_PASS(cmd, "-f -i 2",         make_tuple(2,true) );
+    CHECK_PASS(cmd, "-no-f -i 2",      make_tuple(2,false));
+    CHECK_PASS(cmd, "-f off -i 2",     make_tuple(2,false));
+    CHECK_PASS(cmd, "-f on -i 2",      make_tuple(2,true) );
+    CHECK_PASS(cmd, "-future on -i 2", make_tuple(2,true) );
+    CHECK_PASS(cmd, "-no-future -i 2", make_tuple(2,false));
     // should fail because 3 is not accepted as a boolean
     CHECK_FAIL(cmd, "-f 3 -i 2");
     CHECK_FAIL(cmd, "-f -2 -i 2");
+    // should fail because we give the option twice
+    CHECK_FAIL(cmd, "-i 2 -f false -no-f");    
+    CHECK_FAIL(cmd, "-i 2 -f -no-f");    
+    CHECK_FAIL(cmd, "-i 2 -f -future");    
+    CHECK_FAIL(cmd, "-i 2 -no-f -no-future");    
+    CHECK_FAIL(cmd, "-i 2 -f -no-future");    
   }
 
   //---------------------------------------------------------------------------
@@ -107,9 +119,27 @@ int main() {
     auto cmd = [](CmdLine & cmdline){
       return make_tuple(
           cmdline.value<int>("-i"), 
-          cmdline.value_bool("-f", false)
+          cmdline.value_bool({"-f","-future"}, false)
       );
     };
+    for (const string opt : {"-f","-future"}) {
+      CHECK_PASS(cmd, "-i 2",            make_tuple(2,false));
+      CHECK_PASS(cmd, "-i 2 " + opt,     make_tuple(2,true) );
+      CHECK_PASS(cmd, "-i 2 -no" + opt,  make_tuple(2,false));
+
+      CHECK_PASS(cmd, "-i 2 " + opt + " on",     make_tuple(2,true) );
+      CHECK_PASS(cmd, "-i 2 " + opt + " yes",    make_tuple(2,true) );
+      CHECK_PASS(cmd, "-i 2 " + opt + " true",   make_tuple(2,true) );
+      CHECK_PASS(cmd, "-i 2 " + opt + " 1",      make_tuple(2,true) );
+      CHECK_PASS(cmd, "-i 2 " + opt + " .true.", make_tuple(2,true) );
+
+      CHECK_PASS(cmd, "-i 2 " + opt + " off",     make_tuple(2,false));
+      CHECK_PASS(cmd, "-i 2 " + opt + " no",      make_tuple(2,false));
+      CHECK_PASS(cmd, "-i 2 " + opt + " false",   make_tuple(2,false));
+      CHECK_PASS(cmd, "-i 2 " + opt + " .false.", make_tuple(2,false));
+      CHECK_PASS(cmd, "-i 2 " + opt + " 0",       make_tuple(2,false));
+    }
+
     CHECK_PASS(cmd, "-i 2",    make_tuple(2,false));
     CHECK_PASS(cmd, "-i 2 -f", make_tuple(2,true));
     CHECK_PASS(cmd, "-i 2 -f 1", make_tuple(2,true));
@@ -147,5 +177,8 @@ int main() {
   CHECK_PASS(cmd, "--int 2",              make_tuple(1.4, 2, 3));
   CHECK_PASS(cmd, "--int 2 --uu 6",       make_tuple(1.4, 2, 6));
   CHECK_FAIL(cmd, "");
+
+  cout << "All " << n_checks << " checks passed" << endl;
+  return 0;
 
 }

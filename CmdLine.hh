@@ -276,7 +276,17 @@ class CmdLine {
   ///   * -opt 0  -> false     [also valid are off, no, false, .false.]
   ///
   /// otherwise return the default
-  Result<bool> value_bool(const std::string & opt, const bool defval) const;
+  Result<bool> value_bool(const std::string & opt, const bool defval) const {
+    return any_value_bool({opt}, defval);
+  }
+  Result<bool> value_bool(const std::vector<std::string> & opts, const bool defval) const {
+    return any_value_bool(opts, defval);
+  }
+  Result<bool> value_bool(const std::initializer_list<std::string> & opts, const bool defval) const {
+    return any_value_bool(opts, defval);
+  }
+  
+  Result<bool> any_value_bool(const std::vector<std::string> & opts, const bool defval) const;
 
 
   /// return true if any of the options in the option vector is present

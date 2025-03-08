@@ -213,22 +213,26 @@ CmdLine::Result<bool> CmdLine::any_present(const vector<string> & opts) const {
   return res;
 }
 
-CmdLine::Result<bool> CmdLine::value_bool(const std::string & opt, const bool defval) const {
-  OptionHelp * opthelp = opthelp_ptr(OptionHelp_value_with_default<bool>({opt}, defval));
-  pair<int,int> result_opt    = internal_present(opt);
-  pair<int,int> result_no_opt = internal_present("-no" + opt);
+//CmdLine::Result<bool> CmdLine::value_bool(const std::string & opt, const bool defval) const {
+CmdLine::Result<bool> CmdLine::any_value_bool(const std::vector<std::string> & opts, const bool defval) const {
+    OptionHelp * opthelp = opthelp_ptr(OptionHelp_value_with_default<bool>(opts, defval));
+  pair<int,int> result_opt    = internal_present(opts);
+  std::vector<std::string> no_opts;
+  for (const auto & opt: opts) {no_opts.push_back("-no" + opt);}
+  pair<int,int> result_no_opt = internal_present(no_opts);
   bool result;
   bool is_present = true;
   if (result_opt.first > 0) {
     if (result_no_opt.first > 0) {
-      throw Error("boolean option " + opt + " and its negation -no" + opt + " are both present");
+      throw Error("boolean option " + __arguments[result_opt.first] 
+            + " and negation " + __arguments[result_no_opt.first]  + " are both present");
     } else if (result_opt.second > 0) {
       const string & arg = __arguments[result_opt.second];
       // if next value starts with a - then it's an option, not a value
       if (arg[0] == '-') {
         result = true;
       } else  {
-        result = internal_value<bool>(opt);
+        result = internal_value<bool>(__arguments[result_opt.first]);
       }
     } else {
       result = true;
