@@ -694,7 +694,6 @@ std::string CmdLine::wrap(const std::string & str, int wrap_column,
   size_t line_len = 0;
   if (first_line_prefix) {
     ostr << prefix;
-    prefix.size();
   }
   for (const auto & token: tokens) {
     if (token == "\n") {
