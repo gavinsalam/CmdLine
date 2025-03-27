@@ -35,7 +35,8 @@ Towards Version 3.2.0
   and returns true/false accordingly.
 
 - added markdown formatted help, printed out with --markdown-help (or
-  -markdown-help)
+  -markdown-help), together with the CmdLine::markdown_help_requested() 
+  enquiry function.
 
 - CmdLine::Result<T>::choices() can now take a second argument with a
   vector of help strings, one per valid choice. These are then printed

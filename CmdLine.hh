@@ -371,8 +371,13 @@ class CmdLine {
 
 
   /// return true iff the user has requested a help string (via -h or
-  /// --help)
+  /// --help or -markdown-help)
   bool help_requested() const {return __help_requested;} 
+
+  /// return true iff the user has requested a help string (via
+  /// -markdown-help)
+  bool markdown_help_requested() const {return help_requested() && __markdown_help;} 
+
 
   ///@}
 
