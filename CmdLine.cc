@@ -31,6 +31,7 @@
 #include<fstream>
 #include<vector>
 #include<cstddef> // for size_t
+#include<cstdint> // for uint64_t
 #include <sys/utsname.h> // for getting uname
 #include <unistd.h> // for getting current path
 #include <stdlib.h> // for getting the environment (including username)
