@@ -922,7 +922,7 @@ void CmdLine::print_markdown(ostream & ostr) const {
   ///
   /// @param prefix is the string the precedes each description line (default is "# ")
   /// @param absence_prefix is the string that precedes each line for an option that was not present
-string CmdLine::dump(const string & prefix, const string & absence_prefix) const {
+string CmdLine::dump(const string & prefix, const string & absence_prefix, const string & presence_prefix) const {
   ostringstream ostr;
 
   ostr << prefix << "argfile for " << command_line() << endl;
@@ -938,7 +938,7 @@ string CmdLine::dump(const string & prefix, const string & absence_prefix) const
       if (res.present()) ostr << opthelp.option << " " << res.value_as_string() << endl;
       else               ostr << absence_prefix << opthelp.option << " " << opthelp.argname << endl;
     } else {      
-      ostr << opthelp.option << " " << res.value_as_string() << endl;
+      ostr << presence_prefix << opthelp.option << " " << res.value_as_string() << endl;
     }
   };
 

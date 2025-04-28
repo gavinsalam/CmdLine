@@ -413,7 +413,10 @@ class CmdLine {
   ///
   /// @param prefix is the string the precedes each description line (default is "# ")
   /// @param absence_prefix is the string that precedes each line for an option that was not present
-  std::string dump(const std::string & prefix = "# ", const std::string & absence_prefix = "// ") const;
+  /// @param presence_prefix is the string that precedes each line for an option that was present
+  std::string dump(const std::string & prefix = "# ", 
+                   const std::string & absence_prefix = "// ",
+                   const std::string & presence_prefix = "") const;
   
   /// return true if all options have been asked for at some point or other
   /// and send diagnostic info to ostr
