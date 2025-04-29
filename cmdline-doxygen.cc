@@ -26,7 +26,8 @@
 
 /// \mainpage CmdLine code documentation
 ///
-/// The main classes are CmdLine and the result of an option, CmdLine::Result.
+/// The main classes are CmdLine and the result of an option, CmdLine::Result, 
+/// templated with a type T and automatically convertible to type T.
 ///
 /// Include the CmdLine.hh and CmdLine.hh files in your project and then use it
 /// as follows:

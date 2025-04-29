@@ -17,7 +17,7 @@ Many command-line libraries require you to declare all the options you
 want and then subsequently process the command line to access them. This one
 instead gives you immediate access to the value of the argument.  An
 advantage of such an approach is that it avoids having to set the
-variable in a different location from where it is declared.
+variable in a different location from where it is declared or assigned.
 
 Help is to some extent automated, thought it does not
 yet handle complex cases where one set of arguments depends on a
