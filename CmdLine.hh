@@ -727,7 +727,7 @@ void CmdLine::Result<T>::throw_value_not_available() const {
   ostr << "value of option ";
   if (_opthelp) ostr << _opthelp->option;
   else ostr << "[unknown -- because help disabled]";
-  ostr << " requested, but that value is not availabole\n"
+  ostr << " requested, but that value is not available\n"
        << "because the option was not present on the command line and no default was supplied\n";
   throw Error(ostr.str());
 }

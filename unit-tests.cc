@@ -89,6 +89,7 @@ int main() {
   // verify value_bool with a true default
   {
     auto cmd = [](CmdLine & cmdline){
+      cmdline.help("test script");
       return make_tuple(
           cmdline.value<int>("-i"), 
           cmdline.value_bool({"-f","-future"}, true)
@@ -102,6 +103,10 @@ int main() {
     CHECK_PASS(cmd, "-f on -i 2",      make_tuple(2,true) );
     CHECK_PASS(cmd, "-future on -i 2", make_tuple(2,true) );
     CHECK_PASS(cmd, "-no-future -i 2", make_tuple(2,false));
+    // should fail because -i is either absent or its associated value is absent
+    CHECK_FAIL(cmd, "-f 3");
+    CHECK_FAIL(cmd, "-f 3 -i");
+
     // should fail because 3 is not accepted as a boolean
     CHECK_FAIL(cmd, "-f 3 -i 2");
     CHECK_FAIL(cmd, "-f -2 -i 2");
