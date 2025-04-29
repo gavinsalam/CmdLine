@@ -1,16 +1,21 @@
 
-Towards Version 3.2.0
----------------------
+Version 3.2.0: 2025-04-29
+-------------------------
 
 ### new features
 
 - when there are multiple forms of an option, instead of
   `any_value<T>({"-l,"--long"})`, one can now simply use
   `value<T>({"-l","--long"})` to get the same effect. 
+  This is the preferred option.
+
+- added `CmdLine::value_bool("-opt",true/false)` option, which can process
+  -opt true/false (or yes/no, on/off, 1/0), as well as simply -opt and -no-opt
+  and returns true/false accordingly.
 
 - name demangling is enabled via cxxabi.h if CmdLine.cc is compiled with
-  -DCMDLINE_ENABLE_DEMANGLE. This is useful for printing out type
-  names in the help output
+  `-DCMDLINE_ENABLE_DEMANGLE`. This is useful for printing out type
+  names in the help output.
 
 - subsections now possible, with CmdLine::start_subsection(...)
 
@@ -20,32 +25,28 @@ Towards Version 3.2.0
 
 - as well as overloading operator<< to obtain conversions to
   specific types, the user has the option of specialising the
-  static template function T CmdLine_string_to_value<T>(...),
+  static template function `T CmdLine_string_to_value<T>(...)`,
   which can be used as a last-resort for types where overloading
-  operator<< is not an option.
+  `operator<<` is not an option.
 
-- this has been used to enable cmdline.value<bool> to handle
+- this has been used to enable `cmdline.value<bool>` to handle
   various inputs (true/false, on/off, 1/0, yes/no)
 
 - unit-tests.cc has now been added to check various behaviours;
   can be invoked with make check
 
-- added CmdLine::value_bool("-opt",true/false) option, which can process
-  -opt true/false (or yes/no, on/off, 1/0), as well as simply -opt and -no-opt
-  and returns true/false accordingly.
-
-- added markdown formatted help, printed out with --markdown-help (or
-  -markdown-help), together with the CmdLine::markdown_help_requested() 
+- added markdown formatted help, printed out with `--markdown-help` (or
+  `-markdown-help`), together with the `CmdLine::markdown_help_requested()` 
   enquiry function.
 
-- CmdLine::Result<T>::choices() can now take a second argument with a
+- `CmdLine::Result<T>::choices()` can now take a second argument with a
   vector of help strings, one per valid choice. These are then printed
   out in the various help formats
 
 ### other changes
-- CmdLine::section() and help_requested() members to return current section
+- `CmdLine::section()` and `help_requested()` members, to return current section
   and help requested status
-- CmdLine::section(...) as a shorthand for setting the section (similar subsection()...)
+- `CmdLine::section(...)` as a shorthand for setting the section (similar subsection()...)
 - small improvements in doxygen output
 
 Version 3.1.0: 2023-09-07
