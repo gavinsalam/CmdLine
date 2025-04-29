@@ -48,6 +48,8 @@ Version 3.2.0: 2025-04-29
   and help requested status
 - `CmdLine::section(...)` as a shorthand for setting the section (similar subsection()...)
 - small improvements in doxygen output
+- `CmdLine::dump(...)` now takes an optional third argument to specify the prefix 
+  for each option with a well-defined value.
 
 Version 3.1.0: 2023-09-07
 -------------------------
@@ -71,8 +73,8 @@ Version 3.1.0: 2023-09-07
   user to supply multiple variants (or aliases) of an option name, e.g. 
   `cmdline.any_present({"-l","--long"})`
 
-- added CmdLine::dump() to return a string with all options and their values,
-  suitable for reading with the -argfile option
+- added `CmdLine::dump()` to return a string with all options and their values,
+  suitable for reading with the `-argfile` option
 
 - added checks that options are not being re-registered multiple times
   with inconsistent kinds or defaults (produces a warning unless the new
