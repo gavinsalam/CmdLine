@@ -1,3 +1,8 @@
+Version 3.2.1: 2025-MM-DD
+-------------------------
+### bug fixes
+- added missing default constructor for CmdLine::Result<T> to allow
+  such objects to be created uninitialised.
 
 Version 3.2.0: 2025-04-29
 -------------------------

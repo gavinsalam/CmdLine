@@ -126,6 +126,7 @@ class CmdLine {
   template<class T>
   class Result : public ResultBase {
   public:
+    Result() : _opthelp(nullptr), _is_present(false) {}
     Result(const T & t) : _t(t), _opthelp(0), _is_present(true) {}
     Result(const T & t, OptionHelp * opthelp_ptr, bool is_present) : 
                _t(t), _opthelp(opthelp_ptr), _is_present(is_present) {}
