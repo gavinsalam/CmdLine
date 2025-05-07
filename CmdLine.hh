@@ -67,12 +67,13 @@
 class CmdLine {
  public :
 
+  /// @brief Enum class to indicate the kind of option
   enum class OptKind {
-    present,
-    required_value,
-    value_with_default,
-    optional_value,
-    undefined
+    present,             ///< present("-opt")
+    required_value,      ///< value<T>("-opt")
+    value_with_default,  ///< value<T>("-opt", defval)
+    optional_value,      ///< optional_value<T>("-opt")
+    undefined            ///< undefined
   };
 
   /// base class for holding results
@@ -117,6 +118,9 @@ class CmdLine {
     /// returns the string with the allowed range
     std::string range_string() const;
 
+    /// @brief  given a type name, return a human readable name
+    /// @param type_name 
+    /// @return demangled type name
     static std::string demangle(const std::string & type_name);
   };
 
