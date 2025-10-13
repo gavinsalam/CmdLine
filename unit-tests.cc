@@ -40,9 +40,13 @@ inline typename std::enable_if<I < sizeof...(Tp), void>::type
 /// check to see that the of the function fn, passed the command line associated with options, 
 /// gives the expected result
 template<typename U, typename V> 
-void check_pass(const int line_number, const U & fn, const string & options, const V & expected_result){
+void check_pass(const int line_number, 
+                const U & fn, 
+                const string & options, 
+                const V & expected_result,
+                bool enable_help = true){
   n_checks++;
-  CmdLine cmdline(split_spaces(options));
+  CmdLine cmdline(split_spaces(options), enable_help);
   V result = fn(cmdline);
   if (result != expected_result) {
     cerr << "From line " << to_string(line_number) << ", failure with options: " << options << endl;
@@ -80,6 +84,7 @@ void check_fail(const int line_number, const U & fn, const string & options) {
 
 #define CHECK_PASS(fn, options, expected) (check_pass(__LINE__, fn, options, expected))
 #define CHECK_FAIL(fn, options)           (check_fail(__LINE__, fn, options))
+#define CHECK_PASS_NOHELP(fn, options, expected) (check_pass(__LINE__, fn, options, expected, false))
 
 int main() {
   // make sure that intentional failures are quiet
@@ -117,6 +122,24 @@ int main() {
     CHECK_FAIL(cmd, "-i 2 -no-f -no-future");    
     CHECK_FAIL(cmd, "-i 2 -f -no-future");    
   }
+
+  {
+    auto cmd = [](CmdLine & cmdline){
+      return make_tuple(
+          cmdline.value<int>("-i"), 
+          cmdline.value_bool({"-f","-future"}, true)
+      );
+    };
+    CHECK_PASS_NOHELP(cmd, "-i 2",            make_tuple(2,true) );
+    CHECK_PASS_NOHELP(cmd, "-i 2 -f",         make_tuple(2,true) );
+    CHECK_PASS_NOHELP(cmd, "-f -i 2",         make_tuple(2,true) );
+    CHECK_PASS_NOHELP(cmd, "-no-f -i 2",      make_tuple(2,false));
+    CHECK_PASS_NOHELP(cmd, "-f off -i 2",     make_tuple(2,false));
+    CHECK_PASS_NOHELP(cmd, "-f on -i 2",      make_tuple(2,true) );
+    CHECK_PASS_NOHELP(cmd, "-future on -i 2", make_tuple(2,true) );
+    CHECK_PASS_NOHELP(cmd, "-no-future -i 2", make_tuple(2,false));
+  }
+
 
   //---------------------------------------------------------------------------
   // verify value_bool with a false default
