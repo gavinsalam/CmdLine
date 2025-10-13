@@ -210,7 +210,7 @@ CmdLine::Result<bool> CmdLine::any_present(const vector<string> & opts) const {
   pair<int,int> result_pair = internal_present(opts);
   bool result = (result_pair.first > 0);
   Result<bool> res(result, opthelp, result);
-  opthelp->result_ptr = std::make_shared<Result<bool>>(res);
+  if (opthelp) opthelp->result_ptr = std::make_shared<Result<bool>>(res);
   return res;
 }
 
@@ -245,7 +245,7 @@ CmdLine::Result<bool> CmdLine::any_value_bool(const std::vector<std::string> & o
     is_present = false;
   }
   auto res = std::make_shared<Result<bool>>(result, opthelp, is_present);
-  opthelp->result_ptr = res;
+  if (opthelp) opthelp->result_ptr = res;
   return *res;
 }
 
@@ -740,6 +740,8 @@ string CmdLine::OptionHelp::range_string() const {
 /// a vector of options, as well as an indication of the name of the section
 /// and the level of indentation
 std::vector<CmdLine::OptSection> CmdLine::organised_options() const {
+  if (!__help_enabled) throw Error("CmdLine::organised_options() called, but help disabled");
+
   vector<OptSection> opt_sections;
   opt_sections.push_back(OptSection("", 0));
 
@@ -796,6 +798,8 @@ std::vector<CmdLine::OptSection> CmdLine::organised_options() const {
 }
 
 void CmdLine::print_help(ostream & ostr, bool markdown) const {
+  if (!__help_enabled) throw Error("CmdLine::print_help() called, but help disabled");
+
   if (markdown) {
     print_markdown(ostr);
     return;

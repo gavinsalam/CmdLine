@@ -788,7 +788,7 @@ CmdLine::Result<T> CmdLine::any_value_prefix(const std::vector<std::string> & op
     result = internal_value<T>(opts, prefix);
   }
   Result<T> res(result, opthelp, true);
-  opthelp->result_ptr = std::make_shared<Result<T>>(res);
+  if (opthelp) opthelp->result_ptr = std::make_shared<Result<T>>(res);
   return res;
 }
 
@@ -808,14 +808,14 @@ template<class T> CmdLine::Result<T> CmdLine::any_value(const std::vector<std::s
   } else {
     res = std::make_shared<Result<T>>(defval,opthelp,false);
   }
-  opthelp->result_ptr = res;
+  if (opthelp) opthelp->result_ptr = res;
   return *res;
 }
 
 template<class T> CmdLine::Result<T> CmdLine::any_optional_value(const std::vector<std::string> & opts) const {
   // construct help
   OptionHelp * opthelp = opthelp_ptr(OptionHelp_optional_value<T>(opts));
-  opthelp->default_value = "None";
+  if (opthelp) opthelp->default_value = "None";
 
   // return value
   std::shared_ptr<Result<T>> res;
@@ -828,7 +828,7 @@ template<class T> CmdLine::Result<T> CmdLine::any_optional_value(const std::vect
   } else {    
     res = std::make_shared<Result<T>>(value_for_missing_option<T>(), opthelp, false);
   }
-  opthelp->result_ptr = res;
+  if (opthelp) opthelp->result_ptr = res;
   return *res;
 }
 
@@ -848,7 +848,7 @@ template<class T> CmdLine::Result<T> CmdLine::any_value(const std::vector<std::s
   } else {
     res = std::make_shared<Result<T>>(defval, opthelp, false);
   }
-  opthelp->result_ptr = res;
+  if (opthelp) opthelp->result_ptr = res;
   return *res;
 }
 
