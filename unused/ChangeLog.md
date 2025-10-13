@@ -8,14 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and as of version 2.0.0 this project adheres to 
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Release 2.0.0, 2025-10-13
-
-Releasing now is somewhat arbitrary, but better to start actually making releases.
-
-### Added since 2.0.0-alpha.1
+## Unreleased (2.0.x series)
+### Added
 - header(), including system name, git info, etc.
 - time_elapsed_since_start()
-- fixed some segfaults when used with help disabled (thanks to Giovanni Stagnitto for reporting)
 
 ## 2.0.0-alpha.1
 
