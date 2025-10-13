@@ -1,8 +1,12 @@
-Version 3.2.1: 2025-MM-DD
+Version 3.2.1: 2025-10-13
 -------------------------
+
 ### bug fixes
+
 - added missing default constructor for CmdLine::Result<T> to allow
   such objects to be created uninitialised.
+- fixed segfault when using CmdLine with help disabled, and added
+  some unit tests to check this (reported by Giovanni Stagnitto)
 
 Version 3.2.0: 2025-04-29
 -------------------------
