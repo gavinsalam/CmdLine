@@ -520,6 +520,10 @@ class CmdLine {
   std::string  string_val(const std::string & opt, const std::string & defval) const;
   ///@} 
 
+  /// @brief  struct containing static variables for terminal control codes
+  struct tc;
+
+
  private:
 
   /// returns the stdout (and stderr) from the command
@@ -708,6 +712,7 @@ class CmdLine {
   /// convert the time into a std::string (local by default -- utc if 
   /// utc=true).
   std::string _string_time(const time_t & time, bool utc) const;
+
 };
 
 
@@ -962,5 +967,63 @@ template<class T> T CmdLine::internal_value(const std::vector<std::string> & opt
     _report_conversion_failure(opt, failure.what());
   }
 }
+
+struct CmdLine::tc {
+  //tc();
+  //bool enabled;
+
+  static std::string red;// = "\033[1;31m";
+  static std::string grn;
+  static std::string yel;
+  static std::string blu;
+  static std::string mag;
+  static std::string cyn;
+  static std::string wht;
+  static std::string blk;
+  static std::string gry;
+  static std::string org;
+
+  static std::string red_bg;
+  static std::string grn_bg;
+  static std::string yel_bg;
+  static std::string blu_bg;
+  static std::string mag_bg;
+  static std::string cyn_bg;
+  static std::string wht_bg;
+  static std::string blk_bg;
+  static std::string gry_bg;
+  static std::string org_bg;
+
+  // versions with full names for those colors that have >3 letters
+  // both foreground and background
+  static std::string yellow;
+  static std::string blue;
+  static std::string magenta;
+  static std::string cyan;
+  static std::string white;
+  static std::string black;
+  static std::string gray;
+  static std::string orange;
+
+  static std::string yellow_bg;
+  static std::string blue_bg;
+  static std::string magenta_bg;
+  static std::string cyan_bg;
+  static std::string white_bg;
+  static std::string black_bg;
+  static std::string gray_bg;
+  static std::string orange_bg;
+
+
+  static std::string bold;
+  static std::string nobold;
+  static std::string underline;
+  static std::string reverse;
+  static std::string reset;
+  static std::string clear; ///< clears the screen and moves cursor to home position
+  static std::string clear_screen;
+  static std::string clear_line;
+
+};
 
 #endif

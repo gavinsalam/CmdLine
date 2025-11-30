@@ -1,3 +1,11 @@
+Version 3.3.0: 2025-11-30
+-------------------------
+
+### new feature
+
+- CmdLine::tc struct now has terminal colour codes, e.g. `cout << CmdLine::tc::red`
+  to print in red, etc. Also bold, underline, reverse, reset, etc.
+
 Version 3.2.1: 2025-10-13
 -------------------------
 
