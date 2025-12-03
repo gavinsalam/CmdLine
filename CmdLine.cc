@@ -1082,18 +1082,18 @@ template<> bool CmdLine_string_to_value<bool>(const std::string & str) {
   throw CmdLine::ConversionFailure(str);
 }
 
-
 // all the terminal control strings
+
 std::string CmdLine::tc::red = "\033[31m";
-std::string CmdLine::tc::grn = "\033[1;32m";
-std::string CmdLine::tc::yel = "\033[1;33m";
-std::string CmdLine::tc::blu = "\033[1;34m";
-std::string CmdLine::tc::mag = "\033[1;35m";
-std::string CmdLine::tc::cyn = "\033[1;36m";
-std::string CmdLine::tc::wht = "\033[1;37m";
-std::string CmdLine::tc::blk = "\033[1;30m";
-std::string CmdLine::tc::gry = "\033[1;90m";
-std::string CmdLine::tc::org = "\033[1;91m";
+std::string CmdLine::tc::grn = "\033[32m";
+std::string CmdLine::tc::yel = "\033[33m";
+std::string CmdLine::tc::blu = "\033[34m";
+std::string CmdLine::tc::mag = "\033[35m";
+std::string CmdLine::tc::cyn = "\033[36m";
+std::string CmdLine::tc::wht = "\033[37m";
+std::string CmdLine::tc::blk = "\033[30m";
+std::string CmdLine::tc::gry = "\033[90m";
+std::string CmdLine::tc::org = "\033[91m";
 
 std::string CmdLine::tc::red_bg = "\033[41m";
 std::string CmdLine::tc::grn_bg = "\033[42m";
@@ -1108,30 +1108,35 @@ std::string CmdLine::tc::org_bg = "\033[101m";
 
 // versions with full names for those colors that have >3 letters
 // both foreground and background
-std::string CmdLine::tc::yellow = "\033[1;33m";
-std::string CmdLine::tc::blue = "\033[1;34m";
-std::string CmdLine::tc::magenta = "\033[1;35m";
-std::string CmdLine::tc::cyan = "\033[1;36m";
-std::string CmdLine::tc::white = "\033[1;37m";
-std::string CmdLine::tc::black = "\033[1;30m";
-std::string CmdLine::tc::gray = "\033[1;90m";
-std::string CmdLine::tc::orange = "\033[1;91m";
+std::string CmdLine::tc::yellow  = "\033[33m";
+std::string CmdLine::tc::blue    = "\033[34m";
+std::string CmdLine::tc::magenta = "\033[35m";
+std::string CmdLine::tc::cyan    = "\033[36m";
+std::string CmdLine::tc::white   = "\033[37m";
+std::string CmdLine::tc::black   = "\033[30m";
+std::string CmdLine::tc::gray    = "\033[90m";
+std::string CmdLine::tc::grey    = "\033[90m";
+std::string CmdLine::tc::orange  = "\033[91m";
 
-std::string CmdLine::tc::yellow_bg = "\033[43m";
-std::string CmdLine::tc::blue_bg = "\033[44m";
+std::string CmdLine::tc::yellow_bg  = "\033[43m";
+std::string CmdLine::tc::blue_bg    = "\033[44m";
 std::string CmdLine::tc::magenta_bg = "\033[45m";
-std::string CmdLine::tc::cyan_bg = "\033[46m";
-std::string CmdLine::tc::white_bg = "\033[47m";
-std::string CmdLine::tc::black_bg = "\033[40m";
-std::string CmdLine::tc::gray_bg = "\033[100m";
-std::string CmdLine::tc::orange_bg = "\033[101m";
+std::string CmdLine::tc::cyan_bg    = "\033[46m";
+std::string CmdLine::tc::white_bg   = "\033[47m";
+std::string CmdLine::tc::black_bg   = "\033[40m";
+std::string CmdLine::tc::gray_bg    = "\033[100m";
+std::string CmdLine::tc::grey_bg    = "\033[100m";
+std::string CmdLine::tc::orange_bg  = "\033[101m";
 
 
 std::string CmdLine::tc::bold = "\033[1m";
 std::string CmdLine::tc::nobold = "\033[22m";
+std::string CmdLine::tc::italics = "\033[3m";
+
 std::string CmdLine::tc::underline = "\033[4m";
 std::string CmdLine::tc::reverse = "\033[7m";
 std::string CmdLine::tc::reset = "\033[0m";
 std::string CmdLine::tc::clear = "\033[2J\033[H"; ///< clear screen and move cursor to home
 std::string CmdLine::tc::clear_screen = "\033[2J";
 std::string CmdLine::tc::clear_line = "\033[2K\r";
+

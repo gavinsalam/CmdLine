@@ -1003,6 +1003,7 @@ struct CmdLine::tc {
   static std::string white;
   static std::string black;
   static std::string gray;
+  static std::string grey;
   static std::string orange;
 
   static std::string yellow_bg;
@@ -1012,11 +1013,13 @@ struct CmdLine::tc {
   static std::string white_bg;
   static std::string black_bg;
   static std::string gray_bg;
+  static std::string grey_bg;
   static std::string orange_bg;
 
 
   static std::string bold;
   static std::string nobold;
+  static std::string italics;
   static std::string underline;
   static std::string reverse;
   static std::string reset;

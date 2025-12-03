@@ -82,7 +82,7 @@ int main (int argc, char ** argv) {
   // output a header with various info (command-line, path, time, system)
   cout << cmdline.header() ;
   // output the values
-  cout << CmdLine::tc::red <<  "ival = " << ival << endl;
+  cout << "ival = " << ival << endl;
   cout << "dval = " << dval << " (argument was " << (d_present ? "" : "not " ) << "present)" << endl;
   cout << "sval = " << sval << endl;
   if (ores.present()) cout << "oval = " << ores.value() << endl;

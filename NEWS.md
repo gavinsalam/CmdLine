@@ -1,3 +1,10 @@
+Version 3.3.1: 2025-12-03
+-------------------------
+
+### bug fix
+
+- colour codes accidentally set "bold" for each colour; now fixed.
+
 Version 3.3.0: 2025-11-30
 -------------------------
 
