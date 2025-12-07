@@ -89,7 +89,11 @@ int main (int argc, char ** argv) {
   else                cout << "oval = " << "not present" << endl; 
   cout << "flag = " << flag << endl;
 
-  if (dump) cout << cmdline.dump() << endl;
+  if (dump) {
+    cout << cmdline.dump() << endl;
+    // or fine-tune the dump output
+    //cout << cmdline.dump("#-- ","# #ABSENT:","# ",true) << endl;
+  }
 
   // this can be used to dump the state of all options
   // suitable for reading back in with the -argfile option

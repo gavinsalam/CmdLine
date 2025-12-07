@@ -1,3 +1,10 @@
+Version 3.x.x: unreleased
+-------------------------
+
+### new feature
+- CmdLine::dump(...) now has an optional boolean argument 'compact' to produce a more 
+  compact output without help lines.
+
 Version 3.3.1: 2025-12-03
 -------------------------
 
