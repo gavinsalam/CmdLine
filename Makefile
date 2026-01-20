@@ -1,7 +1,7 @@
 all: libCmdLine.a example unit-tests
 
 #CXXFLAGS=-g -std=c++11 -stdlib=libc++ -pedantic -Wall -O3 -fPIC -DPIC
-CXXFLAGS=-D__CMDLINE_ABI_DEMANGLE__ -g -std=c++14 -pedantic -Wall -Wextra -Wsign-compare -Wshadow -O3 -fPIC -DPIC
+CXXFLAGS=-D__CMDLINE_ABI_DEMANGLE__ -g -std=c++17 -pedantic -Wall -Wextra -Wsign-compare -Wshadow -O3 -fPIC -DPIC
 
 ## to enable coverage tests, on linux, uncomment the following lines
 ##

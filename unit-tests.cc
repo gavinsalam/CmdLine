@@ -2,6 +2,7 @@
 #include <cassert>
 #include <iostream>
 #include <list>
+#include <optional>
 
 using namespace std;
 
@@ -199,17 +200,24 @@ int main() {
     auto uu = cmdline.optional_value<int>({"-u","--uu"});
     double u = uu.present() ? uu.value() : 3;
 
+    //CmdLine::Result<double> xxx = cmdline.optional_value<double>({"-x","--xx"});
+    //std::optional<double> xx = xxx;
+    std::optional<double> xx = cmdline.optional_value<double>({"-x","--xx"}).as_optional();
+    double x = xx.has_value() ? xx.value() : 4;
+
     double_result = cmdline.value<double>(opts_d, 1.4);
     return make_tuple(      
       double_result,
       cmdline.value<int>({"-i","--int"}),
-      u
+      u,
+      x
     );
   };
-  CHECK_PASS(cmd, "-d 2.3 -i 2",          make_tuple(2.3, 2, 3));
-  CHECK_PASS(cmd, "--double 2.3 --int 2", make_tuple(2.3, 2, 3));
-  CHECK_PASS(cmd, "--int 2",              make_tuple(1.4, 2, 3));
-  CHECK_PASS(cmd, "--int 2 --uu 6",       make_tuple(1.4, 2, 6));
+  CHECK_PASS(cmd, "-d 2.3 -i 2",          make_tuple(2.3, 2, 3, 4.0));
+  CHECK_PASS(cmd, "--double 2.3 --int 2", make_tuple(2.3, 2, 3, 4.0));
+  CHECK_PASS(cmd, "--int 2",              make_tuple(1.4, 2, 3, 4.0));
+  CHECK_PASS(cmd, "--int 2 --uu 6",       make_tuple(1.4, 2, 6, 4.0));
+  CHECK_PASS(cmd, "--int 2 --uu 6 -x 7.5",       make_tuple(1.4, 2, 6, 7.5));
   CHECK_FAIL(cmd, "");
 
 

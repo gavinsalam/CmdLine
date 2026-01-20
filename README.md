@@ -3,7 +3,7 @@
 README for the CmdLine directory
 --------------------------------
 
-A simple C++14 library to provide access to command line options.
+A simple C++14/C++17 library to provide access to command line options.
 
 type 
 
@@ -11,7 +11,8 @@ type
 
 to build the library and the example program. To include it in your
 own projects, you can simply copy the CmdLine.cc and CmdLine.hh
-files. 
+files. They will work in C++14 or later, with small additional features
+in C++17 or later..
 
 Many command-line libraries require you to declare all the options you
 want and then subsequently process the command line to access them. This one

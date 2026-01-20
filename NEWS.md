@@ -1,9 +1,16 @@
 Version 3.x.x: unreleased
 -------------------------
 
-### new feature
+### new features
 - CmdLine::dump(...) now has an optional boolean argument 'compact' to produce a more 
   compact output without help lines.
+- CmdLine::Result<T> now has an as_optional() member function to return
+  a std::optional<T> (C++17 and later).
+
+### other changes
+
+- by default the library and unit tests compile with C++17, but
+  CmdLine.{hh|cc} itself remains C++14 compatible.
 
 Version 3.3.1: 2025-12-03
 -------------------------

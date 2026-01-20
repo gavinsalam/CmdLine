@@ -28,6 +28,10 @@
 #include<string>
 #include<sstream>
 #include<iostream>
+#if __cplusplus >= 201703L
+#include<optional>
+#endif
+
 #include<map>
 #include<vector>
 #include<ctime>
@@ -141,6 +145,14 @@ class CmdLine {
     /// this allows the user to do the conversion to the argument's value manually
     T operator()() const;
 
+#if __cplusplus >= 201703L
+    /// automatic conversion to std::optional<T> (C++17 and later)
+    std::optional<T> as_optional() const {
+      if (has_value()) return std::optional<T>(_t);
+      else return std::nullopt;
+    }
+#endif
+
     /// an alternative member name for getting the value manually
     T value() const;
 
@@ -188,6 +200,8 @@ class CmdLine {
     /// returns a reference to the option help, and throws an error if
     /// there is no help
     OptionHelp & opthelp() const;    
+
+    bool has_opthelp() const {return _opthelp != nullptr;}
 
     /// sets a pointer to the help instance for this argument.
     void set_opthelp(OptionHelp * opthelp) {_opthelp = opthelp;}
