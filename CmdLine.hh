@@ -146,8 +146,8 @@ class CmdLine {
     T operator()() const;
 
 #if __cplusplus >= 201703L
-    /// automatic conversion to std::optional<T> (C++17 and later)
-    std::optional<T> as_optional() const {
+    /// conversion to std::optional<T> (C++17 and later)
+    std::optional<T> std_optional() const {
       if (has_value()) return std::optional<T>(_t);
       else return std::nullopt;
     }

@@ -202,7 +202,7 @@ int main() {
 
     //CmdLine::Result<double> xxx = cmdline.optional_value<double>({"-x","--xx"});
     //std::optional<double> xx = xxx;
-    std::optional<double> xx = cmdline.optional_value<double>({"-x","--xx"}).as_optional();
+    std::optional<double> xx = cmdline.optional_value<double>({"-x","--xx"}).std_optional();
     double x = xx.has_value() ? xx.value() : 4;
 
     double_result = cmdline.value<double>(opts_d, 1.4);

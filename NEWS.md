@@ -4,7 +4,7 @@ Version 3.x.x: unreleased
 ### new features
 - CmdLine::dump(...) now has an optional boolean argument 'compact' to produce a more 
   compact output without help lines.
-- CmdLine::Result<T> now has an as_optional() member function to return
+- CmdLine::Result<T> now has a std_optional() member function to return
   a std::optional<T> (C++17 and later).
 
 ### other changes
