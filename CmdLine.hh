@@ -256,6 +256,12 @@ class CmdLine {
     return any_value<T>(opts, defval);
   }
 
+  /// returns the previously queried value for opt
+  ///
+  /// This reuses the value/result from an earlier value-like query and
+  /// throws if no matching prior query exists or if the type differs.
+  template<class T> Result<T> reuse_value(const std::string & opt) const;
+
   /// returns a Result<T> for the option; the result.present() should be queried to
   /// see if it was present before trying to use the value
   template<class T> Result<T> optional_value(const std::string & opt) const {
@@ -713,6 +719,10 @@ class CmdLine {
   /// (if help is disabled, return a null poiner)
   OptionHelp * opthelp_ptr(const OptionHelp & opthelp) const;
 
+  /// return a pointer to an existing option help record matching opt
+  /// directly or through one of its aliases
+  const OptionHelp * existing_opthelp_ptr(const std::string & opt) const;
+
   /// a std::vector of the options queried (this may evolve)
   mutable std::vector<std::string> __options_queried;
   /// a map with help for each option that was queried
@@ -872,6 +882,31 @@ template<class T> CmdLine::Result<T> CmdLine::any_value(const std::vector<std::s
   }
   if (opthelp) opthelp->result_ptr = res;
   return *res;
+}
+
+template<class T>
+CmdLine::Result<T> CmdLine::reuse_value(const std::string & opt) const {
+  const OptionHelp * opthelp = existing_opthelp_ptr(opt);
+  if (!opthelp) {
+    throw Error("option " + opt + " has not been queried before reuse_value was called");
+  }
+  if (!opthelp->takes_value) {
+    throw Error("option " + opt + " was previously queried, but did not take a value (e.g. used with present())");
+  }
+
+  const std::string requested_type = typeid(T).name();
+  if (opthelp->type != requested_type) {
+    throw Error("option " + opt + " was previously queried with type '"
+                + OptionHelp::demangle(opthelp->type)
+                + "' but reuse_value requested type '"
+                + OptionHelp::demangle(requested_type) + "'");
+  }
+
+  auto reused_result = std::dynamic_pointer_cast<Result<T>>(opthelp->result_ptr);
+  if (!reused_result) {
+    throw Error("could not reuse stored value for option " + opt);
+  }
+  return *reused_result;
 }
 
 template<class T>

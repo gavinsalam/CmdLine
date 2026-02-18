@@ -221,6 +221,44 @@ int main() {
   CHECK_FAIL(cmd, "");
 
 
+  //---------------------------------------------------------------------------
+  // verify reuse_value
+  {
+    auto cmd_reuse_default = [](CmdLine & cmdline){
+      auto v = cmdline.value<int>({"-o","-opt-long"}, 9);
+      auto r = cmdline.reuse_value<int>("-opt-long");
+      return make_tuple(v.value(), r.value(), v.present(), r.present());
+    };
+    CHECK_PASS(cmd_reuse_default, "",             make_tuple(9, 9, false, false));
+    CHECK_PASS(cmd_reuse_default, "-o 3",         make_tuple(3, 3, true,  true ));
+    CHECK_PASS(cmd_reuse_default, "-opt-long 4",  make_tuple(4, 4, true,  true ));
+  }
+
+  {
+    auto cmd_reuse_required = [](CmdLine & cmdline){
+      auto v = cmdline.value<int>({"-o","-opt-long"});
+      auto r = cmdline.reuse_value<int>("-o");
+      return make_tuple(v.value(), r.value());
+    };
+    CHECK_PASS(cmd_reuse_required, "-o 7",        make_tuple(7, 7));
+    CHECK_PASS(cmd_reuse_required, "-opt-long 8", make_tuple(8, 8));
+  }
+
+  {
+    auto cmd_reuse_missing = [](CmdLine & cmdline){
+      return make_tuple(cmdline.reuse_value<int>("-o").value());
+    };
+    CHECK_FAIL(cmd_reuse_missing, "-o 1");
+  }
+
+  {
+    auto cmd_reuse_wrong_type = [](CmdLine & cmdline){
+      cmdline.value<int>({"-o","-opt-long"}, 2);
+      return make_tuple(cmdline.reuse_value<double>("-opt-long").value());
+    };
+    CHECK_FAIL(cmd_reuse_wrong_type, "");
+  }
+
 
   cout << "All " << n_checks << " checks passed" << endl;
   return 0;

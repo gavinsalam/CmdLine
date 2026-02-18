@@ -570,6 +570,19 @@ CmdLine::OptionHelp * CmdLine::opthelp_ptr(const CmdLine::OptionHelp & opthelp) 
 
 }
 
+const CmdLine::OptionHelp * CmdLine::existing_opthelp_ptr(const std::string & opt) const {
+  auto opthelp_iter = __options_help.find(opt);
+  if (opthelp_iter != __options_help.end()) return &opthelp_iter->second;
+
+  for (const auto & opt_and_help: __options_help) {
+    const auto & aliases = opt_and_help.second.aliases;
+    if (std::find(aliases.begin(), aliases.end(), opt) != aliases.end()) {
+      return &opt_and_help.second;
+    }
+  }
+  return nullptr;
+}
+
 string CmdLine::OptionHelp::type_name() const {
   if      (type == typeid(int)   .name())   return "int"   ;
   else if (type == typeid(unsigned int).name()) return "unsigned int"   ;
@@ -1140,4 +1153,3 @@ std::string CmdLine::tc::reset = "\033[0m";
 std::string CmdLine::tc::clear = "\033[2J\033[H"; ///< clear screen and move cursor to home
 std::string CmdLine::tc::clear_screen = "\033[2J";
 std::string CmdLine::tc::clear_line = "\033[2K\r";
-

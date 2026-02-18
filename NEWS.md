@@ -6,6 +6,10 @@ Version 3.x.x: unreleased
   compact output without help lines.
 - CmdLine::Result<T> now has a std_optional() member function to return
   a std::optional<T> (C++17 and later).
+- added `CmdLine::reuse_value<T>("-opt")`, which reuses the previously queried
+  value/result for an option (including defaults/presence), supports aliases
+  defined in prior multi-name queries, and throws if the option was not
+  previously queried or if the type is inconsistent.
 
 ### other changes
 
