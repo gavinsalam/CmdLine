@@ -97,8 +97,6 @@ void check_fail(const int line_number, const U & fn, const string & options) {
 #define CHECK_PASS_NOHELP(fn, options, expected) (check_pass(__LINE__, fn, options, expected, false))
 
 int main(int argc, char ** argv) {
-  // make sure that intentional failures are quiet
-  CmdLine::Error::set_print_message(false);
   {
     CmdLine cmdline(argc, argv);
     verbose_successes = cmdline.value_bool({"-v","-verbose","--verbose"}, false)
@@ -106,6 +104,8 @@ int main(int argc, char ** argv) {
     cmdline.assert_all_options_used();
   }
 
+  // from here on, make sure that intentional failures are quiet
+  CmdLine::Error::set_print_message(false);
   //---------------------------------------------------------------------------
   // verify value_bool with a true default
   {
