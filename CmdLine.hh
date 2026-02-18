@@ -751,7 +751,7 @@ public:
   Error(const std::ostringstream & ostr);
   Error(const std::string & str);
   //const char* what() throw() {return _message.c_str();}
-  const std::string & message() throw() {return _message;}
+  const std::string & message() const throw() {return _message;}
   static void set_print_message(bool doprint) {_do_printout = doprint;}
 private:
   std::string _message;
@@ -888,7 +888,9 @@ template<class T>
 CmdLine::Result<T> CmdLine::reuse_value(const std::string & opt) const {
   const OptionHelp * opthelp = existing_opthelp_ptr(opt);
   if (!opthelp) {
-    throw Error("option " + opt + " has not been queried before reuse_value was called");
+    throw Error("`reuse_value<T>(\"" + opt + "\")` requires " + opt + " to have been"
+                " previously queried with `value<T>(\""+opt+
+                "\" [, ...])`, but no prior query for that option was found");
   }
   if (!opthelp->takes_value) {
     throw Error("option " + opt + " was previously queried, but did not take a value (e.g. used with present())");

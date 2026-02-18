@@ -79,6 +79,7 @@ void check_fail(const int line_number, const U & fn, const string & options) {
 
   } catch (const CmdLine::Error & e) {
     // expected
+    //cout << e.message() << endl;
     return;
   }
 }
@@ -242,6 +243,18 @@ int main() {
     };
     CHECK_PASS(cmd_reuse_required, "-o 7",        make_tuple(7, 7));
     CHECK_PASS(cmd_reuse_required, "-opt-long 8", make_tuple(8, 8));
+  }
+
+  {    
+    auto cmd_reuse_default = [](CmdLine & cmdline){
+      auto v = cmdline.value_bool({"-o","-opt-long"}, false);
+      auto r = cmdline.reuse_value<bool>("-opt-long");
+      return make_tuple(v.value(), r.value());
+    };
+    CHECK_PASS(cmd_reuse_default, "",              make_tuple(false, false));
+    CHECK_PASS(cmd_reuse_default, "-o yes",        make_tuple(true, true));
+    CHECK_PASS(cmd_reuse_default, "-opt-long yes", make_tuple(true,  true ));
+    CHECK_PASS(cmd_reuse_default, "-opt-long no",  make_tuple(false, false));
   }
 
   {

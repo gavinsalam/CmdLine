@@ -1,3 +1,12 @@
+Version 3.4.x: unreleased
+-------------------------
+
+### Small changes
+- improved error message for reuse_value when option not previously queried
+
+### bug fixes
+- CmdLine::Error::message() is now a const member function.
+
 Version 3.4.0: 2026-02-18
 -------------------------
 
