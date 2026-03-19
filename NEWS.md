@@ -1,4 +1,4 @@
-Version 3.4.x: unreleased
+Version 3.4.1: 2026-03-19
 -------------------------
 
 ### Small changes
