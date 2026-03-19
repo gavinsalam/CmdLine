@@ -734,7 +734,7 @@ class CmdLine {
 
   /// report failure of conversion (throws a CmdLine::Error)
   [[ noreturn ]] void _report_conversion_failure(const std::string & opt, 
-                                  const std::string & optstring) const;
+                  const std::string & optstring, const std::string & type_name) const;
 
   /// convert the time into a std::string (local by default -- utc if 
   /// utc=true).
@@ -1018,7 +1018,7 @@ template<class T> T CmdLine::internal_value(const std::vector<std::string> & opt
     return CmdLine_string_to_value<T>(optstring);
   } catch (const ConversionFailure & failure) {
     std::string opt = __arguments[internal_present(opts).first];
-    _report_conversion_failure(opt, failure.what());
+    _report_conversion_failure(opt, failure.what(), typeid(T).name());
   }
 }
 

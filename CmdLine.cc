@@ -444,10 +444,11 @@ string CmdLine::unix_username() const {
 
 /// report failure of conversion
 void CmdLine::_report_conversion_failure(const string & opt, 
-                                         const string & optstring) const {
+                                         const string & optstring,
+                                         const string & type_name) const {
   ostringstream ostr;
-  ostr << "could not convert option ("<<opt<<") value ("
-       <<optstring<<") to requested type"<<endl; 
+  ostr << "could not convert value of option \""<<opt<<"\" = \""
+       <<optstring<<"\", to requested type ("<< OptionHelp::demangle(type_name) << ")" << endl; 
   throw Error(ostr);
 }
 

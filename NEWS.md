@@ -3,6 +3,7 @@ Version 3.4.x: unreleased
 
 ### Small changes
 - improved error message for reuse_value(...) when option not previously queried
+- improved error message when conversion to type fails
 - unit-tests now has a `-v`/`--verbose` option.
 
 ### bug fixes
