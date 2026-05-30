@@ -11,7 +11,7 @@ bool verbose_successes = false;
 
 /// return a vector of strings, split by spaces
 vector<string> split_spaces(const string& s) {
-  return CmdLine::split_at_spaces(s);
+  return CmdLine::split_at_spaces("dummy " + s);
 }
 
 

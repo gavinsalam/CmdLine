@@ -1099,7 +1099,6 @@ template<> bool CmdLine_string_to_value<bool>(const std::string & str) {
 
 std::vector<std::string> CmdLine::split_at_spaces(const std::string & str) {
   vector<string> result;
-  result.push_back("dummy");
   stringstream ss(str);
   string item;
   while (getline(ss, item, ' ')) {
