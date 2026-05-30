@@ -221,8 +221,13 @@ class CmdLine {
   CmdLine() {};
   /// initialise a CmdLine from a C-style array of command-line arguments
   CmdLine(const int argc, char** argv, bool enable_help = true, const std::string & file_option=_default_argfile_option );
-  /// initialise a CmdLine from a C++ std::vector of arguments 
+  /// initialise a CmdLine from a C++ std::vector of arguments; the 0th argument should be the command name 
   CmdLine(const std::vector<std::string> & args, bool enable_help = true, const std::string & file_option=_default_argfile_option );
+  /// @brief  initialise a CmdLine from a string containing the command
+  /// line; the string will be split at spaces, with multiple spaces
+  /// treated as one; the first item is expected to be the command name
+  CmdLine(const std::string & cmdline_string, bool enable_help = true, const std::string & file_option=_default_argfile_option ) :
+    CmdLine(split_at_spaces(cmdline_string), enable_help, file_option) {}
 
   /// @name Member functions to add and classify command-line options
   ///@{
@@ -499,6 +504,11 @@ class CmdLine {
   /// The header includes a final newline
   std::string header(const std::string & prefix = "# ") const;
   
+  /// @brief  split a string at spaces, treating multiple spaces as one, and returning a vector of the items
+  /// @param str the string to split
+  /// @return the vector of individual items
+  static std::vector<std::string> split_at_spaces(const std::string & str);
+
   ///@}
 
 

@@ -1,3 +1,10 @@
+Unreleased
+-----------
+
+### Small changes
+- added CmdLine(cmdline_string) constructor
+- added static CmdLine::split_at_spaces(str)
+
 Version 3.4.1: 2026-03-19
 -------------------------
 
@@ -13,8 +20,8 @@ Version 3.4.0: 2026-02-18
 -------------------------
 
 ### new features
-- CmdLine::dump(...) now has an optional boolean argument 'compact' to produce a more 
-  compact output without help lines.
+- CmdLine::dump(...) now has an optional boolean argument 'compact' to
+  produce a more compact output without help lines.
 - CmdLine::Result<T> now has a std_optional() member function to return
   a std::optional<T> (C++17 and later).
 - added `CmdLine::reuse_value<T>("-opt")`, which reuses the previously queried

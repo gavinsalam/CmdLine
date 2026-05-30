@@ -1097,6 +1097,19 @@ template<> bool CmdLine_string_to_value<bool>(const std::string & str) {
   throw CmdLine::ConversionFailure(str);
 }
 
+std::vector<std::string> CmdLine::split_at_spaces(const std::string & str) {
+  vector<string> result;
+  result.push_back("dummy");
+  stringstream ss(str);
+  string item;
+  while (getline(ss, item, ' ')) {
+    // skip empty items, effectively ignoring multiple spaces
+    if (item == "") continue;
+    result.push_back(item);
+  }
+  return result;
+}
+
 // all the terminal control strings
 
 std::string CmdLine::tc::red = "\033[31m";

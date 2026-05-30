@@ -11,16 +11,7 @@ bool verbose_successes = false;
 
 /// return a vector of strings, split by spaces
 vector<string> split_spaces(const string& s) {
-  vector<string> result;
-  result.push_back("dummy");
-  stringstream ss(s);
-  string item;
-  while (getline(ss, item, ' ')) {
-    // skip empty items, effectively ignoring multiple spaces
-    if (item == "") continue;
-    result.push_back(item);
-  }
-  return result;
+  return CmdLine::split_at_spaces(s);
 }
 
 
