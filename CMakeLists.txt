@@ -15,6 +15,21 @@ endif()
 option(CMDLINE_BUILD_EXAMPLE "Build the CmdLine example program" ${CMDLINE_IS_TOP_LEVEL})
 option(CMDLINE_BUILD_TESTS "Build the CmdLine unit tests" ${CMDLINE_IS_TOP_LEVEL})
 
+file(GLOB CMDLINE_LEGACY_OBJECT_FILES
+  RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+  "${CMAKE_CURRENT_SOURCE_DIR}/*.o"
+)
+if(CMDLINE_LEGACY_OBJECT_FILES)
+  list(JOIN CMDLINE_LEGACY_OBJECT_FILES ", " CMDLINE_LEGACY_OBJECT_FILES_LIST)
+  message(FATAL_ERROR
+    "CmdLine source directory contains pre-existing object files: "
+    "${CMDLINE_LEGACY_OBJECT_FILES_LIST}. "
+    "This usually means a prior Makefile build is present and can conflict "
+    "with the CMake build. Run `make distclean` in "
+    "${CMAKE_CURRENT_SOURCE_DIR} and re-run CMake."
+  )
+endif()
+
 check_cxx_source_compiles("
   #include <cxxabi.h>
   #include <cstdlib>

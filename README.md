@@ -14,6 +14,8 @@ own projects, you can simply copy the CmdLine.cc and CmdLine.hh
 files. They will work in C++14 or later, with small additional features
 in C++17 or later..
 
+For CMake-based integration, see the `CMake usage` section below.
+
 Many command-line libraries require you to declare all the options you
 want and then subsequently process the command line to access them. This one
 instead gives you immediate access to the value of the argument.  An
@@ -55,3 +57,45 @@ int main(int argc, char** argv) {
 
 Run `example -h` to see an illustrative help message, or 
 `example -markdown-help` to see the help message in markdown format.
+
+## CMake usage
+
+CmdLine can be used from CMake either by adding this repository as a
+subdirectory or by installing it and using `find_package()`.
+
+When using `add_subdirectory(...)`, link against one of the exported
+targets:
+
+```cmake
+add_subdirectory(path/to/CmdLine)
+
+target_link_libraries(my_target PRIVATE CmdLine::CmdLine)
+```
+
+`CmdLine::CmdLine` is the shared library target, and
+`CmdLine::CmdLineStatic` is also available if you want the static
+library instead.
+
+To install the package:
+
+```sh
+cmake -S . -B build
+cmake --build build
+cmake --install build --prefix /your/install/prefix
+```
+
+Then in a third-party project:
+
+```cmake
+find_package(CmdLine CONFIG REQUIRED)
+
+target_link_libraries(my_target PRIVATE CmdLine::CmdLine)
+```
+
+If the source directory contains old `make`-generated object files such
+as `*.o`, the CMake configure step will stop with an error to avoid
+mixing Makefile and CMake builds. In that case, run:
+
+```sh
+make distclean
+```
