@@ -1,6 +1,9 @@
 Unreleased
 -----------
 
+### build system update
+- CMake now supported
+
 ### Small changes
 - added CmdLine(cmdline_string) constructor
 - added static CmdLine::split_at_spaces(str)
