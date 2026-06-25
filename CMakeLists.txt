@@ -54,16 +54,16 @@ function(cmdline_configure_library target_name)
   endif()
 endfunction()
 
-add_library(CmdLine STATIC
+add_library(CmdLineStatic STATIC
   CmdLine.cc
 )
-add_library(CmdLine::CmdLineStatic ALIAS CmdLine)
-set_target_properties(CmdLine PROPERTIES
+add_library(CmdLine::CmdLineStatic ALIAS CmdLineStatic)
+set_target_properties(CmdLineStatic PROPERTIES
   OUTPUT_NAME CmdLine
   POSITION_INDEPENDENT_CODE ON
   EXPORT_NAME CmdLineStatic
 )
-cmdline_configure_library(CmdLine)
+cmdline_configure_library(CmdLineStatic)
 
 add_library(CmdLineShared SHARED
   CmdLine.cc
@@ -99,7 +99,7 @@ if(CMDLINE_BUILD_TESTS)
   endif()
 endif()
 
-install(TARGETS CmdLine CmdLineShared
+install(TARGETS CmdLineStatic CmdLineShared
   EXPORT CmdLineTargets
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
